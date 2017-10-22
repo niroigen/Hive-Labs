@@ -42,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
                         Element element = elements.select("a[href*=" + date + "]").first();
 
+                        String eventid = element.attributes().get("id");
+
+                        Element event = doc.select("dl#eventinfo-" + eventid).first();
+
+
                         String hw="";
 
                     }
@@ -56,3 +61,6 @@ public class MainActivity extends AppCompatActivity {
             newThread.start();
     }
 }
+
+
+
