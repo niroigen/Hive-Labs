@@ -3,7 +3,6 @@ package com.example.niroigensuntharam.elec390application;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +26,16 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         InitializeRooms();
+
+//        // Create an instance of GoogleAPIClient.
+//        if (mGoogleApiClient == null) {
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        }
+
     }
 
     private void InitializeRooms()
