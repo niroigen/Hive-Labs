@@ -17,15 +17,22 @@ import java.sql.SQLException;
 
 public class MainActivity extends AppCompatActivity{
 
+    // Retrieving the date and time when the application is being launces
     String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
     String timeString = new SimpleDateFormat("HHmm").format(new Date());
 
+    // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
                                         ,"833","835","837","841","843","845","847","849","854","862"},
                                         {"16","20","16","18","22","20","16","20","16","16","30","16"
                                          ,"16","15","15","20","16","20","23","16","12"}};
 
+    // A list of all the rooms informations
+    // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
+    
+    // List of all available rooms that the user 
+    // can enter currently
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
 
     ListViewAdapter myCustomAdapter=null;
@@ -83,48 +90,78 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    // Initializing to get all the rooms information
     private void InitializeRooms()
     {
+        // Clearing all the rooms and available rooms
         Rooms.clear();
         RoomsNowAvailable.clear();
 
+        // Looping through all the rooms
+        // and getting its information
         for (int i = 0; i < AvailableRooms[0].length; i ++)
         {
+            // Passing in the room number and its capacity
             Room room = new Room(AvailableRooms[0][i],AvailableRooms[1][i]);
 
+            // Verifying whether the room is currently available or not
             VerifyIfAvalaible(room);
 
+            // Adding the room to the list of rooms
             Rooms.add(room);
         }
     }
 
+    // Will be used to verify whether a room is currently available
+    // and if it is, then it will be added to the RoomsNowAvailable list
     private void VerifyIfAvalaible(Room room)
     {
+        // The availability of a certain lab
         boolean isAvailable = true;
 
         for (int i = 0; i < room.TimeList.size(); i++)
         {
+            // Getting the time of a certain course
+            // Ex: 12:45 - 13:55
             String[] time = room.TimeList.get(i).split("-");
 
+            // Retrieving the start time
+            // Ex: 12:45
             String[] startTime = time[0].split(":");
 
+            // Retrieving the end time
+            // Ex: 13:55
             String[] endTime = time[1].split(":");
 
+            // Getting an integer value for the timeString
+            // Ex: 1500
             int TimeNow = Integer.parseInt(timeString);
+            
+            // Getting an integer value for the startTime
+            // Ex: 1245
             int StartTime = Integer.parseInt(startTime[0].trim() + startTime[1].trim());
+            
+            // Getting an integer value for the endTime
+            // Ex: 1355
             int EndTime = Integer.parseInt(endTime[0].trim() + endTime[1].trim());
 
+            // Verifying whether the room is currently unavailable
             if (TimeNow >= StartTime && TimeNow < EndTime)
             {
+                // Set the availability to false
                 isAvailable = false;
+                
+                // Break from the loop
                 break;
             }
         }
 
+        // If the room is available add it to the list of available rooms
         if (isAvailable)
             RoomsNowAvailable.add(room);
     }
 
+    // Will refresh to show the rooms the user can currently go to
     private void RefreshRooms()
     {
         String tempDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
