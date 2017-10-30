@@ -2,10 +2,18 @@ package com.example.niroigensuntharam.elec390application;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import android.content.Intent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.TextView;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -20,12 +28,49 @@ public class MainActivity extends AppCompatActivity{
     static ArrayList<Room> Rooms = new ArrayList<>();
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
 
+    ListViewAdapter myCustomAdapter=null;
+    ListView listView=null;
+    Databasehelper db=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        Databasehelper myDbHelper = new Databasehelper(getApplicationContext());
+//        myDbHelper = new Databasehelper(this);
+//        try {
+//            myDbHelper.createDatabase();
+//        } catch (IOException ioe) {
+//            throw new Error("Unable to create database");
+//        }
+//        try {
+//            myDbHelper.openDatabase();
+//        }catch(SQLException sqle){
+//            //throw sqle;
+//        }
+
+
+        //db = new Databasehelper(this);
+        //cars=myDbHelper.getData();
+
         InitializeRooms();
+
+        myCustomAdapter= new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
+
+        listView = (ListView)findViewById(R.id.simpleListView);
+        listView.setAdapter(myCustomAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView v = (TextView) view.findViewById(R.id.labName);
+                Intent intent = new Intent(getBaseContext(), LabDetail.class);
+                intent.putExtra("LAB_ID", v.getText());
+                startActivity(intent);
+            }
+        });
 
 //        // Create an instance of GoogleAPIClient.
 //        if (mGoogleApiClient == null) {

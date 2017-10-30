@@ -19,6 +19,22 @@ public class Room {
     String roomNumber;
     String capacity;
 
+    public ArrayList<String> getTimeList() {
+        return TimeList;
+    }
+
+    public ArrayList<String> getClassList() {
+        return ClassList;
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public String getCapacity() {
+        return capacity;
+    }
+
     Room (String room, String cap)
     {
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
