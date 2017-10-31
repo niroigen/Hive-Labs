@@ -50,6 +50,8 @@ public class ListViewAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+
+        // Test of slack
         holder.labName.setText(rooms.get(position).roomNumber);
 
         if(MainActivity.RoomsNowAvailable.contains(getItem(position)))
