@@ -45,15 +45,14 @@
         app:layout_constraintTop_toBottomOf="@+id/today"
         app:layout_constraintVertical_bias="0.032" />
 
-    <TextView
-        android:id="@+id/listOfClasses"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="18sp"
+    <ListView
+        android:id="@+id/classScheduleList"
+        android:layout_width="368dp"
+        android:layout_height="401dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/today"
-        app:layout_constraintVertical_bias="0.242" />
+        app:layout_constraintTop_toBottomOf="@+id/capacity" />
+
 </android.support.constraint.ConstraintLayout>

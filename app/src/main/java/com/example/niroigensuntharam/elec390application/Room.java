@@ -1,6 +1,9 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ProgressBar;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,6 +29,10 @@ public class Room {
     // The number of people that can be within a certain room
     String capacity;
 
+    String nextClass;
+
+    String currentClass;
+
     public ArrayList<String> getTimeList() {
         return TimeList;
     }
@@ -41,6 +48,14 @@ public class Room {
     public String getCapacity() {
         return capacity;
     }
+
+    public String getCurrentClass() {return currentClass;}
+
+    public String getNextClass() {return nextClass;}
+
+    public void setNextClass(String next_class) {nextClass = next_class;}
+
+    public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
     Room (String room, String cap)
     {
@@ -81,7 +96,7 @@ public class Room {
 
                 TimeList.add(temp);
 
-                temp = event.childNode(11).toString().split("\n")[1];
+                temp = element.childNode(1).toString().split(";")[1];
 
                 ClassList.add(temp);
             }
@@ -94,6 +109,8 @@ public class Room {
 
 // The AsyncTask is used since the application is doing a web call
 class GetRoomInfoAsync extends AsyncTask<String, Void, Document> {
+    private ProgressBar progressBar;
+
     @Override
     protected Document doInBackground(String... params) {
 
@@ -108,6 +125,11 @@ class GetRoomInfoAsync extends AsyncTask<String, Void, Document> {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onPreExecute(){
+
     }
 }
 
