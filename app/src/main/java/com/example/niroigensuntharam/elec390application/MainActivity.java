@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity{
 
                 TextView v = (TextView) view.findViewById(R.id.labName);
                 Intent intent = new Intent(getBaseContext(), LabDetail.class);
-                intent.putExtra("LAB_ID", v.getText());
+                intent.putExtra("position", position);
                 startActivity(intent);
             }
         });

@@ -16,12 +16,12 @@ import java.util.ArrayList;
 public class ListViewAdapter extends ArrayAdapter {
 
     private Context context;
-    private ArrayList<Room> room;
+    private ArrayList<Room> rooms;
 
     public ListViewAdapter(Context context, int textViewResourceId, ArrayList objects) {
         super(context, textViewResourceId, objects);
         this.context = context;
-        room = objects;
+        rooms = objects;
     }
 
     private class ViewHolder {
@@ -46,8 +46,7 @@ public class ListViewAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Room individualLab = room.get(position);
-        holder.labName.setText(individualLab.getClassList().get(0));
+        holder.labName.setText(rooms.get(position).roomNumber);
         return convertView;
     }
 }

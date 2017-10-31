@@ -12,37 +12,35 @@ import java.util.ArrayList;
 
 public class LabDetail extends AppCompatActivity {
 
-    TextView lab_name;
+    TextView roomNumber;
+    TextView class_name;
     TextView lab_capacity;
     Button lab_week_schedule_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lab_detail);
+        setContentView(R.layout.lab_detail);
 
         Databasehelper myDbHelper = new Databasehelper(getApplicationContext());
         myDbHelper = new Databasehelper(this);
         //Intent intent = getIntent();
-        String s = getIntent().getExtras().getString("LAB_ID");
-        Log.v("Lab : ", s);
-        String temp[] = s.split(" ");
+        int position = getIntent().getExtras().getInt("position");
         //room = myDbHelper.getDataByName(temp[1].toString());
-        final Room individualLab = MainActivity.Rooms.get(0);
-        Log.v("Data : ", individualLab.getClassList().get(0));
+        final Room individualLab = MainActivity.Rooms.get(position);
 
-        lab_name = (TextView)findViewById(R.id.lab_name);
-        lab_name.setText(individualLab.getClassList().get(0));
+        String c = "";
+
+        for (int i = 0; i < individualLab.getClassList().size(); i++)
+        {
+            c += individualLab.getClassList().get(i) + "\n" + individualLab.getTimeList().get(i) + "\n\n";
+        }
+
+        roomNumber = (TextView) findViewById(R.id.roomNumber);
+        roomNumber.setText(individualLab.roomNumber);
+        class_name = (TextView)findViewById(R.id.listOfClasses);
+        class_name.setText(c);
         lab_capacity = (TextView) findViewById(R.id.capacity);
-        lab_capacity.setText(individualLab.capacity);
-        lab_week_schedule_url = (Button) findViewById(R.id.btn_week_schedule);
-        lab_week_schedule_url.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Uri uri = Uri.parse(individualLab.getLab_week_schedule_url()); // missing 'http://' will cause crashed
-                //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                //startActivity(intent);
-            }
-        });
+        lab_capacity.setText("Capacity: " + individualLab.capacity);
     }
 }
