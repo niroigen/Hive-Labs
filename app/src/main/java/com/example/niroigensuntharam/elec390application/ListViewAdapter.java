@@ -51,7 +51,7 @@ public class ListViewAdapter extends ArrayAdapter {
         }
 
 
-        // Test of slack
+        // Test of slack1
         holder.labName.setText(rooms.get(position).roomNumber);
 
         if(MainActivity.RoomsNowAvailable.contains(getItem(position)))
