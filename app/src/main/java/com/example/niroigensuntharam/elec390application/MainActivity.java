@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity{
             if (TimeNow < StartTime && !isNextClass)
             {
                 room.setNextClass(room.getClassList().get(i));
+                room.setNextClassTime(room.getTimeList().get(i));
                 isNextClass = true;
             }
 

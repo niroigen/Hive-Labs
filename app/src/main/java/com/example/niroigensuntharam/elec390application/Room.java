@@ -31,6 +31,8 @@ public class Room {
 
     String nextClass;
 
+    String nextClassTime;
+
     String currentClass;
 
     public ArrayList<String> getTimeList() {
@@ -54,6 +56,10 @@ public class Room {
     public String getNextClass() {return nextClass;}
 
     public void setNextClass(String next_class) {nextClass = next_class;}
+
+    public String getNextClassTime() {return nextClassTime;}
+
+    public void setNextClassTime(String next_class_time) {nextClassTime = next_class_time;}
 
     public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
