@@ -31,6 +31,8 @@ public class Room {
 
     String nextClass;
 
+    String nextTime;
+
     String currentClass;
 
     public ArrayList<String> getTimeList() {
@@ -53,9 +55,13 @@ public class Room {
 
     public String getNextClass() {return nextClass;}
 
+    public String getNextTime() {return nextTime;}
+
     public void setNextClass(String next_class) {nextClass = next_class;}
 
     public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
+
+    public void setNextTime(String next_time) {nextTime = next_time;}
 
     Room (String room, String cap, String datee, Document doc)
     {
@@ -137,6 +143,7 @@ public class Room {
             if (TimeNow < StartTime && !isNextClass)
             {
                 room.setNextClass(room.getClassList().get(i));
+                room.setNextTime(room.getTimeList().get(i));
                 isNextClass = true;
             }
 

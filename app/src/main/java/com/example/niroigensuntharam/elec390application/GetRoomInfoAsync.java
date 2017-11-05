@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 // The AsyncTask is used since the application is doing a web call
-class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
+public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     private ProgressBar progressBar;
 
     private Context mContext;
@@ -83,7 +83,7 @@ class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         MainActivity.myCustomAdapter.notifyDataSetChanged();
 
-        new NotificationHelper(mContext);
+        NotificationHelper notificationHelper = new NotificationHelper(mContext);
     }
 
     @Override

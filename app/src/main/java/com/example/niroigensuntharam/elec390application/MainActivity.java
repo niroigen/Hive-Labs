@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity{
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
         getRoomInfoAsync.execute(dateString);
-
         Initialization();
     }
 

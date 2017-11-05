@@ -7,6 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by niroigensuntharam on 2017-11-05.
  */
@@ -15,10 +20,29 @@ public class NotificationHelper {
 
     Context mContext;
 
+    public Timer t = new Timer();
+
     NotificationHelper(Context context)
     {
         mContext = context;
-        sendNotification();
+
+        String[] laterTime = MainActivity.currentRoom.getNextTime().split("-")[0].split(":");
+
+        String startTime = new SimpleDateFormat("HHmm").format(new Date());
+
+        long TimeLeft = (Integer.parseInt(laterTime[0].trim()+laterTime[1].trim()) - 15) - Integer.parseInt(startTime);
+
+        Timer t = new Timer();
+
+        t.schedule(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                //code that runs when timer is done
+                sendNotification();
+            }
+        }, TimeLeft * 1000 * 60);
     }
 
     public void sendNotification() {
