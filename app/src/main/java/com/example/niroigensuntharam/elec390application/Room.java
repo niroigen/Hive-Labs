@@ -57,7 +57,7 @@ public class Room {
 
     public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
-    Room (String room, String cap)
+    Room (String room, String cap, String datee)
     {
         // Creating an object of the async class
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
@@ -74,7 +74,7 @@ public class Room {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
 
-        final String dateString = dateFormat.format(date);
+        final String dateString = datee;//"20171101";//dateFormat.format(date);
 
         try {
             // Getting the information of the async task
@@ -130,6 +130,16 @@ class GetRoomInfoAsync extends AsyncTask<String, Void, Document> {
     @Override
     protected void onPreExecute(){
 
+    }
+
+    @Override
+    protected void onPostExecute(Document document) {
+        super.onPostExecute(document);
+    }
+
+    @Override
+    protected void onProgressUpdate(Void... values) {
+        super.onProgressUpdate(values);
     }
 }
 
