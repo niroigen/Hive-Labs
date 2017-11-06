@@ -79,11 +79,11 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         Toast.makeText(mContext, "Done", Toast.LENGTH_SHORT).show();
 
-        MainActivity.currentRoom = MainActivity.RoomsNowAvailable.get(0);
+        //MainActivity.currentRoom = MainActivity.RoomsNowAvailable.get(0);
 
         MainActivity.myCustomAdapter.notifyDataSetChanged();
 
-        NotificationHelper notificationHelper = new NotificationHelper(mContext);
+        //NotificationHelper notificationHelper = new NotificationHelper(mContext);
     }
 
     @Override

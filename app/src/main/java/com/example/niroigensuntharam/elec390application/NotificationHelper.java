@@ -1,10 +1,12 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
 
 import java.text.SimpleDateFormat;
@@ -20,29 +22,34 @@ public class NotificationHelper {
 
     Context mContext;
 
-    public Timer t = new Timer();
+    public static Timer t = new Timer();
 
     NotificationHelper(Context context)
     {
         mContext = context;
 
-        String[] laterTime = MainActivity.currentRoom.getNextTime().split("-")[0].split(":");
+        if (MainActivity.currentRoom != null && MainActivity.currentRoom.getNextTime() != null) {
 
-        String startTime = new SimpleDateFormat("HHmm").format(new Date());
+            String[] startTime = MainActivity.currentRoom.getNextTime().split("-")[0].split(":");
 
-        long TimeLeft = (Integer.parseInt(laterTime[0].trim()+laterTime[1].trim()) - 15) - Integer.parseInt(startTime);
+            String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
 
-        Timer t = new Timer();
+            long MinutesStartTime = Long.parseLong(startTime[0].trim()) * 60 + Long.parseLong(startTime[1].trim());
 
-        t.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                //code that runs when timer is done
-                sendNotification();
+            long MinutesNowTime = Long.parseLong(nowTime.split(":")[0]) * 60 + Long.parseLong(nowTime.split(":")[1].trim());
+
+            long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
+
+            if (TimeLeft > 0) {
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //code that runs when timer is done
+                        sendNotification();
+                    }
+                }, TimeLeft * 1000 * 60);
             }
-        }, TimeLeft * 1000 * 60);
+        }
     }
 
     public void sendNotification() {
@@ -62,17 +69,20 @@ public class NotificationHelper {
                 .setContentText("Room in this lab soon")
                 .setContentIntent(contentIntent)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setVibrate(new long[0]);
+                .setVibrate(new long[] { 1000, 500, 1000, 500 })
+                .setLights(Color.MAGENTA, 1000, 1000)
+                .setVisibility(Notification.VISIBILITY_PUBLIC);
 
         NotificationCompat.InboxStyle inboxStyle =
                 new NotificationCompat.InboxStyle();
 
-        String[] events = new String[2];
+        String[] events = new String[3];
 
         inboxStyle.setBigContentTitle("Reminder for Room Description");
 
         events[0] = "Room number: " + MainActivity.currentRoom.getRoomNumber();
         events[1] = "Course: " + MainActivity.currentRoom.getNextClass();
+        events[2] = "Time: " + MainActivity.currentRoom.getNextTime();
 
         for (int i = 0; i < events.length; i++)
         {

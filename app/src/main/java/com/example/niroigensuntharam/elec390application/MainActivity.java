@@ -21,8 +21,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity{
 
     // Retrieving the date and time when the application is being launches
-    String dateString = "20171101";//new SimpleDateFormat("yyyyMMdd").format(new Date());
-    public static String timeString = "1000";//new SimpleDateFormat("HHmm").format(new Date());
+    String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
+    public static String timeString = new SimpleDateFormat("HHmm").format(new Date());
 
     // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
@@ -62,11 +62,15 @@ public class MainActivity extends AppCompatActivity{
 
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
-        //if (!tempDate.equals(dateString))
+        if (!tempTime.equals(timeString)) {
+            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-        GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
-
-        getRoomInfoAsync.execute(tempDate);
+            getRoomInfoAsync.execute(tempDate);
+        }
+        else
+        {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void Initialization()

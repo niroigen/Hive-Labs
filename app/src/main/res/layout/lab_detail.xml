@@ -55,4 +55,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/capacity" />
 
+    <Button
+        android:id="@+id/currentRoomButton"
+        android:layout_width="97dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="60dp"
+        android:text="Current Room"
+        app:layout_constraintBottom_toTopOf="@+id/classScheduleList"
+        app:layout_constraintEnd_toStartOf="@+id/capacity"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/roomNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/today"
+        app:layout_constraintVertical_bias="1.0" />
+
 </android.support.constraint.ConstraintLayout>
