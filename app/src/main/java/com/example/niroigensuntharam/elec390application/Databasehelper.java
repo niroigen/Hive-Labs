@@ -143,7 +143,7 @@ public class Databasehelper extends SQLiteOpenHelper
         ArrayList<Room> car= new ArrayList<Room>();
         Cursor result = db.rawQuery("select * from lab" , null);
         while(result.moveToNext()){
-            car.add( new Room(result.getString(result.getColumnIndex("lab_no")), result.getString(result.getColumnIndex("lab_capacity"))));
+            //car.add( new Room(result.getString(result.getColumnIndex("lab_no")), result.getString(result.getColumnIndex("lab_capacity")),"20171001"));
 
         }
         return car;
@@ -154,7 +154,7 @@ public class Databasehelper extends SQLiteOpenHelper
         ArrayList<Room> car= new ArrayList<Room>();
         Cursor result = db.rawQuery("select * from lab where lab_no = " + name , null);
         while(result.moveToNext()){
-            car.add( new Room(result.getString(result.getColumnIndex("lab_no")), result.getString(result.getColumnIndex("lab_capacity"))));
+            //car.add( new Room(result.getString(result.getColumnIndex("lab_no")), result.getString(result.getColumnIndex("lab_capacity")),"20171101"));
 
         }
         return car;

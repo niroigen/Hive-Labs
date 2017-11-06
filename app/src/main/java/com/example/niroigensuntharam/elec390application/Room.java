@@ -31,7 +31,7 @@ public class Room {
 
     String nextClass;
 
-    String nextClassTime;
+    String nextTime;
 
     String currentClass;
 
@@ -55,6 +55,8 @@ public class Room {
 
     public String getNextClass() {return nextClass;}
 
+    public String getNextTime() {return nextTime;}
+
     public void setNextClass(String next_class) {nextClass = next_class;}
 
     public String getNextClassTime() {return nextClassTime;}
@@ -63,15 +65,10 @@ public class Room {
 
     public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
-    Room (String room, String cap)
+    public void setNextTime(String next_time) {nextTime = next_time;}
+
+    Room (String room, String cap, String datee, Document doc)
     {
-        // Creating an object of the async class
-        GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
-
-        // The url will depend on the room number being provided
-        // Executing the async task
-        getRoomInfoAsync.execute("https://calendar.encs.concordia.ca/month.php?user=_NUC_LAB_H" + room);
-
         // Setting the properties
         roomNumber = room;
         capacity = cap;
@@ -80,11 +77,11 @@ public class Room {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Date date = new Date();
 
-        final String dateString = dateFormat.format(date);
+        final String dateString = datee;//"20171101";//dateFormat.format(date);
 
         try {
             // Getting the information of the async task
-            Document document = getRoomInfoAsync.get();
+            Document document = doc;
 
             // Getting the all the days which the lab is open
             Elements elements = document.select("a[class=layerentry]");
@@ -111,31 +108,66 @@ public class Room {
         {
         }
     }
-}
 
-// The AsyncTask is used since the application is doing a web call
-class GetRoomInfoAsync extends AsyncTask<String, Void, Document> {
-    private ProgressBar progressBar;
+    // Will be used to verify whether a room is currently available
+    // and if it is, then it will be added to the RoomsNowAvailable list
+    public static void VerifyIfAvalaible(Room room)
+    {
+        // The availability of a certain lab
+        boolean isAvailable = true;
 
-    @Override
-    protected Document doInBackground(String... params) {
+        boolean isNextClass = false;
 
-        try {
-            // Connecting to the website and retrieving the room information
-            Document doc = Jsoup.connect(params[0]).get();
-
-            return doc;
-        }
-        catch (IOException ex)
+        for (int i = 0; i < room.TimeList.size(); i++)
         {
+            // Getting the time of a certain course
+            // Ex: 12:45 - 13:55
+            String[] time = room.TimeList.get(i).split("-");
+
+            // Retrieving the start time
+            // Ex: 12:45
+            String[] startTime = time[0].split(":");
+
+            // Retrieving the end time
+            // Ex: 13:55
+            String[] endTime = time[1].split(":");
+
+            // Getting an integer value for the timeString
+            // Ex: 1500
+            int TimeNow = Integer.parseInt(MainActivity.timeString);
+
+            // Getting an integer value for the startTime
+            // Ex: 1245
+            int StartTime = Integer.parseInt(startTime[0].trim() + startTime[1].trim());
+
+            // Getting an integer value for the endTime
+            // Ex: 1355
+            int EndTime = Integer.parseInt(endTime[0].trim() + endTime[1].trim());
+
+            if (TimeNow < StartTime && !isNextClass)
+            {
+                room.setNextClass(room.getClassList().get(i));
+                room.setNextTime(room.getTimeList().get(i));
+                isNextClass = true;
+            }
+
+            // Verifying whether the room is currently unavailable
+            if (TimeNow >= StartTime && TimeNow < EndTime)
+            {
+                // Set the availability to false
+                isAvailable = false;
+
+                room.setCurrentClass(room.getClassList().get(i));
+
+                // Break from the loop
+                break;
+            }
         }
 
-        return null;
-    }
-
-    @Override
-    protected void onPreExecute(){
-
+        // If the room is available add it to the list of available rooms
+        if (isAvailable) {
+            MainActivity.RoomsNowAvailable.add(room);
+        }
     }
 }
 

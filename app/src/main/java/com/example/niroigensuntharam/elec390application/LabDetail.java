@@ -1,5 +1,6 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,13 +13,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class LabDetail extends AppCompatActivity {
 
     TextView roomNumber;
     TextView class_name;
     TextView lab_capacity;
-    Button lab_week_schedule_url;
+    Button currentRoomButton;
     ArrayAdapter myCustomAdapter=null;
     ListView listView = null;
 
@@ -60,5 +62,26 @@ public class LabDetail extends AppCompatActivity {
 //        class_name.setText(c);
         lab_capacity = (TextView) findViewById(R.id.capacity);
         lab_capacity.setText("Capacity: " + individualLab.capacity);
+        currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
+
+        if (MainActivity.currentRoom != null
+                && MainActivity.currentRoom.roomNumber == individualLab.roomNumber)
+        {
+            currentRoomButton.setEnabled(false);
+        }
+
+        currentRoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.currentRoom = individualLab;
+
+
+                NotificationHelper.t = new Timer();
+
+                new NotificationHelper(LabDetail.this);
+
+                currentRoomButton.setEnabled(false);
+            }
+        });
     }
 }
