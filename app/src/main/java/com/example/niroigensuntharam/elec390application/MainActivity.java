@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity{
         if (!tempTime.equals(timeString)) {
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
+            timeString = tempTime;
+
             getRoomInfoAsync.execute(tempDate);
         }
         else

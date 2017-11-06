@@ -63,7 +63,7 @@ public class ListViewAdapter extends ArrayAdapter {
             }
             else
             {
-                out = "@" + rooms.get(position).nextClassTime + " \n\t\t\t\t\t\t\t" + rooms.get(position).nextClass;
+                out = "@" + rooms.get(position).nextTime + " \n\t\t\t\t\t\t\t" + rooms.get(position).nextClass;
             }
 
             // do something change color
