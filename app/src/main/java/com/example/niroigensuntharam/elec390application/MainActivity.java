@@ -4,6 +4,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -48,10 +51,19 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+        if (isOnline()) {
+            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-        getRoomInfoAsync.execute(dateString);
-        Initialization();
+            getRoomInfoAsync.execute(dateString);
+        }
+        else{
+            Toast toast = Toast.makeText(getApplicationContext(), "No internet connection!", Toast.LENGTH_LONG);
+            toast.show();
+        }
+            Initialization();
+
+
+
     }
 
     // Will refresh to show the rooms the user can currently go to
@@ -100,6 +112,14 @@ public class MainActivity extends AppCompatActivity{
                 RefreshRooms();
             }
         });
+    }
+
+    //function which checks if the device is connected to the internet
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
 
