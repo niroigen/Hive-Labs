@@ -29,8 +29,9 @@ public class LabDetail extends AppCompatActivity {
     Button currentRoomButton;
     ArrayAdapter myCustomAdapter=null;
     ListView listView = null;
-    AlarmManager mgr = null;
-    PendingIntent pi = null;
+    static AlarmManager mgr;
+
+    static PendingIntent pi = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +83,13 @@ public class LabDetail extends AppCompatActivity {
 
                 String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
 
-                long MinutesStartTime = Long.parseLong(startTime.substring(0,1)) * 60 + Long.parseLong(startTime.substring(2,3));
+                long MinutesStartTime = Long.parseLong(startTime.substring(0,2)) * 60 + Long.parseLong(startTime.substring(2,4));
 
                 long MinutesNowTime = Long.parseLong(nowTime.split(":")[0]) * 60 + Long.parseLong(nowTime.split(":")[1].trim());
 
                 long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
 
-                AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 Intent i = new Intent(LabDetail.this, ScheduledService.class);
                 pi = PendingIntent.getService(LabDetail.this, 0, i, 0);
                 mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
