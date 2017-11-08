@@ -20,7 +20,6 @@ public class ListViewAdapter extends ArrayAdapter {
 
     private Context context;
     private ArrayList<Room> rooms;
-    String timeString = new SimpleDateFormat("HHmm").format(new Date());
 
     public ListViewAdapter(Context context, int textViewResourceId, ArrayList objects) {
         super(context, textViewResourceId, objects);
@@ -50,7 +49,6 @@ public class ListViewAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-
         // Test of slack1
         holder.labName.setText(rooms.get(position).roomNumber);
 
@@ -63,17 +61,22 @@ public class ListViewAdapter extends ArrayAdapter {
             }
             else
             {
+                //String nextTime = (rooms.get(position).nextClass != null) ? rooms.get(position).nextClass : "No other classes";
                 out = "@" + rooms.get(position).nextTime + " \n\t\t\t\t\t\t\t" + rooms.get(position).nextClass;
             }
 
             // do something change color
             holder.labName.append("\t\t\tNext class: " + out);
-            convertView.setBackgroundColor (Color.rgb(159,208,137)); // some color
+
+            if (out == "No other classes")
+                convertView.setBackgroundColor (Color.rgb(159,208,137)); // some color
+            else
+                convertView.setBackgroundColor (Color.rgb(233,175,0));
         }
         else
         {
             holder.labName.append("\t\t\t" + rooms.get(position).currentClass);
-            convertView.setBackgroundColor (Color.WHITE); // default coloe
+            convertView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
 
         return convertView;

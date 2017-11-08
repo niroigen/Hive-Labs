@@ -1,6 +1,8 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.app.IntentService;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-public class Room {
+public class Room implements Comparable<Room> {
 
     // Storing the list of different time slots for a certain room
     ArrayList<String> TimeList = new ArrayList<>();
@@ -31,7 +34,7 @@ public class Room {
 
     String nextClass;
 
-    String nextTime;
+    int nextTime = 0;
 
     String currentClass;
 
@@ -55,13 +58,26 @@ public class Room {
 
     public String getNextClass() {return nextClass;}
 
-    public String getNextTime() {return nextTime;}
+    public int getNextTime() {return nextTime;}
 
     public void setNextClass(String next_class) {nextClass = next_class;}
 
     public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
-    public void setNextTime(String next_time) {nextTime = next_time;}
+    public void setNextTime(int next_time) {nextTime = next_time;}
+
+    public void setRoomNumber(String room_Number) {roomNumber = room_Number;}
+
+    public void setClassList(ArrayList<String> class_List) {ClassList = class_List;}
+
+    public void setTimeList(ArrayList<String> timeList) {TimeList = timeList;}
+
+    public void setCapacity(String _capacity) {capacity = _capacity;}
+
+    Room ()
+    {
+
+    }
 
     Room (String room, String cap, String datee, Document doc)
     {
@@ -105,6 +121,39 @@ public class Room {
         }
     }
 
+    public static void EarliestAvailableTime()
+    {
+        for (int i = 0; i < MainActivity.RoomsNowAvailable.size(); i++) {
+
+            if (MainActivity.RoomsNowAvailable.get(i).TimeList.size() > 0) {
+                // Getting the time of a certain course
+                // Ex: 12:45 - 13:55
+                String[] time = MainActivity.RoomsNowAvailable.get(i).TimeList.get(0).split("-");
+
+                // Retrieving the start time
+                // Ex: 12:45
+                String[] startTime = time[0].split(":");
+
+                String nowTime = new SimpleDateFormat("HHmm").format(new Date());
+
+                // Getting an integer value for the startTime
+                // Ex: 1245
+                int StartTime = Integer.parseInt(startTime[0].trim() + startTime[1].trim());
+
+                int NowTime = Integer.parseInt(nowTime);
+
+                if (NowTime < StartTime) {
+                    MainActivity.earliestTime = Integer.toString(StartTime);
+                } else if (MainActivity.earliestTime != null
+                        && StartTime < Integer.parseInt(MainActivity.earliestTime)
+                        && NowTime < StartTime) {
+                    MainActivity.earliestTime = Integer.toString(StartTime);
+                }
+            }
+        }
+    }
+
+
     // Will be used to verify whether a room is currently available
     // and if it is, then it will be added to the RoomsNowAvailable list
     public static void VerifyIfAvalaible(Room room)
@@ -143,7 +192,7 @@ public class Room {
             if (TimeNow < StartTime && !isNextClass)
             {
                 room.setNextClass(room.getClassList().get(i));
-                room.setNextTime(room.getTimeList().get(i));
+                room.setNextTime(StartTime);
                 isNextClass = true;
             }
 
@@ -155,15 +204,47 @@ public class Room {
 
                 room.setCurrentClass(room.getClassList().get(i));
 
+                room.nextTime = -1;
+
                 // Break from the loop
                 break;
             }
+        }
+
+        if (room.nextClass == null && room.currentClass == null)
+        {
+            room.nextTime = 2400;
         }
 
         // If the room is available add it to the list of available rooms
         if (isAvailable) {
             MainActivity.RoomsNowAvailable.add(room);
         }
+    }
+
+    public static void SortRooms() {
+        Collections.sort(MainActivity.Rooms);
+    }
+
+    @Override
+    public int compareTo(Room room) {
+
+//        if (room.getCurrentClass() == null && this.getCurrentClass() == null)
+//        {
+//            return 0;
+//        }
+//        else if (room.getNextTime() == 0 && this.getNextTime() == 0 &&
+//            room.getCurrentClass() != null && this.getCurrentClass() != null)
+//        {
+//            return 2400;
+//        }
+//        else {
+
+            int compareTime = room.getNextTime();
+            int diff = compareTime - this.getNextTime();
+
+            return diff;
+//        }
     }
 }
 

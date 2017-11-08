@@ -7,49 +7,24 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
- * Created by niroigensuntharam on 2017-11-05.
+ * Created by niroigensuntharam on 2017-11-06.
  */
 
-public class NotificationHelper {
+public class ScheduledService extends IntentService{
 
-    Context mContext;
+    public static Context mContext;
 
-    public static Timer t = new Timer();
+    public ScheduledService() {
+        super("My service");
+    }
 
-    NotificationHelper(Context context)
-    {
-        mContext = context;
-
-        if (MainActivity.currentRoom != null && MainActivity.currentRoom.getNextTime() != null) {
-
-            String[] startTime = MainActivity.currentRoom.getNextTime().split("-")[0].split(":");
-
-            String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
-
-            long MinutesStartTime = Long.parseLong(startTime[0].trim()) * 60 + Long.parseLong(startTime[1].trim());
-
-            long MinutesNowTime = Long.parseLong(nowTime.split(":")[0]) * 60 + Long.parseLong(nowTime.split(":")[1].trim());
-
-            long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
-
-            if (TimeLeft > 0) {
-                t.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        //code that runs when timer is done
-                        sendNotification();
-                    }
-                }, TimeLeft * 1000 * 60);
-            }
-        }
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        sendNotification();
     }
 
     public void sendNotification() {

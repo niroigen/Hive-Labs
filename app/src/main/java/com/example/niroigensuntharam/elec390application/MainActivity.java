@@ -1,12 +1,14 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.app.NotificationCompat;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,7 +21,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -29,9 +32,12 @@ public class MainActivity extends AppCompatActivity{
 
     // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
-                                        ,"833","835","837","841","843","845","847","849","854","862"},
+                                        ,"833","835","837","841","843","845","847","849","854","862","903"
+                                        ,"907","909","911","913","915","917","921","929","962","966","967"
+                                        ,"968"},
                                         {"16","20","16","18","22","20","16","20","16","16","30","16"
-                                         ,"16","15","15","20","16","20","23","16","12"}};
+                                         ,"16","15","15","20","16","20","23","16","12","42","42","20"
+                                         ,"16","16","16","27","16","50","24","19","50","20"}};
 
     // A list of all the rooms informations
     // Ex: Capacity, Courses, and Time Slots
@@ -44,28 +50,24 @@ public class MainActivity extends AppCompatActivity{
     ListView roomListView = null;
     static public SwipeRefreshLayout swipeRefreshLayout = null;
     static public Room currentRoom;
-    Databasehelper db = null;
+    static public ArrayList<Application> Applications = new ArrayList<>();
+    static public AlertDialog dialog;
+    static public String earliestTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dialog = new SpotsDialog(this);
+        dialog.show();
+
+        GetRoomInfoAsync.isNetworkAvailable(this);
+
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-        if(isOnline()){
-            getRoomInfoAsync.execute(dateString);
-        }
-        else{
-            Toast toast = Toast.makeText(getApplicationContext(), "No internet connection!", Toast.LENGTH_LONG);
-            toast.show();
-        }
-
-
+        getRoomInfoAsync.execute(dateString);
         Initialization();
-
-
-
     }
 
     // Will refresh to show the rooms the user can currently go to
@@ -76,7 +78,8 @@ public class MainActivity extends AppCompatActivity{
 
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
-        if (!tempTime.equals(timeString)) {
+        if (!tempTime.equals(timeString) || !tempDate.equals(dateString)) {
+
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
             timeString = tempTime;
@@ -94,9 +97,7 @@ public class MainActivity extends AppCompatActivity{
         myCustomAdapter = new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
 
         roomListView = (ListView) findViewById(R.id.simpleListView);
-
         roomListView.setAdapter(myCustomAdapter);
-
         roomListView.setCacheColorHint(Color.WHITE);
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,6 +110,40 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+        roomListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                String output = "";
+
+                for (int j = 0; j < Applications.size(); j++)
+                {
+                    ArrayList<String> rooms = Applications.get(j).getRoomsToUse();
+
+                    for (int k = 0; k < rooms.size(); k++)
+                    {
+                        if (rooms.get(k).substring(3,6).equals(Rooms.get(i).roomNumber))
+                        {
+                            output += Applications.get(j).getApplication() + "\n";
+                        }
+                    }
+                }
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Software Available");
+                alertDialog.setMessage(output);
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+
+                return true;
+            }
+        });
+
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -116,14 +151,6 @@ public class MainActivity extends AppCompatActivity{
                 RefreshRooms();
             }
         });
-    }
-
-    //function which checks if the device is connected to the internet
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
 
