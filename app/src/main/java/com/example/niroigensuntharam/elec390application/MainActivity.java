@@ -51,16 +51,18 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (isOnline()) {
-            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+        GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
+        if(isOnline()){
             getRoomInfoAsync.execute(dateString);
         }
         else{
             Toast toast = Toast.makeText(getApplicationContext(), "No internet connection!", Toast.LENGTH_LONG);
             toast.show();
         }
-            Initialization();
+
+
+        Initialization();
 
 
 
@@ -92,7 +94,9 @@ public class MainActivity extends AppCompatActivity{
         myCustomAdapter = new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
 
         roomListView = (ListView) findViewById(R.id.simpleListView);
+
         roomListView.setAdapter(myCustomAdapter);
+
         roomListView.setCacheColorHint(Color.WHITE);
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
