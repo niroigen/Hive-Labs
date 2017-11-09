@@ -25,7 +25,6 @@ import java.util.Timer;
 public class LabDetail extends AppCompatActivity {
 
     TextView roomNumber;
-    TextView class_name;
     TextView lab_capacity;
     Button currentRoomButton;
     ArrayAdapter myCustomAdapter=null;

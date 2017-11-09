@@ -21,10 +21,10 @@ import org.jsoup.select.Elements;
 public class Room implements Comparable<Room> {
 
     // Storing the list of different time slots for a certain room
-    ArrayList<String> TimeList = new ArrayList<>();
+    private ArrayList<String> TimeList = new ArrayList<>();
     
     // Storing the list of classes for a certain room
-    ArrayList<String> ClassList = new ArrayList<>();
+    private ArrayList<String> ClassList = new ArrayList<>();
     
     // The room number of the room
     String roomNumber;
@@ -74,20 +74,11 @@ public class Room implements Comparable<Room> {
 
     public void setCapacity(String _capacity) {capacity = _capacity;}
 
-    Room ()
-    {
-
-    }
-
     Room (String room, String cap, String datee, Document doc)
     {
         // Setting the properties
         roomNumber = room;
         capacity = cap;
-
-        // Retrieving the current date
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        Date date = new Date();
 
         final String dateString = datee;//"20171101";//dateFormat.format(date);
 
@@ -126,19 +117,12 @@ public class Room implements Comparable<Room> {
         for (int i = 0; i < MainActivity.RoomsNowAvailable.size(); i++) {
 
             if (MainActivity.RoomsNowAvailable.get(i).TimeList.size() > 0) {
-                // Getting the time of a certain course
-                // Ex: 12:45 - 13:55
-                String[] time = MainActivity.RoomsNowAvailable.get(i).TimeList.get(0).split("-");
-
-                // Retrieving the start time
-                // Ex: 12:45
-                String[] startTime = time[0].split(":");
 
                 String nowTime = new SimpleDateFormat("HHmm").format(new Date());
 
                 // Getting an integer value for the startTime
                 // Ex: 1245
-                int StartTime = Integer.parseInt(startTime[0].trim() + startTime[1].trim());
+                int StartTime = MainActivity.RoomsNowAvailable.get(i).getNextTime();
 
                 int NowTime = Integer.parseInt(nowTime);
 
@@ -157,11 +141,6 @@ public class Room implements Comparable<Room> {
     // and if it is, then it will be added to the RoomsNowAvailable list
     public static void VerifyIfAvalaible(Room room)
     {
-        if (room.roomNumber.equals("833"))
-        {
-            String c = "";
-        }
-
         // The availability of a certain lab
         boolean isAvailable = true;
 
@@ -199,6 +178,9 @@ public class Room implements Comparable<Room> {
                 room.setNextTime(StartTime);
                 isNextClass = true;
             }
+            else{
+                room.setNextClass(null);
+            }
 
             // Verifying whether the room is currently unavailable
             if (TimeNow >= StartTime && TimeNow <= EndTime) {
@@ -235,22 +217,10 @@ public class Room implements Comparable<Room> {
     @Override
     public int compareTo(Room room) {
 
-//        if (room.getCurrentClass() == null && this.getCurrentClass() == null)
-//        {
-//            return 0;
-//        }
-//        else if (room.getNextTime() == 0 && this.getNextTime() == 0 &&
-//            room.getCurrentClass() != null && this.getCurrentClass() != null)
-//        {
-//            return 2400;
-//        }
-//        else {
-
             int compareTime = room.getNextTime();
             int diff = compareTime - this.getNextTime();
 
             return diff;
-//        }
     }
 }
 
