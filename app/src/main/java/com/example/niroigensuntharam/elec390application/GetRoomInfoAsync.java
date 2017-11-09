@@ -41,82 +41,38 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         Date = params[0];
 
+        //deleteSharedPreference();
+
         ArrayList<Room> roomsStored = readRooms();
         ArrayList<Application> applicationsStored = readApplications();
+        String dateStored = readDate();
 
         // Clearing all the rooms and available rooms
         MainActivity.Rooms.clear();
         MainActivity.RoomsNowAvailable.clear();
         MainActivity.Applications.clear();
 
-        if ((isConnected && roomsStored == null && applicationsStored == null)
-                || !readDate().equals(Date)) {
-            try {
-                // Looping through all the rooms
-                // and getting its information
-                for (int i = 0; i < MainActivity.AvailableRooms[0].length; i++) {
-                    // Creating an object of the async class
-                    //GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
-
-                    // The url will depend on the room number being provided
-                    // Executing the async task
-                    // Connecting to the website and retrieving the room information
-                    Document doc = Jsoup.connect
-                            ("https://calendar.encs.concordia.ca/month.php?user=_NUC_LAB_H" +
-                                    MainActivity.AvailableRooms[0][i]).get();
-
-                    // Passing in the room number, its capacity and the date
-                    Room room = new Room(MainActivity.AvailableRooms[0][i],
-                            MainActivity.AvailableRooms[1][i],
-                            params[0], doc);
-
-                    // Verifying whether the room is currently available or not
-                    Room.VerifyIfAvalaible(room);
-
-                    // Adding the room to the list of rooms
-                    MainActivity.Rooms.add(room);
-                }
-
-                Document doc1 = Jsoup.connect
-                        ("https://aits.encs.concordia.ca/services/software-windows-public-labs").get();
-
-                Element table = doc1.select("table").get(0);
-                Elements rows = table.select("tr");
-
-                for (int i = 0; i < rows.size(); i++)
-                {
-                    Element row = rows.get(i);
-                    Elements cols = row.select("td");
-
-                    String applicationName = cols.select("td").get(0).text();
-
-                    String[] rooms = cols.select("td").get(1).text().split(",");
-
-                    Application application = new Application();
-
-                    application.setApplication(applicationName);
-
-                    for (int j = 0; j < rooms.length; j++) {
-
-                        if (rooms.length == 0) {
-                            application.AllRooms = true;
-                            break;
-                        } else if (rooms[j].contains("H")){
-                            application.addRoom(rooms[j]);
-                        }
-
-                    }
-
-                    MainActivity.Applications.add(application);
-                }
-
-                // Connecting to the website and retrieving the room information
-                //Document doc = Jsoup.connect(params[0]).get();
-            } catch (IOException ex) {
-            }
+        if (isConnected && roomsStored == null){
+            RetrieveRoomsInfo();
+            roomsStored = readRooms();
         }
 
-        else{
+        if (isConnected && applicationsStored == null){
+            RetrieveApplicationInfo();
+            applicationsStored = readApplications();
+        }
+
+        if (isConnected && dateStored == null)
+        {
+            saveDate();
+            dateStored = readDate();
+        }
+
+        if (isConnected && !dateStored.equals(Date)) {
+            RetrieveRoomsInfo();
+            RetrieveApplicationInfo();
+        }
+        else {
 
             for (int i = 0; i < roomsStored.size(); i++) {
 
@@ -133,6 +89,82 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         }
 
         return null;
+    }
+
+    private void RetrieveApplicationInfo(){
+        try{
+            Document doc1 = Jsoup.connect
+                    ("https://aits.encs.concordia.ca/services/software-windows-public-labs").get();
+
+            Element table = doc1.select("table").get(0);
+            Elements rows = table.select("tr");
+
+            for (int i = 0; i < rows.size(); i++)
+            {
+                Element row = rows.get(i);
+                Elements cols = row.select("td");
+
+                String applicationName = cols.select("td").get(0).text();
+
+                String[] rooms = cols.select("td").get(1).text().split(",");
+
+                Application application = new Application();
+
+                application.setApplication(applicationName);
+
+                for (int j = 0; j < rooms.length; j++) {
+
+                    if (rooms.length == 0) {
+                        application.AllRooms = true;
+                        break;
+                    } else if (rooms[j].contains("H")){
+                        application.addRoom(rooms[j]);
+                    }
+
+                }
+
+                MainActivity.Applications.add(application);
+            }
+        }
+        catch (IOException ex) {
+        }
+        finally {
+            saveApplications();
+        }
+    }
+
+    private void RetrieveRoomsInfo(){
+        try {
+            // Looping through all the rooms
+            // and getting its information
+            for (int i = 0; i < MainActivity.AvailableRooms[0].length; i++) {
+                // Creating an object of the async class
+                //GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
+
+                // The url will depend on the room number being provided
+                // Executing the async task
+                // Connecting to the website and retrieving the room information
+                Document doc = Jsoup.connect
+                        ("https://calendar.encs.concordia.ca/month.php?user=_NUC_LAB_H" +
+                                MainActivity.AvailableRooms[0][i]).get();
+
+                // Passing in the room number, its capacity and the date
+                Room room = new Room(MainActivity.AvailableRooms[0][i],
+                        MainActivity.AvailableRooms[1][i],
+                        Date, doc);
+
+                // Verifying whether the room is currently available or not
+                Room.VerifyIfAvalaible(room);
+
+                // Adding the room to the list of rooms
+                MainActivity.Rooms.add(room);
+            }
+        }
+        catch (IOException ex) {
+        }
+        finally {
+            saveRooms();
+        }
     }
 
     @Override
@@ -160,11 +192,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
             MainActivity.myCustomAdapter.notifyDataSetChanged();
 
-            saveRooms();
-
-            saveApplications();
-
-            saveDate();
+            //saveDate();
         }
         else {
             Toast.makeText(mContext, "Not connected to the internet", Toast.LENGTH_SHORT).show();
@@ -185,6 +213,14 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     public static void isNetworkAvailable(Context context)
     {
         isConnected = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
+    }
+
+    private void deleteSharedPreference(){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+        editor.clear();
+        editor.commit();
     }
 
     private void saveRooms() {
@@ -215,9 +251,9 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         Gson gson = new Gson();
 
-        String json = gson.toJson(Date);
+        String json = gson.toJson(MainActivity.Applications);
 
-        editor.putString("Date",json);
+        editor.putString("Applications",json);
         editor.apply();
     }
 

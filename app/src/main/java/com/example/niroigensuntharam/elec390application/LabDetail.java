@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,7 +64,8 @@ public class LabDetail extends AppCompatActivity {
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
 
         if (MainActivity.currentRoom != null
-                && MainActivity.currentRoom.roomNumber == individualLab.roomNumber)
+                && MainActivity.currentRoom.roomNumber == individualLab.roomNumber
+                || individualLab.getNextTime() == -1)
         {
             currentRoomButton.setEnabled(false);
         }
@@ -81,20 +83,22 @@ public class LabDetail extends AppCompatActivity {
 
                 String startTime = Integer.toString(MainActivity.currentRoom.getNextTime());
 
-                String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
+                if (MainActivity.currentRoom.getNextTime() != -1) {
+                    String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
 
-                long MinutesStartTime = Long.parseLong(startTime.substring(0,2)) * 60 + Long.parseLong(startTime.substring(2,4));
+                    long MinutesStartTime = Long.parseLong(startTime.substring(0, 2)) * 60 + Long.parseLong(startTime.substring(2, 4));
 
-                long MinutesNowTime = Long.parseLong(nowTime.split(":")[0]) * 60 + Long.parseLong(nowTime.split(":")[1].trim());
+                    long MinutesNowTime = Long.parseLong(nowTime.split(":")[0]) * 60 + Long.parseLong(nowTime.split(":")[1].trim());
 
-                long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
+                    long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
 
-                mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                Intent i = new Intent(LabDetail.this, ScheduledService.class);
-                pi = PendingIntent.getService(LabDetail.this, 0, i, 0);
-                mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
+                    mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    Intent i = new Intent(LabDetail.this, ScheduledService.class);
+                    pi = PendingIntent.getService(LabDetail.this, 0, i, 0);
+                    mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
 
-                currentRoomButton.setEnabled(false);
+                    currentRoomButton.setEnabled(false);
+                }
             }
         });
     }

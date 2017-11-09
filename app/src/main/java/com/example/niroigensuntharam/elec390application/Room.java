@@ -142,7 +142,7 @@ public class Room implements Comparable<Room> {
 
                 int NowTime = Integer.parseInt(nowTime);
 
-                if (NowTime < StartTime) {
+                if (NowTime < StartTime && MainActivity.earliestTime == null) {
                     MainActivity.earliestTime = Integer.toString(StartTime);
                 } else if (MainActivity.earliestTime != null
                         && StartTime < Integer.parseInt(MainActivity.earliestTime)
@@ -153,11 +153,15 @@ public class Room implements Comparable<Room> {
         }
     }
 
-
     // Will be used to verify whether a room is currently available
     // and if it is, then it will be added to the RoomsNowAvailable list
     public static void VerifyIfAvalaible(Room room)
     {
+        if (room.roomNumber.equals("833"))
+        {
+            String c = "";
+        }
+
         // The availability of a certain lab
         boolean isAvailable = true;
 
@@ -197,8 +201,7 @@ public class Room implements Comparable<Room> {
             }
 
             // Verifying whether the room is currently unavailable
-            if (TimeNow >= StartTime && TimeNow < EndTime)
-            {
+            if (TimeNow >= StartTime && TimeNow <= EndTime) {
                 // Set the availability to false
                 isAvailable = false;
 
@@ -208,6 +211,9 @@ public class Room implements Comparable<Room> {
 
                 // Break from the loop
                 break;
+            }
+            else {
+                room.setCurrentClass(null);
             }
         }
 
