@@ -2,23 +2,24 @@ package com.example.niroigensuntharam.elec390application;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import android.content.Intent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.TextView;
 
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity{
+
 
     // Retrieving the date and time when the application is being launches
     String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -26,17 +27,17 @@ public class MainActivity extends AppCompatActivity{
 
     // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
-                                        ,"833","835","837","841","843","845","847","849","854","862","903"
-                                        ,"907","909","911","913","915","917","921","929","962","966","967"
-                                        ,"968"},
-                                        {"16","20","16","18","22","20","16","20","16","16","30","16"
-                                         ,"16","15","15","20","16","20","23","16","12","42","42","20"
-                                         ,"16","16","16","27","16","50","24","19","50","20"}};
+            ,"833","835","837","841","843","845","847","849","854","862","903"
+            ,"907","909","911","913","915","917","921","929","962","966","967"
+            ,"968"},
+            {"16","20","16","18","22","20","16","20","16","16","30","16"
+                    ,"16","15","15","20","16","20","23","16","12","42","42","20"
+                    ,"16","16","16","27","16","50","24","19","50","20"}};
 
     // A list of all the rooms informations
     // Ex: Capacity, Courses, and Time Slots
     public static ArrayList<Room> Rooms = new ArrayList<>();
-    
+
     // List of all available rooms that the user 
     // can enter currently
     public static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         dialog = new SpotsDialog(this);
         dialog.show();
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity{
 
         getRoomInfoAsync.execute(dateString);
         Initialization();
+
     }
 
     // Will refresh to show the rooms the user can currently go to
@@ -72,18 +75,25 @@ public class MainActivity extends AppCompatActivity{
 
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
-        if (Integer.parseInt(tempTime) > Integer.parseInt(earliestTime)) {
 
-            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+        //Log.d("Time ",""+earliestTime);
 
-            timeString = tempTime;
+        if (earliestTime != null && tempTime != null) {
+            if (Integer.parseInt(tempTime) > Integer.parseInt(earliestTime)) {
 
-            getRoomInfoAsync.execute(tempDate);
-        }
-        else
+                GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+
+                timeString = tempTime;
+
+                getRoomInfoAsync.execute(tempDate);
+            } else {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        } else
         {
             swipeRefreshLayout.setRefreshing(false);
         }
+
     }
 
     private void Initialization()
@@ -138,16 +148,20 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+        swipeRefreshLayout=(SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+
                 RefreshRooms();
+
             }
+
+
         });
     }
 }
-
 // Commented code
 
 
@@ -188,3 +202,5 @@ public class MainActivity extends AppCompatActivity{
 //                    .addApi(LocationServices.API)
 //                    .build();
 //        }
+
+
