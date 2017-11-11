@@ -1,9 +1,12 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +57,11 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        if (!isConnected(MainActivity.this))builderDialog(MainActivity.this).show();
+        else {
+            setContentView(R.layout.activity_main);
+        }
 
         dialog = new SpotsDialog(this);
         dialog.show();
@@ -133,6 +141,8 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
 
+                /*
+
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                 alertDialog.setTitle("Software Available");
                 alertDialog.setMessage(output);
@@ -143,6 +153,7 @@ public class MainActivity extends AppCompatActivity{
                             }
                         });
                 alertDialog.show();
+                */
 
                 return true;
             }
@@ -161,6 +172,41 @@ public class MainActivity extends AppCompatActivity{
 
         });
     }
+
+
+    //
+
+    public boolean isConnected(Context context)
+    {
+        ConnectivityManager cm=(ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        NetworkInfo netinfo =cm.getActiveNetworkInfo();
+        if (netinfo!=null&&netinfo.isConnected()){
+            android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            if ((mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting()))
+                return true; else return false;
+        }else return false;
+    }
+
+    public  AlertDialog.Builder builderDialog(Context c)
+
+    {
+        AlertDialog.Builder builder=new AlertDialog.Builder(c);
+        // Display internet connection
+        builder.setTitle("No Connection");
+        builder.setMessage("You need to have Mobile Data or wifi");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        return builder;
+    }
+
+
 }
 // Commented code
 
