@@ -77,8 +77,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     // Will refresh to show the rooms the user can currently go to
-    private void RefreshRooms()
-    {
+    private void RefreshRooms() {
         String tempDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String tempTime = new SimpleDateFormat("HHmm").format(new Date());
 
@@ -90,15 +89,16 @@ public class MainActivity extends AppCompatActivity{
         if (earliestTime != null && tempTime != null) {
             if (!tempTime.equals(timeString)) {
 
-            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+                GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-            timeString = tempTime;
+                timeString = tempTime;
 
-            getRoomInfoAsync.execute(tempDate);
-        }
-        else
-        {
-            swipeRefreshLayout.setRefreshing(false);
+                getRoomInfoAsync.execute(tempDate);
+            }
+            else
+            {
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
     }
 
