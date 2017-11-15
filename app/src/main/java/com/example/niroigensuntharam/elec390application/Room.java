@@ -118,7 +118,7 @@ public class Room implements Comparable<Room> {
 
             if (MainActivity.RoomsNowAvailable.get(i).TimeList.size() > 0) {
 
-                String nowTime = new SimpleDateFormat("HHmm").format(new Date());
+                String nowTime = MainActivity.timeString;// SimpleDateFormat("HHmm").format(new Date());
 
                 // Getting an integer value for the startTime
                 // Ex: 1245
@@ -178,7 +178,7 @@ public class Room implements Comparable<Room> {
                 room.setNextTime(StartTime);
                 isNextClass = true;
             }
-            else{
+            else if (!isNextClass){
                 room.setNextClass(null);
             }
 

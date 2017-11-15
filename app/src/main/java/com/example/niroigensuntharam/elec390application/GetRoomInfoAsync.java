@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
@@ -65,12 +66,14 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         if (isConnected && dateStored == null)
         {
             saveDate();
-            dateStored = readDate();
+
+            return null;
         }
 
         if (isConnected && !dateStored.equals(Date)) {
             RetrieveRoomsInfo();
             RetrieveApplicationInfo();
+            saveDate();
         }
         else {
 
@@ -135,32 +138,37 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
     private void RetrieveRoomsInfo(){
         try {
+
+            ArrayList<Thread> threads = new ArrayList<>();
+
             // Looping through all the rooms
-            // and getting its information
+            // and setting all the threads
             for (int i = 0; i < MainActivity.AvailableRooms[0].length; i++) {
                 // Creating an object of the async class
                 //GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync();
 
-                // The url will depend on the room number being provided
-                // Executing the async task
-                // Connecting to the website and retrieving the room information
-                Document doc = Jsoup.connect
-                        ("https://calendar.encs.concordia.ca/month.php?user=_NUC_LAB_H" +
-                                MainActivity.AvailableRooms[0][i]).get();
+                String url = "https://calendar.encs.concordia.ca/month.php?user=_NUC_LAB_H" +
+                        MainActivity.AvailableRooms[0][i];
 
-                // Passing in the room number, its capacity and the date
-                Room room = new Room(MainActivity.AvailableRooms[0][i],
-                        MainActivity.AvailableRooms[1][i],
-                        Date, doc);
+                Runnable worker = new MyRunnable(url, MainActivity.AvailableRooms[0][i],
+                        MainActivity.AvailableRooms[1][i], Date);
 
-                // Verifying whether the room is currently available or not
-                Room.VerifyIfAvalaible(room);
+                Thread thread = new Thread(worker);
 
-                // Adding the room to the list of rooms
-                MainActivity.Rooms.add(room);
+                threads.add(thread);
+            }
+
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads.get(i).start();
+            }
+
+            for (int i = 0; i < threads.size(); i++)
+            {
+                threads.get(i).join();
             }
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
         }
         finally {
             saveRooms();

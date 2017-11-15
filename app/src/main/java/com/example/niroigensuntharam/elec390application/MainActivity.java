@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity{
 
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-        getRoomInfoAsync.execute(dateString);
+        getRoomInfoAsync.execute(dateString, timeString);
         Initialization();
     }
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity{
 
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
-        if (Integer.parseInt(tempTime) > Integer.parseInt(earliestTime)) {
+        if (!tempTime.equals(timeString)) {
 
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
