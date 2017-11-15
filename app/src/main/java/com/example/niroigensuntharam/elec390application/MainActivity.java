@@ -1,12 +1,18 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,6 +59,12 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        if (!isConnected(MainActivity.this))builderDialog(MainActivity.this).show();
+        else {
+            setContentView(R.layout.activity_main);
+        }
+
         dialog = new SpotsDialog(this);
         dialog.show();
 
@@ -60,7 +72,7 @@ public class MainActivity extends AppCompatActivity{
 
         GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-        getRoomInfoAsync.execute(dateString, timeString);
+        getRoomInfoAsync.execute(dateString);
         Initialization();
     }
 
@@ -72,7 +84,11 @@ public class MainActivity extends AppCompatActivity{
 
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
-        if (!tempTime.equals(timeString)) {
+
+        //Log.d("Time ",""+earliestTime);
+
+        if (earliestTime != null && tempTime != null) {
+            if (!tempTime.equals(timeString)) {
 
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
@@ -146,8 +162,42 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
-}
 
+
+    //
+
+    public boolean isConnected(Context context)
+    {
+        ConnectivityManager cm=(ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+        NetworkInfo netinfo =cm.getActiveNetworkInfo();
+        if (netinfo!=null&&netinfo.isConnected()){
+            android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            if ((mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting()))
+                return true; else return false;
+        }else return false;
+    }
+
+    public  AlertDialog.Builder builderDialog(Context c)
+
+    {
+        AlertDialog.Builder builder=new AlertDialog.Builder(c);
+        // Display internet connection
+        builder.setTitle("No Connection");
+        builder.setMessage("You need to have Mobile Data or wifi");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        return builder;
+    }
+
+
+}
 // Commented code
 
 
