@@ -194,7 +194,7 @@ public class Room implements Comparable<Room> {
                 // Break from the loop
                 break;
             }
-            else {
+            else if(!isNextClass) {
                 room.setCurrentClass(null);
             }
         }
