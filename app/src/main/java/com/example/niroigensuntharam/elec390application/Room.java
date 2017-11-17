@@ -27,20 +27,18 @@ public class Room implements Comparable<Room> {
     private ArrayList<String> ClassList = new ArrayList<>();
     
     // The room number of the room
-    String roomNumber;
+    private String roomNumber;
     
     // The number of people that can be within a certain room
-    String capacity;
+    private String capacity;
 
-    String nextClass;
+    private String nextClass;
 
-    int nextTime = 0;
+    private int nextTime = 0;
 
-    String currentClass;
+    private String currentClass;
 
-    public ArrayList<String> getTimeList() {
-        return TimeList;
-    }
+    public ArrayList<String> getTimeList() {return TimeList;}
 
     public ArrayList<String> getClassList() {
         return ClassList;
@@ -73,6 +71,12 @@ public class Room implements Comparable<Room> {
     public void setTimeList(ArrayList<String> timeList) {TimeList = timeList;}
 
     public void setCapacity(String _capacity) {capacity = _capacity;}
+
+    Room()
+    {
+
+    }
+
 
     Room (String room, String cap, String datee, Document doc)
     {

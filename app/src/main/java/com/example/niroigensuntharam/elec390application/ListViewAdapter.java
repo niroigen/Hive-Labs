@@ -50,19 +50,19 @@ public class ListViewAdapter extends ArrayAdapter {
         }
 
         // Test of slack1
-        holder.labName.setText(rooms.get(position).roomNumber);
+        holder.labName.setText(rooms.get(position).getRoomNumber());
 
         if(MainActivity.RoomsNowAvailable.contains(getItem(position)))
         {
             String out = "";
-            if (rooms.get(position).nextClass == null)
+            if (rooms.get(position).getNextClass() == null)
             {
                 out = "No other classes";
             }
             else
             {
                 //String nextTime = (rooms.get(position).nextClass != null) ? rooms.get(position).nextClass : "No other classes";
-                out = "@" + rooms.get(position).nextTime + " \n\t\t\t\t\t\t\t" + rooms.get(position).nextClass;
+                out = "@" + rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + rooms.get(position).getNextClass();
             }
 
             // do something change color
@@ -75,7 +75,7 @@ public class ListViewAdapter extends ArrayAdapter {
         }
         else
         {
-            holder.labName.append("\t\t\t" + rooms.get(position).currentClass);
+            holder.labName.append("\t\t\t" + rooms.get(position).getCurrentClass());
             convertView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
 

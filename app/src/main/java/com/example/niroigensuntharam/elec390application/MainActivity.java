@@ -1,6 +1,7 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -65,58 +67,16 @@ public class MainActivity extends AppCompatActivity{
     static String TAG = "MainActivity";
 
     public static FirebaseDatabase database = FirebaseDatabase.getInstance();
-    public static DatabaseReference myRef = database.getReference("message");
+    public static DatabaseReference mRootRef = database.getReference();
+    public static DatabaseReference mRoomRef = mRootRef.child("rooms");
+    public static DatabaseReference mAppRef = mRootRef.child("apps");
+    public static DatabaseReference mDateRef = mRootRef.child("date");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        myRef.setValue("Hello World!");
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        });
 
         if (!isConnected(MainActivity.this))builderDialog(MainActivity.this).show();
         else {
@@ -132,6 +92,29 @@ public class MainActivity extends AppCompatActivity{
 
         getRoomInfoAsync.execute(dateString);
         Initialization();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mRoomRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try{
+
+                }
+                catch(Exception ex){
+                    String c = "";
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // Will refresh to show the rooms the user can currently go to
@@ -190,7 +173,7 @@ public class MainActivity extends AppCompatActivity{
 
                     for (int k = 0; k < rooms.size(); k++)
                     {
-                        if (rooms.get(k).substring(3,6).equals(Rooms.get(i).roomNumber))
+                        if (rooms.get(k).substring(3,6).equals(Rooms.get(i).getRoomNumber()))
                         {
                             output += Applications.get(j).getApplication() + "\n";
                         }

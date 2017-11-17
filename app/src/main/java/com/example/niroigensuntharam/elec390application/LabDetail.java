@@ -57,13 +57,13 @@ public class LabDetail extends AppCompatActivity {
 
 
         roomNumber = (TextView) findViewById(R.id.roomNumber);
-        roomNumber.setText(individualLab.roomNumber);
+        roomNumber.setText(individualLab.getRoomNumber());
         lab_capacity = (TextView) findViewById(R.id.capacity);
-        lab_capacity.setText("Capacity: " + individualLab.capacity);
+        lab_capacity.setText("Capacity: " + individualLab.getCapacity());
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
 
         if (MainActivity.currentRoom != null
-                && MainActivity.currentRoom.roomNumber == individualLab.roomNumber
+                && MainActivity.currentRoom.getRoomNumber() == individualLab.getRoomNumber()
                 || individualLab.getNextTime() == -1)
         {
             currentRoomButton.setEnabled(false);

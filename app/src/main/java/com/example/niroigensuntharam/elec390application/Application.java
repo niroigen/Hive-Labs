@@ -12,9 +12,8 @@ import java.util.ArrayList;
 
 public class Application {
 
-    String Application;
-    ArrayList<String> RoomsToUse = new ArrayList<>();
-    boolean AllRooms = false;
+    private String Application;
+    private ArrayList<String> RoomsToUse = new ArrayList<>();
 
     Application()
     {
@@ -23,15 +22,6 @@ public class Application {
 
     public ArrayList<String> getRoomsToUse() {
         return RoomsToUse;
-    }
-
-    public void setAllRooms(boolean allRooms) {
-        AllRooms = allRooms;
-    }
-
-    public boolean getAllRooms()
-    {
-        return AllRooms;
     }
 
     public void setApplication(String application) {

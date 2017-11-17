@@ -9,6 +9,8 @@ import android.preference.PreferenceManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.Query;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,7 +24,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
@@ -42,54 +46,48 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         Date = params[0];
 
-        //deleteSharedPreference();
-
-        ArrayList<Room> roomsStored = readRooms();
-        ArrayList<Application> applicationsStored = readApplications();
-        String dateStored = readDate();
-
         // Clearing all the rooms and available rooms
         MainActivity.Rooms.clear();
         MainActivity.RoomsNowAvailable.clear();
         MainActivity.Applications.clear();
 
-        if (isConnected && roomsStored == null){
-            RetrieveRoomsInfo();
-            roomsStored = readRooms();
-        }
+//        if (isConnected && roomsStored == null){
+//            RetrieveRoomsInfo();
+//            roomsStored = readRooms();
+//        }
+//
+//        if (isConnected && applicationsStored == null){
+//            RetrieveApplicationInfo();
+//            applicationsStored = readApplications();
+//        }
+//
+//        if (isConnected && dateStored == null)
+//        {
+//            saveDate();
+//
+//            return null;
+//        }
 
-        if (isConnected && applicationsStored == null){
-            RetrieveApplicationInfo();
-            applicationsStored = readApplications();
-        }
-
-        if (isConnected && dateStored == null)
-        {
-            saveDate();
-
-            return null;
-        }
-
-        if (isConnected && !dateStored.equals(Date)) {
-            RetrieveRoomsInfo();
-            RetrieveApplicationInfo();
-            saveDate();
-        }
-        else {
-
-            for (int i = 0; i < roomsStored.size(); i++) {
-
-                MainActivity.Rooms.add(roomsStored.get(i));
-
-                // Verifying whether the room is currently available or not
-                Room.VerifyIfAvalaible(roomsStored.get(i));
-            }
-
-            for (int i = 0; i < applicationsStored.size(); i++)
-            {
-                MainActivity.Applications.add(applicationsStored.get(i));
-            }
-        }
+//        if (isConnected ){&& !dateStored.equals(Date)) {
+//            RetrieveRoomsInfo();
+//            RetrieveApplicationInfo();
+//            saveDate();
+//        }
+//        else {
+//
+//            for (int i = 0; i < roomsStored.size(); i++) {
+//
+//                MainActivity.Rooms.add(roomsStored.get(i));
+//
+//                // Verifying whether the room is currently available or not
+//                Room.VerifyIfAvalaible(roomsStored.get(i));
+//            }
+//
+//            for (int i = 0; i < applicationsStored.size(); i++)
+//            {
+//                MainActivity.Applications.add(applicationsStored.get(i));
+//            }
+//        }
 
         return null;
     }
@@ -109,16 +107,29 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
                 String applicationName = cols.select("td").get(0).text();
 
+                String[] words = applicationName.split("[ _.]+");
+                String temp = words[0];
+
+                for (int j = 0; j < words.length; j++){
+                    if (!words[j].matches(".*\\d+.*")
+                            && !words[j].contains(("v"))){
+                        temp += " " + words[j];
+                    }
+                    else {
+                        break;
+                    }
+                }
+
                 String[] rooms = cols.select("td").get(1).text().split(",");
 
                 Application application = new Application();
 
-                application.setApplication(applicationName);
+                application.setApplication(temp);
 
                 for (int j = 0; j < rooms.length; j++) {
 
                     if (rooms.length == 0) {
-                        application.AllRooms = true;
+
                         break;
                     } else if (rooms[j].contains("H")){
                         application.addRoom(rooms[j]);
@@ -129,7 +140,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
                 MainActivity.Applications.add(application);
             }
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
         }
         finally {
             saveApplications();
@@ -169,6 +180,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
             }
         }
         catch (Exception ex) {
+            String  c = "";
         }
         finally {
             saveRooms();
@@ -209,8 +221,6 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
             MainActivity.dialog.dismiss();
         }
-
-        //NotificationHelper notificationHelper = new NotificationHelper(mContext);
     }
 
     @Override
@@ -223,76 +233,29 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         isConnected = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
     }
 
-    private void deleteSharedPreference(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-
-        editor.clear();
-        editor.commit();
-    }
-
     private void saveRooms() {
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        Gson gson = new Gson();
+        Map<String, Room> rooms = new HashMap<>();
 
-        String json = gson.toJson(MainActivity.Rooms);
+        for (int i = 0; i < MainActivity.Rooms.size(); i++)
+            rooms.put( MainActivity.Rooms.get(i).getRoomNumber(),
+                    MainActivity.Rooms.get(i));
 
-        editor.putString("Rooms",json);
-        editor.apply();
+        MainActivity.mRoomRef.setValue(rooms);
     }
 
     private void saveDate() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        Gson gson = new Gson();
-
-        String json = gson.toJson(Date);
-
-        editor.putString("Date",json);
-        editor.apply();
+        MainActivity.mDateRef.setValue(Date);
     }
 
     private void saveApplications() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        Gson gson = new Gson();
 
-        String json = gson.toJson(MainActivity.Applications);
+        Map<String, Application> apps = new HashMap<>();
 
-        editor.putString("Applications",json);
-        editor.apply();
-    }
+        for (int i = 0; i < MainActivity.Applications.size(); i++)
+            apps.put(MainActivity.Applications.get(i).getApplication(),
+                    MainActivity.Applications.get(i));
 
-    private String readDate() {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        Gson gson = new Gson();
-        String json = sharedPrefs.getString("Date", null);
-        Type type = new TypeToken<String>() {}.getType();
-        String date = gson.fromJson(json, type);
-
-        return date;
-    }
-
-    private ArrayList<Application> readApplications(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        Gson gson = new Gson();
-        String json = sharedPrefs.getString("Applications", null);
-        Type type = new TypeToken<ArrayList<Application>>() {}.getType();
-        ArrayList<Application> arrayList = gson.fromJson(json, type);
-
-        return arrayList;
-    }
-
-    private ArrayList<Room> readRooms()
-    {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        Gson gson = new Gson();
-        String json = sharedPrefs.getString("Rooms", null);
-        Type type = new TypeToken<ArrayList<Room>>() {}.getType();
-        ArrayList<Room> arrayList = gson.fromJson(json, type);
-
-        return arrayList;
+        MainActivity.mAppRef.setValue(apps);
     }
 }
