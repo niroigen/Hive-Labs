@@ -47,6 +47,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         Date = params[0];
 
         // Clearing all the rooms and available rooms
+        // Clearing all the rooms and available rooms
         MainActivity.Rooms.clear();
         MainActivity.RoomsNowAvailable.clear();
         MainActivity.Applications.clear();
@@ -233,18 +234,18 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         isConnected = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null;
     }
 
-    private void saveRooms() {
+    public static void saveRooms() {
 
         List<Room> rooms = MainActivity.Rooms;
 
         MainActivity.mRoomRef.setValue(rooms);
     }
 
-    private void saveDate() {
+    public void saveDate() {
         MainActivity.mDateRef.setValue(Date);
     }
 
-    private void saveApplications() {
+    public void saveApplications() {
 
         Map<String, Application> apps = new HashMap<>();
 

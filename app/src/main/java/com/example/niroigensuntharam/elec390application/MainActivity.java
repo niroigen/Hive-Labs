@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity{
 
     // Retrieving the date and time when the application is being launches
     String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
-    public static String timeString = new SimpleDateFormat("HHmm").format(new Date());
+    public static String timeString = "1400";//new SimpleDateFormat("HHmm").format(new Date());
 
     // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity{
     // List of all available rooms that the user 
     // can enter currently
     public static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    public static ListViewAdapter myCustomAdapter=null;
+    public static ListViewAdapter myCustomAdapter = null;
     ListView roomListView = null;
     static public SwipeRefreshLayout swipeRefreshLayout = null;
     static public Room currentRoom;
@@ -93,26 +93,30 @@ public class MainActivity extends AppCompatActivity{
 
         getRoomInfoAsync.execute(dateString);
         Initialization();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         mRoomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try{
                     GenericTypeIndicator<ArrayList<Room>> t = new GenericTypeIndicator<ArrayList<Room>>() {};
-                    ArrayList<Room> yourStringArray = dataSnapshot.getValue(t);
 
-                    String c = dataSnapshot.getValue().toString();
+                    ArrayList<Room> rooms = dataSnapshot.getValue(t);
 
-                    int index = Integer.parseInt(dataSnapshot.getValue().toString().substring(1,3).trim());
+                    Rooms.clear();
 
-                    Room room =  yourStringArray.get(index);
+                    for (int i = 0; i < rooms.size(); i++)
+                    {
+                        Rooms.add(rooms.get(i));
+                    }
 
-                    String x = "";
+                    for (int i = 0; i < Rooms.size(); i++)
+                    {
+                        Room.VerifyIfAvalaible(Rooms.get(i));
+                    }
+
+                    Room.SortRooms();
+
+                    myCustomAdapter.notifyDataSetChanged();
                 }
                 catch(Exception ex){
                     String c = "";
@@ -124,6 +128,11 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         mRoomRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -136,7 +145,9 @@ public class MainActivity extends AppCompatActivity{
 
                 Room room = dataSnapshot.getValue(Room.class);
 
-                String c = "";
+                Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
+
+                myCustomAdapter.notifyDataSetChanged();
             }
 
             @Override

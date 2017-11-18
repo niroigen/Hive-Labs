@@ -25,7 +25,9 @@ public class Room implements Comparable<Room> {
     
     // Storing the list of classes for a certain room
     private ArrayList<String> ClassList = new ArrayList<>();
-    
+
+    private boolean isAvailable;
+
     // The room number of the room
     private String roomNumber;
     
@@ -37,6 +39,10 @@ public class Room implements Comparable<Room> {
     private int nextTime = 0;
 
     private String currentClass;
+
+    public boolean getIsAvailable() {return isAvailable;}
+
+    public void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}
 
     public ArrayList<String> getTimeList() {return TimeList;}
 
@@ -146,7 +152,7 @@ public class Room implements Comparable<Room> {
     public static void VerifyIfAvalaible(Room room)
     {
         // The availability of a certain lab
-        boolean isAvailable = true;
+        room.isAvailable = true;
 
         boolean isNextClass = false;
 
@@ -189,7 +195,7 @@ public class Room implements Comparable<Room> {
             // Verifying whether the room is currently unavailable
             if (TimeNow >= StartTime && TimeNow <= EndTime) {
                 // Set the availability to false
-                isAvailable = false;
+                room.isAvailable = false;
 
                 room.setCurrentClass(room.getClassList().get(i));
 
@@ -206,11 +212,6 @@ public class Room implements Comparable<Room> {
         if (room.nextClass == null && room.currentClass == null)
         {
             room.nextTime = 2400;
-        }
-
-        // If the room is available add it to the list of available rooms
-        if (isAvailable) {
-            MainActivity.RoomsNowAvailable.add(room);
         }
     }
 

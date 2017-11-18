@@ -19,12 +19,10 @@ import java.util.Date;
 public class ListViewAdapter extends ArrayAdapter {
 
     private Context context;
-    private ArrayList<Room> rooms;
 
     public ListViewAdapter(Context context, int textViewResourceId, ArrayList objects) {
         super(context, textViewResourceId, objects);
         this.context = context;
-        rooms = objects;
     }
 
     private class ViewHolder {
@@ -50,19 +48,19 @@ public class ListViewAdapter extends ArrayAdapter {
         }
 
         // Test of slack1
-        holder.labName.setText(rooms.get(position).getRoomNumber());
+        holder.labName.setText(MainActivity.Rooms.get(position).getRoomNumber());
 
-        if(MainActivity.RoomsNowAvailable.contains(getItem(position)))
+        if(MainActivity.Rooms.get(position).getIsAvailable())
         {
             String out = "";
-            if (rooms.get(position).getNextClass() == null)
+            if (MainActivity.Rooms.get(position).getNextClass() == null)
             {
                 out = "No other classes";
             }
             else
             {
                 //String nextTime = (rooms.get(position).nextClass != null) ? rooms.get(position).nextClass : "No other classes";
-                out = "@" + rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + rooms.get(position).getNextClass();
+                out = "@" + MainActivity.Rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + MainActivity.Rooms.get(position).getNextClass();
             }
 
             // do something change color
@@ -75,13 +73,12 @@ public class ListViewAdapter extends ArrayAdapter {
         }
         else
         {
-            holder.labName.append("\t\t\t" + rooms.get(position).getCurrentClass());
+            holder.labName.append("\t\t\t" + MainActivity.Rooms.get(position).getCurrentClass());
             convertView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
 
         return convertView;
     }
-
 }
 
 
