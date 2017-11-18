@@ -30,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import dmax.dialog.SpotsDialog;
@@ -102,11 +103,49 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try{
+                    GenericTypeIndicator<ArrayList<Room>> t = new GenericTypeIndicator<ArrayList<Room>>() {};
+                    ArrayList<Room> yourStringArray = dataSnapshot.getValue(t);
 
+                    String c = dataSnapshot.getValue().toString();
+
+                    int index = Integer.parseInt(dataSnapshot.getValue().toString().substring(1,3).trim());
+
+                    Room room =  yourStringArray.get(index);
+
+                    String x = "";
                 }
                 catch(Exception ex){
                     String c = "";
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mRoomRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                Room room = dataSnapshot.getValue(Room.class);
+
+                String c = "";
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 

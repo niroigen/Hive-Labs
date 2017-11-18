@@ -235,11 +235,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
     private void saveRooms() {
 
-        Map<String, Room> rooms = new HashMap<>();
-
-        for (int i = 0; i < MainActivity.Rooms.size(); i++)
-            rooms.put( MainActivity.Rooms.get(i).getRoomNumber(),
-                    MainActivity.Rooms.get(i));
+        List<Room> rooms = MainActivity.Rooms;
 
         MainActivity.mRoomRef.setValue(rooms);
     }
