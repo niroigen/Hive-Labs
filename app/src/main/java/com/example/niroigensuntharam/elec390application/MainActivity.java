@@ -8,10 +8,14 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 
+import java.nio.channels.AlreadyBoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +23,7 @@ import java.util.Locale;
 
 import android.view.View;
 import android.widget.AdapterView;
+import android.support.v7.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -28,6 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+
+import javax.xml.datatype.Duration;
 
 import dmax.dialog.SpotsDialog;
 
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity{
     static ArrayList<Application> Applications = new ArrayList<>();
     static AlertDialog dialog;
     static String earliestTime;
+    private static ArrayList<Room> AllRooms = new ArrayList<>();
     private static boolean areRoomsInitialized = false;
     private static boolean areApplicationsInitialized = false;
     private static boolean dateChanged = false;
@@ -135,6 +143,8 @@ public class MainActivity extends AppCompatActivity{
 
                     myCustomAdapter.notifyDataSetChanged();
 
+                    AllRooms.addAll(Rooms);
+
                     areRoomsInitialized = true;
 
                     dialog.dismiss();
@@ -146,6 +156,35 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+
+            public boolean onQueryTextSubmit(String s) {
+
+                VerifyQuery(s);
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                VerifyQuery(s);
+
+                return false;
+            }
+        });
+
+        return true;
     }
 
     @Override
@@ -222,7 +261,7 @@ public class MainActivity extends AppCompatActivity{
 
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
 
-            getRoomInfoAsync.execute(dateString);
+            getRoomInfoAsync.execute(new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date()));
 
             dateChanged = false;
         }
@@ -330,7 +369,43 @@ public class MainActivity extends AppCompatActivity{
         return builder;
     }
 
+    public static void SetAllRooms(ArrayList<Room> rooms){
+        AllRooms.addAll(rooms);
+    }
 
+    private void VerifyQuery(String query){
+        if (!query.isEmpty()) {
+            ArrayList<String> rooms = new ArrayList<>();
+
+            for (Application app : Applications) {
+                if (app.getApplication().toUpperCase().contains(query.toUpperCase())) {
+                    rooms.addAll(app.getRoomsToUse());
+                }
+            }
+
+            ArrayList<Room> roomsWithApp = new ArrayList<>();
+
+            for (String _room : rooms) {
+                for (Room room : AllRooms) {
+                    if (room.getRoomNumber().contains(_room.substring(3, 6))) {
+                        roomsWithApp.add(room);
+                        break;
+                    }
+                }
+            }
+
+            Rooms.clear();
+            Rooms.addAll(roomsWithApp);
+        }
+        else{
+            Rooms.clear();
+            Rooms.addAll(AllRooms);
+        }
+
+        Room.SortRooms();
+
+        myCustomAdapter.notifyDataSetChanged();
+    }
 }
 // Commented code
 

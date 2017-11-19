@@ -91,6 +91,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         saveDate();
 
+        MainActivity.SetAllRooms(MainActivity.Rooms);
         //MainActivity.currentRoom = MainActivity.RoomsNowAvailable.get(0);
 
         MainActivity.myCustomAdapter.notifyDataSetChanged();
