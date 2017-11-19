@@ -9,9 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ListViewAdapter extends ArrayAdapter {
 
@@ -30,7 +28,7 @@ public class ListViewAdapter extends ArrayAdapter {
     @NonNull
     public View getView(int position, View convertView, @NonNull ViewGroup parent)
     {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
             LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.lab_cell, null);
