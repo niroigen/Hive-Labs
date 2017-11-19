@@ -8,10 +8,6 @@ import org.jsoup.nodes.Document;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by niroigensuntharam on 2017-11-10.
- */
-
 public class MyRunnable implements Runnable{
     private final String url;
     private String RoomNumber;
@@ -43,6 +39,7 @@ public class MyRunnable implements Runnable{
             // Adding the room to the list of rooms
             MainActivity.Rooms.add(room);
         } catch (Exception e) {
+            // Exception being thrown
         }
     }
 }

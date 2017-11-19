@@ -6,11 +6,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-/**
- * Created by niroigensuntharam on 2017-11-07.
- */
-
-public class Application {
+class Application {
 
     private String Application;
     private ArrayList<String> RoomsToUse = new ArrayList<>();
@@ -20,19 +16,23 @@ public class Application {
 
     }
 
-    public ArrayList<String> getRoomsToUse() {
+    ArrayList<String> getRoomsToUse() {
         return RoomsToUse;
     }
 
-    public void setApplication(String application) {
+    void setRoomsToUse(ArrayList<String> roomsToUse) {
+        RoomsToUse = roomsToUse;
+    }
+
+    void setApplication(String application) {
         Application = application;
     }
 
-    public void addRoom(String room) {
+    void addRoom(String room) {
         RoomsToUse.add(room);
     }
 
-    public String getApplication() {
+    String getApplication() {
         return Application;
     }
 }

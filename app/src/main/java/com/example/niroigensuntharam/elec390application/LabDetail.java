@@ -17,9 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 
 public class LabDetail extends AppCompatActivity {
@@ -59,11 +61,11 @@ public class LabDetail extends AppCompatActivity {
         roomNumber = (TextView) findViewById(R.id.roomNumber);
         roomNumber.setText(individualLab.getRoomNumber());
         lab_capacity = (TextView) findViewById(R.id.capacity);
-        lab_capacity.setText("Capacity: " + individualLab.getCapacity());
+        lab_capacity.setText(getString(R.string.room_capacity, individualLab.getCapacity()));
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
 
         if (MainActivity.currentRoom != null
-                && MainActivity.currentRoom.getRoomNumber() == individualLab.getRoomNumber()
+                && MainActivity.currentRoom.getRoomNumber().equals(individualLab.getRoomNumber())
                 || individualLab.getNextTime() == -1)
         {
             currentRoomButton.setEnabled(false);
@@ -76,14 +78,12 @@ public class LabDetail extends AppCompatActivity {
                 if (mgr != null)
                     mgr.cancel(pi);
 
-                ScheduledService.mContext = LabDetail.this;
-
                 MainActivity.currentRoom = individualLab;
 
                 String startTime = Integer.toString(MainActivity.currentRoom.getNextTime());
 
                 if (MainActivity.currentRoom.getNextTime() != -1) {
-                    String nowTime = new SimpleDateFormat("HH:mm").format(new Date());
+                    String nowTime = new SimpleDateFormat("HH:mm", Locale.CANADA).format(new Date());
 
                     long MinutesStartTime = Long.parseLong(startTime.substring(0, 2)) * 60 + Long.parseLong(startTime.substring(2, 4));
 

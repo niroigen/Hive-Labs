@@ -1,11 +1,8 @@
 package com.example.niroigensuntharam.elec390application;
 
-/**
- * Created by abdullahalsaeed on 2017-10-29.
- */
-
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +17,7 @@ public class ListViewAdapter extends ArrayAdapter {
 
     private Context context;
 
-    public ListViewAdapter(Context context, int textViewResourceId, ArrayList objects) {
+    ListViewAdapter(Context context, int textViewResourceId, ArrayList objects) {
         super(context, textViewResourceId, objects);
         this.context = context;
     }
@@ -30,7 +27,8 @@ public class ListViewAdapter extends ArrayAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    @NonNull
+    public View getView(int position, View convertView, @NonNull ViewGroup parent)
     {
         ViewHolder holder = null;
         if (convertView == null) {
@@ -38,7 +36,7 @@ public class ListViewAdapter extends ArrayAdapter {
             convertView = vi.inflate(R.layout.lab_cell, null);
 
             holder = new ViewHolder();
-            holder.labName = (TextView)convertView.findViewById(R.id.labName);
+            holder.labName = convertView.findViewById(R.id.labName);
             holder.labName.setHintTextColor(Color.WHITE);
 
             convertView.setTag(holder);
@@ -47,7 +45,6 @@ public class ListViewAdapter extends ArrayAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        // Test of slack1
         holder.labName.setText(MainActivity.Rooms.get(position).getRoomNumber());
 
         if(MainActivity.Rooms.get(position).getIsAvailable())
@@ -66,7 +63,7 @@ public class ListViewAdapter extends ArrayAdapter {
             // do something change color
             holder.labName.append("\t\t\tNext class: " + out);
 
-            if (out == "No other classes")
+            if (out.equals("No other classes"))
                 convertView.setBackgroundColor (Color.rgb(159,208,137)); // some color
             else
                 convertView.setBackgroundColor (Color.rgb(233,175,0));

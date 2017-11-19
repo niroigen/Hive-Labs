@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LabBolt</string>
+    <string name="room_capacity">Capacity: %1$s</string>
 </resources>

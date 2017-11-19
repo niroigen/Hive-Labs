@@ -1,7 +1,6 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,21 +8,18 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import android.content.Intent;
+import java.util.Locale;
+
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,8 +34,8 @@ import dmax.dialog.SpotsDialog;
 public class MainActivity extends AppCompatActivity{
 
     // Retrieving the date and time when the application is being launches
-    String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
-    public static String timeString = "1400";//new SimpleDateFormat("HHmm").format(new Date());
+    public static String dateString = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date());
+    public static String timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
 
     // All rooms which will store the room number and its capacity
     static String[][] AvailableRooms = {{"807","811","813","815","817","819","821","823","825","827","831"
@@ -50,76 +46,98 @@ public class MainActivity extends AppCompatActivity{
                                          ,"16","15","15","20","16","20","23","16","12","42","42","20"
                                          ,"16","16","16","27","16","50","24","19","50","20"}};
 
-    // A list of all the rooms informations
+    // A list of all the rooms information
     // Ex: Capacity, Courses, and Time Slots
-    public static ArrayList<Room> Rooms = new ArrayList<>();
+    static ArrayList<Room> Rooms = new ArrayList<>();
     
     // List of all available rooms that the user 
     // can enter currently
-    public static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    public static ListViewAdapter myCustomAdapter = null;
+    static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
+    static ListViewAdapter myCustomAdapter = null;
     ListView roomListView = null;
-    static public SwipeRefreshLayout swipeRefreshLayout = null;
-    static public Room currentRoom;
-    static public ArrayList<Application> Applications = new ArrayList<>();
-    static public AlertDialog dialog;
-    static public String earliestTime;
+    static SwipeRefreshLayout swipeRefreshLayout = null;
+    static Room currentRoom;
+    static ArrayList<Application> Applications = new ArrayList<>();
+    static AlertDialog dialog;
+    static String earliestTime;
+    private static boolean areRoomsInitialized = false;
+    private static boolean areApplicationsInitialized = false;
+    private static boolean dateChanged = false;
 
-    static String TAG = "MainActivity";
-
-    public static FirebaseDatabase database = FirebaseDatabase.getInstance();
-    public static DatabaseReference mRootRef = database.getReference();
-    public static DatabaseReference mRoomRef = mRootRef.child("rooms");
-    public static DatabaseReference mAppRef = mRootRef.child("apps");
-    public static DatabaseReference mDateRef = mRootRef.child("date");
-
+    static FirebaseDatabase database = FirebaseDatabase.getInstance();
+    static DatabaseReference mRootRef = database.getReference();
+    static DatabaseReference mRoomRef = mRootRef.child("rooms");
+    static DatabaseReference mAppRef = mRootRef.child("apps");
+    static DatabaseReference mDateRef = mRootRef.child("date");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!isConnected(MainActivity.this))builderDialog(MainActivity.this).show();
-        else {
+        if (!isConnected(MainActivity.this))
+            builderDialog(MainActivity.this).show();
+        else
             setContentView(R.layout.activity_main);
-        }
+
 
         dialog = new SpotsDialog(this);
         dialog.show();
 
-        GetRoomInfoAsync.isNetworkAvailable(this);
-
-        GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
-
-        getRoomInfoAsync.execute(dateString);
         Initialization();
+
+        mAppRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (!areApplicationsInitialized) {
+                    GenericTypeIndicator<ArrayList<Application>> apps = new GenericTypeIndicator<ArrayList<Application>>() {
+                    };
+
+                    ArrayList<Application> _apps = dataSnapshot.getValue(apps);
+
+                    Applications.clear();
+
+                    Applications.addAll(_apps);
+
+                    areApplicationsInitialized = true;
+
+                    dialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mRoomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                try{
-                    GenericTypeIndicator<ArrayList<Room>> t = new GenericTypeIndicator<ArrayList<Room>>() {};
 
-                    ArrayList<Room> rooms = dataSnapshot.getValue(t);
+                if (!areRoomsInitialized) {
+                    GenericTypeIndicator<ArrayList<Room>> _rooms = new GenericTypeIndicator<ArrayList<Room>>() {};
+
+                    ArrayList<Room> rooms = dataSnapshot.getValue(_rooms);
 
                     Rooms.clear();
 
-                    for (int i = 0; i < rooms.size(); i++)
-                    {
-                        Rooms.add(rooms.get(i));
-                    }
+                    Rooms.addAll(rooms);
 
-                    for (int i = 0; i < Rooms.size(); i++)
-                    {
-                        Room.VerifyIfAvalaible(Rooms.get(i));
+                    for(Room room: Rooms){
+                        Room.VerifyIfAvalaible(room);
                     }
 
                     Room.SortRooms();
 
+                    Room.EarliestAvailableTime();
+
                     myCustomAdapter.notifyDataSetChanged();
-                }
-                catch(Exception ex){
-                    String c = "";
+
+                    areRoomsInitialized = true;
+
+                    dialog.dismiss();
                 }
             }
 
@@ -165,31 +183,52 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+
+        mDateRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String dateStored = dataSnapshot.getValue(String.class);
+
+                if (dateStored != null && !dateStored.equals(dateString)){ // Get all the data for the current date
+
+                    Toast.makeText(MainActivity.this, "Date Changed Please Update", Toast.LENGTH_SHORT).show();
+
+                    dateString = dateStored;
+
+                    dateChanged = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // Will refresh to show the rooms the user can currently go to
     private void RefreshRooms() {
-        String tempDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String tempTime = new SimpleDateFormat("HHmm").format(new Date());
-
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
 
-        //Log.d("Time ",""+earliestTime);
+        if (dateChanged ||
+                (earliestTime != null && Integer.parseInt(earliestTime) > Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
 
-        if (earliestTime != null && tempTime != null) {
-            if (!tempTime.equals(timeString)) {
+            Rooms.clear();
 
-                GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+            myCustomAdapter.notifyDataSetChanged();
 
-                timeString = tempTime;
+            timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
 
-                getRoomInfoAsync.execute(tempDate);
-            }
-            else
-            {
-                swipeRefreshLayout.setRefreshing(false);
-            }
+            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+
+            getRoomInfoAsync.execute(dateString);
+
+            dateChanged = false;
+        }
+        else
+        {
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -197,14 +236,13 @@ public class MainActivity extends AppCompatActivity{
     {
         myCustomAdapter = new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
 
-        roomListView = (ListView) findViewById(R.id.simpleListView);
+        roomListView = findViewById(R.id.simpleListView);
         roomListView.setAdapter(myCustomAdapter);
         roomListView.setCacheColorHint(Color.WHITE);
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView v = (TextView) view.findViewById(R.id.labName);
                 Intent intent = new Intent(getBaseContext(), LabDetail.class);
                 intent.putExtra("position", position);
                 startActivity(intent);
@@ -215,7 +253,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                String output = "";
+                StringBuilder output = new StringBuilder();
 
                 for (int j = 0; j < Applications.size(); j++)
                 {
@@ -225,7 +263,8 @@ public class MainActivity extends AppCompatActivity{
                     {
                         if (rooms.get(k).substring(3,6).equals(Rooms.get(i).getRoomNumber()))
                         {
-                            output += Applications.get(j).getApplication() + "\n";
+                            output.append(Applications.get(j).getApplication());
+                            output.append("\n");
                         }
                     }
                 }
@@ -245,7 +284,7 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -254,24 +293,28 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-
-    //
-
     public boolean isConnected(Context context)
     {
-        ConnectivityManager cm=(ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
-        NetworkInfo netinfo =cm.getActiveNetworkInfo();
-        if (netinfo!=null&&netinfo.isConnected()){
-            android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            if ((mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting()))
-                return true; else return false;
-        }else return false;
+        if (cm != null)
+        {
+            NetworkInfo netInfo =cm.getActiveNetworkInfo();
+            if (netInfo!=null && netInfo.isConnected()){
+
+                android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+                return (mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting());
+            }
+            else
+                return false;
+        }
+        else
+            return false;
     }
 
     public  AlertDialog.Builder builderDialog(Context c)
-
     {
         AlertDialog.Builder builder=new AlertDialog.Builder(c);
         // Display internet connection
@@ -290,36 +333,6 @@ public class MainActivity extends AppCompatActivity{
 
 }
 // Commented code
-
-
-//rgb(121, 49, 0)
-
-//        Databasehelper myDbHelper = new Databasehelper(getApplicationContext());
-//        myDbHelper = new Databasehelper(this);
-//        try {
-//            myDbHelper.createDatabase();
-//        } catch (IOException ioe) {
-//            throw new Error("Unable to create database");
-//        }
-//        try {
-//            myDbHelper.openDatabase();
-//        }catch(SQLException sqle){
-//            //throw sqle;
-//        }
-
-
-//db = new Databasehelper(this);
-//        cars=myDbHelper.getData();
-
-//        layout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
-//
-//        layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                RefreshRooms();
-//            }
-//        });
-
 
 //        // Create an instance of GoogleAPIClient.
 //        if (mGoogleApiClient == null) {
