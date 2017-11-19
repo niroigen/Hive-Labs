@@ -1,5 +1,6 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,13 +11,7 @@ import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
-/**
- * Created by niroigensuntharam on 2017-11-06.
- */
-
 public class ScheduledService extends IntentService{
-
-    public static Context mContext;
 
     public ScheduledService() {
         super("My service");
@@ -27,18 +22,19 @@ public class ScheduledService extends IntentService{
         sendNotification();
     }
 
+    @TargetApi(21)
     public void sendNotification() {
         //Get an instance of NotificationManager//
 
-        Intent notificationIntent = new Intent(mContext, MainActivity.class);
+        Intent notificationIntent = new Intent(this.getApplicationContext(), MainActivity.class);
 
         PendingIntent contentIntent = PendingIntent.getActivity(
-                mContext,
+                this.getApplicationContext(),
                 0,
                 notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext)
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.getApplicationContext())
                 .setSmallIcon(R.drawable.desktop_icon)
                 .setContentTitle("Change Room")
                 .setContentText("Room in this lab soon")
@@ -59,21 +55,18 @@ public class ScheduledService extends IntentService{
         events[1] = "Course: " + MainActivity.currentRoom.getNextClass();
         events[2] = "Time: " + MainActivity.currentRoom.getNextTime();
 
-        for (int i = 0; i < events.length; i++)
-        {
-            inboxStyle.addLine(events[i]);
+        for (String event: events) {
+            inboxStyle.addLine(event);
         }
 
         mBuilder.setStyle(inboxStyle);
 
         // Gets an instance of the NotificationManager service//
-
-        NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) this.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
 
-        //NotificationManager.notify().
-
-        mNotificationManager.notify(001, mBuilder.build());
+        if (mNotificationManager != null)
+            mNotificationManager.notify(001, mBuilder.build());
     }
 }

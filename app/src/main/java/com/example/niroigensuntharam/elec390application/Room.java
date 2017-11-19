@@ -25,78 +25,84 @@ public class Room implements Comparable<Room> {
     
     // Storing the list of classes for a certain room
     private ArrayList<String> ClassList = new ArrayList<>();
-    
+
+    private boolean isAvailable;
+
     // The room number of the room
-    String roomNumber;
+    private String roomNumber;
     
     // The number of people that can be within a certain room
-    String capacity;
+    private String capacity;
 
-    String nextClass;
+    private String nextClass;
 
-    int nextTime = 0;
+    private int nextTime = 0;
 
-    String currentClass;
+    private String currentClass;
 
-    public ArrayList<String> getTimeList() {
-        return TimeList;
-    }
+    boolean getIsAvailable() {return isAvailable;}
 
-    public ArrayList<String> getClassList() {
+    void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}
+
+    ArrayList<String> getTimeList() {return TimeList;}
+
+    ArrayList<String> getClassList() {
         return ClassList;
     }
 
-    public String getRoomNumber() {
+    String getRoomNumber() {
         return roomNumber;
     }
 
-    public String getCapacity() {
+    String getCapacity() {
         return capacity;
     }
 
-    public String getCurrentClass() {return currentClass;}
+    String getCurrentClass() {return currentClass;}
 
-    public String getNextClass() {return nextClass;}
+    String getNextClass() {return nextClass;}
 
-    public int getNextTime() {return nextTime;}
+    int getNextTime() {return nextTime;}
 
-    public void setNextClass(String next_class) {nextClass = next_class;}
+    void setNextClass(String next_class) {nextClass = next_class;}
 
-    public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
+    void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
-    public void setNextTime(int next_time) {nextTime = next_time;}
+    void setNextTime(int next_time) {nextTime = next_time;}
 
-    public void setRoomNumber(String room_Number) {roomNumber = room_Number;}
+    void setRoomNumber(String room_Number) {roomNumber = room_Number;}
 
-    public void setClassList(ArrayList<String> class_List) {ClassList = class_List;}
+    void setClassList(ArrayList<String> class_List) {ClassList = class_List;}
 
-    public void setTimeList(ArrayList<String> timeList) {TimeList = timeList;}
+    void setTimeList(ArrayList<String> timeList) {TimeList = timeList;}
 
-    public void setCapacity(String _capacity) {capacity = _capacity;}
+    void setCapacity(String _capacity) {capacity = _capacity;}
 
-    Room (String room, String cap, String datee, Document doc)
+    Room()
+    {
+
+    }
+
+
+    Room (String room, String cap, String date, Document doc)
     {
         // Setting the properties
         roomNumber = room;
         capacity = cap;
 
-        final String dateString = datee;//"20171101";//dateFormat.format(date);
-
         try {
-            // Getting the information of the async task
-            Document document = doc;
 
             // Getting the all the days which the lab is open
-            Elements elements = document.select("a[class=layerentry]");
+            Elements elements = doc.select("a[class=layerentry]");
 
             // Finding all the courses that will be held on the dateString
-            for (int i = 0 ; i < elements.select("a[href*=" + dateString + "]").size(); i++)
+            for (int i = 0 ; i < elements.select("a[href*=" + date + "]").size(); i++)
             {
-                Element element = elements.select("a[href*=" + dateString + "]").get(i);
+                Element element = elements.select("a[href*=" + date + "]").get(i);
 
-                String eventid = element.attributes().get("id");
+                String eventId = element.attributes().get("id");
 
-                Element event = document.select("dl#eventinfo-" + eventid).first();
+                Element event = doc.select("dl#eventinfo-" + eventId).first();
 
                 String temp = event.childNode(7).toString().split("\n")[1];
 
@@ -109,10 +115,11 @@ public class Room implements Comparable<Room> {
         }
         catch (Exception ex)
         {
+            // When exception is thrown
         }
     }
 
-    public static void EarliestAvailableTime()
+    static void EarliestAvailableTime()
     {
         for (int i = 0; i < MainActivity.RoomsNowAvailable.size(); i++) {
 
@@ -139,10 +146,10 @@ public class Room implements Comparable<Room> {
 
     // Will be used to verify whether a room is currently available
     // and if it is, then it will be added to the RoomsNowAvailable list
-    public static void VerifyIfAvalaible(Room room)
+    static void VerifyIfAvalaible(Room room)
     {
         // The availability of a certain lab
-        boolean isAvailable = true;
+        room.isAvailable = true;
 
         boolean isNextClass = false;
 
@@ -185,7 +192,7 @@ public class Room implements Comparable<Room> {
             // Verifying whether the room is currently unavailable
             if (TimeNow >= StartTime && TimeNow <= EndTime) {
                 // Set the availability to false
-                isAvailable = false;
+                room.isAvailable = false;
 
                 room.setCurrentClass(room.getClassList().get(i));
 
@@ -203,24 +210,16 @@ public class Room implements Comparable<Room> {
         {
             room.nextTime = 2400;
         }
-
-        // If the room is available add it to the list of available rooms
-        if (isAvailable) {
-            MainActivity.RoomsNowAvailable.add(room);
-        }
     }
 
-    public static void SortRooms() {
+    static void SortRooms() {
         Collections.sort(MainActivity.Rooms);
     }
 
     @Override
-    public int compareTo(Room room) {
-
+    public int compareTo(@NonNull Room room) {
             int compareTime = room.getNextTime();
-            int diff = compareTime - this.getNextTime();
-
-            return diff;
+            return compareTime - this.getNextTime();
     }
 }
 

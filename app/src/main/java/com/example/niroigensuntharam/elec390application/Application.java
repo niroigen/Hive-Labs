@@ -6,43 +6,33 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-/**
- * Created by niroigensuntharam on 2017-11-07.
- */
+class Application {
 
-public class Application {
-
-    String Application;
-    ArrayList<String> RoomsToUse = new ArrayList<>();
-    boolean AllRooms = false;
+    private String Application;
+    private ArrayList<String> RoomsToUse = new ArrayList<>();
 
     Application()
     {
 
     }
 
-    public ArrayList<String> getRoomsToUse() {
+    ArrayList<String> getRoomsToUse() {
         return RoomsToUse;
     }
 
-    public void setAllRooms(boolean allRooms) {
-        AllRooms = allRooms;
+    void setRoomsToUse(ArrayList<String> roomsToUse) {
+        RoomsToUse = roomsToUse;
     }
 
-    public boolean getAllRooms()
-    {
-        return AllRooms;
-    }
-
-    public void setApplication(String application) {
+    void setApplication(String application) {
         Application = application;
     }
 
-    public void addRoom(String room) {
+    void addRoom(String room) {
         RoomsToUse.add(room);
     }
 
-    public String getApplication() {
+    String getApplication() {
         return Application;
     }
 }

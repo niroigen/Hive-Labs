@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "129578427391",
+    "firebase_url": "https://coral-pipe-158717.firebaseio.com",
+    "project_id": "coral-pipe-158717",
+    "storage_bucket": "coral-pipe-158717.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129578427391:android:0149da8683a176d0",
+        "android_client_info": {
+          "package_name": "com.example.niroigensuntharam.elec390application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129578427391-fr43d0g28vgeiu89llhvd4kb8eg4coab.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg1vaodlFWFOLJECrhZCadc1YyRI0XO8o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
