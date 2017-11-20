@@ -8,20 +8,15 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-
 import android.view.View;
 import android.widget.AdapterView;
-import android.support.v7.widget.SearchView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -32,7 +27,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
 import dmax.dialog.SpotsDialog;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+import static android.Manifest.permission.CHANGE_WIFI_STATE;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -52,7 +56,9 @@ public class MainActivity extends AppCompatActivity{
     // A list of all the rooms information
     // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
-    
+
+    private final int CODE_PERMISSIONS = 0;
+
     // List of all available rooms that the user 
     // can enter currently
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
@@ -87,6 +93,13 @@ public class MainActivity extends AppCompatActivity{
 
         dialog = new SpotsDialog(this);
         dialog.show();
+
+        String[] neededPermissions = {
+                CHANGE_WIFI_STATE,
+                ACCESS_WIFI_STATE,
+                ACCESS_COARSE_LOCATION
+        };
+        ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
 
         Initialization();
 
@@ -181,6 +194,13 @@ public class MainActivity extends AppCompatActivity{
         });
 
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Handle if any of the permissions are denied, in grantResults
     }
 
     @Override

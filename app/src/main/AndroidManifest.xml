@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.niroigensuntharam.elec390application">
 
+    <uses-feature android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.compass"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.wifi"
+        android:required="true" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -32,6 +40,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_KEY"
+            android:value="1b737f4d-378b-4866-8862-ec9c30350555"/>
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_SECRET"
+            android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ=="/>
     </application>
 
 </manifest>
