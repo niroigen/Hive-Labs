@@ -47,7 +47,7 @@ public class LabDetail extends AppCompatActivity {
         viewNavigationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), NavigationActivity.class);
+                Intent intent = new Intent(getBaseContext(), ImageViewActivity.class);
                 startActivity(intent);
             }
         });
