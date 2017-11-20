@@ -70,4 +70,14 @@
         app:layout_constraintTop_toBottomOf="@+id/today"
         app:layout_constraintVertical_bias="1.0" />
 
+    <Button
+        android:id="@+id/navigateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="Navigate"
+        app:layout_constraintBottom_toTopOf="@+id/roomNumber"
+        app:layout_constraintEnd_toStartOf="@+id/today" />
+
 </android.support.constraint.ConstraintLayout>

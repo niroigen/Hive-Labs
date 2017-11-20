@@ -12,13 +12,17 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +30,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.indooratlas.android.sdk.IALocation;
+import com.indooratlas.android.sdk.IALocationListener;
+import com.indooratlas.android.sdk.IALocationManager;
+import com.indooratlas.android.sdk.IALocationRequest;
+import com.indooratlas.android.sdk.IARegion;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,8 +68,47 @@ public class MainActivity extends AppCompatActivity{
 
     private final int CODE_PERMISSIONS = 0;
 
+    static IALocationManager mIaLocationManager;
+
+    IALocationListener mIALocationListener = new IALocationListener() {
+        @Override
+        public void onLocationChanged(IALocation iaLocation) {
+            Log.d(TAG, "Lattitude: " + iaLocation.getLatitude());
+            Log.d(TAG, "Longitude: " + iaLocation.getLongitude());
+            Log.d(TAG, "Floor number: " + iaLocation.getFloorLevel());
+
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+    };
+
+    private IARegion.Listener mRegionListener = new IARegion.Listener() {
+
+        IARegion mCurrentFloorPlan = null;
+
+        @Override
+        public void onEnterRegion(IARegion iaRegion) {
+            if (iaRegion.getType() == IARegion.TYPE_FLOOR_PLAN){
+                Log.d(TAG, "Entered " + iaRegion.getName());
+                Log.d(TAG, "floor plan ID: " + iaRegion.getId());
+                mCurrentFloorPlan = iaRegion;
+            }
+        }
+
+        @Override
+        public void onExitRegion(IARegion iaRegion) {
+
+        }
+    };
+
+    private String TAG = "MainActivity";
+
     // List of all available rooms that the user 
     // can enter currently
+    private static GoogleApiClient mGoogleApiClient;
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
     static ListViewAdapter myCustomAdapter = null;
     ListView roomListView = null;
@@ -261,6 +309,20 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
+                mIALocationListener);
+    }
+
+    @Override
+    protected void onPause() {
+            super.onPause();
+        mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
+                mIALocationListener);
+    }
+
     // Will refresh to show the rooms the user can currently go to
     private void RefreshRooms() {
         // If after the user refreshes, and there is a change in the date
@@ -294,6 +356,19 @@ public class MainActivity extends AppCompatActivity{
         roomListView = findViewById(R.id.simpleListView);
         roomListView.setAdapter(myCustomAdapter);
         roomListView.setCacheColorHint(Color.WHITE);
+
+        mIaLocationManager = IALocationManager.create(this);
+        mIaLocationManager.registerRegionListener(mRegionListener);
+
+//        // Create an instance of GoogleAPIClient.
+//
+//        if (mGoogleApiClient == null) {
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks()
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        }
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -424,12 +499,3 @@ public class MainActivity extends AppCompatActivity{
     }
 }
 // Commented code
-
-//        // Create an instance of GoogleAPIClient.
-//        if (mGoogleApiClient == null) {
-//            mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//        }

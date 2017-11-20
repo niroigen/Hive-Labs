@@ -33,12 +33,24 @@ public class LabDetail extends AppCompatActivity {
     ListView listView = null;
     static AlarmManager mgr;
 
+    private Button viewNavigationButton;
+
     static PendingIntent pi = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lab_detail);
+
+        viewNavigationButton = findViewById(R.id.navigateButton);
+
+        viewNavigationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), NavigationActivity.class);
+                startActivity(intent);
+            }
+        });
 
         int position = getIntent().getExtras().getInt("position");
 

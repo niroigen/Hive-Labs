@@ -40,6 +40,26 @@ public class Room implements Comparable<Room> {
 
     private String currentClass;
 
+    private String Latitude;
+
+    private String Longitude;
+
+    String getLatitude() {
+        return Latitude;
+    }
+
+    String getLongitude() {
+        return Longitude;
+    }
+
+    public void setLatitude(String latitude) {
+        Latitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
+        Longitude = longitude;
+    }
+
     boolean getIsAvailable() {return isAvailable;}
 
     void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}

@@ -106,6 +106,22 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         List<Room> rooms = MainActivity.Rooms;
 
+        // Remove after being saving all the locations of each room
+        for (Room room: MainActivity.Rooms){
+            if (room.getRoomNumber().contains("819")){
+                room.setLatitude("45.4969376");
+                room.setLongitude("-73.5789478");
+            }
+            if (room.getRoomNumber().contains("821")){
+                room.setLatitude("45.4969595");
+                room.setLongitude("-73.5790202");
+            }
+            if (room.getRoomNumber().contains("807")){
+                room.setLatitude("45.4971524");
+                room.setLongitude("-73.5786222");
+            }
+        }
+
         MainActivity.mRoomRef.setValue(rooms);
     }
 
