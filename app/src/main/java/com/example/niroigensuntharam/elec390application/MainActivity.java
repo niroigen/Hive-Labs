@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 
 import dmax.dialog.SpotsDialog;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
@@ -213,6 +215,8 @@ public class MainActivity extends AppCompatActivity{
                     areRoomsInitialized = true;
 
                     dialog.dismiss();
+
+                    showSearchPrompt();
                 }
             }
 
@@ -535,5 +539,16 @@ public class MainActivity extends AppCompatActivity{
         Room.SortRooms();
 
         myCustomAdapter.notifyDataSetChanged();
+    }
+
+    public void showSearchPrompt()
+    {
+        new MaterialTapTargetPrompt.Builder(this)
+                .setPrimaryText(R.string.search_prompt_title)
+                .setSecondaryText(R.string.search_prompt_description)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_search)
+                .setTarget(findViewById(R.id.action_search))
+                .show();
     }
 }
