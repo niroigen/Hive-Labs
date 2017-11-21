@@ -204,6 +204,7 @@ public class Room implements Comparable<Room> {
                 room.setNextClass(room.getClassList().get(i));
                 room.setNextTime(StartTime);
                 isNextClass = true;
+                MainActivity.RoomsNowAvailable.add(room);
             }
             else if (!isNextClass){
                 room.setNextClass(null);

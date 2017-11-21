@@ -7,11 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -19,13 +21,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import io.mattcarroll.hover.overlay.OverlayPermission;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -114,9 +114,8 @@ public class MainActivity extends AppCompatActivity{
 
     private String TAG = "MainActivity";
 
-    // List of all available rooms that the user 
+    // List of all available rooms that the user
     // can enter currently
-    private static GoogleApiClient mGoogleApiClient;
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
     static ListViewAdapter myCustomAdapter = null;
     ListView roomListView = null;
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         if (!isConnected(MainActivity.this))
@@ -174,9 +174,9 @@ public class MainActivity extends AppCompatActivity{
                     Applications.addAll(_apps);
 
                     areApplicationsInitialized = true;
-
-                    dialog.dismiss();
                 }
+
+                dialog.dismiss();
             }
 
             @Override
@@ -323,6 +323,9 @@ public class MainActivity extends AppCompatActivity{
         mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
                 mIALocationListener);
 
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
+
         Intent stopHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
         stopService(stopHoverIntent);
 
@@ -375,7 +378,7 @@ public class MainActivity extends AppCompatActivity{
         // all the rooms will be initialized again
 
         if (dateChanged ||
-                (earliestTime != null && Integer.parseInt(earliestTime) > Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
+                (earliestTime != null && Integer.parseInt(earliestTime) < Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
 
             Rooms.clear();
 
@@ -469,7 +472,7 @@ public class MainActivity extends AppCompatActivity{
             if (netInfo!=null && netInfo.isConnected()){
 
                 android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                android.net.NetworkInfo mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
                 return (mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting());
             }
@@ -480,9 +483,9 @@ public class MainActivity extends AppCompatActivity{
             return false;
     }
 
-    public  AlertDialog.Builder builderDialog(Context c)
+    public AlertDialog.Builder builderDialog(Context c)
     {
-        AlertDialog.Builder builder=new AlertDialog.Builder(c);
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
         // Display internet connection
         builder.setTitle("No Connection");
         builder.setMessage("You need to have Mobile Data or wifi");
@@ -534,4 +537,3 @@ public class MainActivity extends AppCompatActivity{
         myCustomAdapter.notifyDataSetChanged();
     }
 }
-// Commented code

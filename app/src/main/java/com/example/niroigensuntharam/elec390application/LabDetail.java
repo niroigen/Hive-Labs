@@ -4,25 +4,22 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Timer;
 
 public class LabDetail extends AppCompatActivity {
 
@@ -33,8 +30,6 @@ public class LabDetail extends AppCompatActivity {
     ListView listView = null;
     static AlarmManager mgr;
 
-    private Button viewNavigationButton;
-
     static PendingIntent pi = null;
 
     @Override
@@ -42,7 +37,7 @@ public class LabDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lab_detail);
 
-        viewNavigationButton = findViewById(R.id.navigateButton);
+        Button viewNavigationButton = findViewById(R.id.navigateButton);
 
         viewNavigationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +46,7 @@ public class LabDetail extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
         int position = getIntent().getExtras().getInt("position");
 
@@ -112,6 +108,17 @@ public class LabDetail extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent stopHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
+        stopService(stopHoverIntent);
+
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
     }
 
     @Override

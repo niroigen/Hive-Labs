@@ -1,6 +1,9 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,6 +48,10 @@ public class NavigationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
+
         setContentView(R.layout.activity_navigation);
 
         mFloorPlanImage = (ImageView) findViewById(R.id.navigationImageView);

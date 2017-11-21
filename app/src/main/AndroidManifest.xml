@@ -23,12 +23,11 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/hive_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
-        <service android:name=".ScheduledService" />
 
         <activity
             android:name=".MainActivity"
@@ -60,8 +59,8 @@
         <activity android:name=".NavigationActivity" />
         <activity android:name=".ImageViewActivity"/>
 
-        <service android:name="com.example.niroigensuntharam.elec390application.ScheduledService"/>
-        <service android:name="com.example.niroigensuntharam.elec390application.SingleSectionHoverMenuService"/>
+        <service android:name=".ScheduledService"/>
+        <service android:name=".SingleSectionHoverMenuService"/>
     </application>
 
 </manifest>

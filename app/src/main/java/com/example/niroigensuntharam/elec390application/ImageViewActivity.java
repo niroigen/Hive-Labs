@@ -1,6 +1,6 @@
 package com.example.niroigensuntharam.elec390application;
 
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.Manifest;
 import android.app.DownloadManager;
@@ -12,14 +12,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.PointF;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,7 +33,6 @@ import com.indooratlas.android.sdk.resources.IAResourceManager;
 import com.indooratlas.android.sdk.resources.IAResult;
 import com.indooratlas.android.sdk.resources.IAResultCallback;
 import com.indooratlas.android.sdk.resources.IATask;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -45,6 +41,8 @@ public class ImageViewActivity extends FragmentActivity {
     private static final String TAG = "IndoorAtlasExample";
 
     private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1;
+
+    private static Intent starterIntent;
 
     // blue dot radius in meters
     private static final float dotRadius = 1.0f;
@@ -96,6 +94,8 @@ public class ImageViewActivity extends FragmentActivity {
         // prevent the screen going to sleep while app is on foreground
         findViewById(android.R.id.content).setKeepScreenOn(true);
 
+        starterIntent = getIntent();
+
         mImageView = (BlueDotView) findViewById(R.id.navigateeView);
 
         mDownloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -126,6 +126,7 @@ public class ImageViewActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         ensurePermissions();
         // starts receiving location updates
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mLocationListener);
@@ -165,9 +166,22 @@ public class ImageViewActivity extends FragmentActivity {
                 int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
                 if (status == DownloadManager.STATUS_SUCCESSFUL) {
                     // process download
-                    String filePath = c.getString(c.getColumnIndex(
-                            DownloadManager.COLUMN_LOCAL_FILENAME));
-                    showFloorPlanImage(filePath);
+                    try {
+                        String downloadFilePath = null;
+
+                        String downloadFileLocalUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+                        if (downloadFileLocalUri != null) {
+                            File mFile = new File(Uri.parse(downloadFileLocalUri).getPath());
+                            downloadFilePath = mFile.getAbsolutePath();
+                        }
+
+                        showFloorPlanImage(downloadFilePath);
+                    }
+                    catch (Exception ex){
+                        Log.d(TAG, "Exception because of: " + ex.getMessage());
+
+                    }
                 }
             }
             c.close();
@@ -203,17 +217,17 @@ public class ImageViewActivity extends FragmentActivity {
                                     new DownloadManager.Request(Uri.parse(mFloorPlan.getUrl()));
                             request.setDescription("IndoorAtlas floor plan");
                             request.setTitle("Floor plan");
-                            // requires android 3.2 or later to compile
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                                request.allowScanningByMediaScanner();
-                                request.setNotificationVisibility(DownloadManager.
-                                        Request.VISIBILITY_VISIBLE);
-                            }
+                            request.allowScanningByMediaScanner();
+                            request.setNotificationVisibility(DownloadManager.
+                                    Request.VISIBILITY_VISIBLE);
+
                             request.setDestinationInExternalPublicDir(Environment.
                                     DIRECTORY_DOWNLOADS, fileName);
 
-                                mDownloadId = mDownloadManager.enqueue(request);
+                            mDownloadId = mDownloadManager.enqueue(request);
 
+                            finish();
+                            startActivity(ImageViewActivity.starterIntent);
                         } else {
                             showFloorPlanImage(filePath);
                         }
@@ -249,7 +263,7 @@ public class ImageViewActivity extends FragmentActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
             case REQUEST_CODE_WRITE_EXTERNAL_STORAGE:
@@ -262,6 +276,5 @@ public class ImageViewActivity extends FragmentActivity {
                 }
                 break;
         }
-
     }
 }
