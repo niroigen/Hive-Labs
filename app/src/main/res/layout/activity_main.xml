@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context="com.example.niroigensuntharam.elec390application.MainActivity">
 
+    <View android:layout_height="100dp"
+        android:layout_width="match_parent"
+        android:layout_centerInParent="true"
+        android:id="@+id/expansion_view"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"/>
+
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"

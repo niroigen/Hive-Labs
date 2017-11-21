@@ -1,6 +1,8 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import io.mattcarroll.hover.overlay.OverlayPermission;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,6 +42,7 @@ import com.indooratlas.android.sdk.IARegion;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import dmax.dialog.SpotsDialog;
@@ -67,6 +71,10 @@ public class MainActivity extends AppCompatActivity{
     static ArrayList<Room> Rooms = new ArrayList<>();
 
     private final int CODE_PERMISSIONS = 0;
+
+    private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
+
+    private boolean mPermissionsRequested = false;
 
     static IALocationManager mIaLocationManager;
 
@@ -314,6 +322,27 @@ public class MainActivity extends AppCompatActivity{
         super.onResume();
         mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
                 mIALocationListener);
+
+        Intent stopHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
+        stopService(stopHoverIntent);
+
+        // On Android M and above we need to ask the user for permission to display the Hover
+        // menu within the "alert window" layer.  Use OverlayPermission to check for the permission
+        // and to request it.
+        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
+            @SuppressWarnings("NewApi")
+            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
+            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (REQUEST_CODE_HOVER_PERMISSION == requestCode) {
+            mPermissionsRequested = true;
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -321,6 +350,23 @@ public class MainActivity extends AppCompatActivity{
             super.onPause();
         mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
                 mIALocationListener);
+
+        if (isApplicationSentToBackground(this)){
+            Intent startHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
+            startService(startHoverIntent);
+        }
+    }
+
+    public static boolean isApplicationSentToBackground(final Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Will refresh to show the rooms the user can currently go to
@@ -359,16 +405,6 @@ public class MainActivity extends AppCompatActivity{
 
         mIaLocationManager = IALocationManager.create(this);
         mIaLocationManager.registerRegionListener(mRegionListener);
-
-//        // Create an instance of GoogleAPIClient.
-//
-//        if (mGoogleApiClient == null) {
-//            mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks()
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//        }
 
         roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
