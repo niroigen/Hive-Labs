@@ -154,6 +154,8 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             textView.append("\t\t\t" + MainActivity.Rooms.get(position).getCurrentClass());
             viewHolder.itemView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
+
+        textView.setTextColor(Color.WHITE);
     }
 
     // Returns the total count of items in the list
