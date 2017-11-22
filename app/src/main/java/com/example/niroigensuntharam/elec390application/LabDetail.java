@@ -48,11 +48,20 @@ public class LabDetail extends AppCompatActivity {
         });
 
 
-        int position = getIntent().getExtras().getInt("position");
-
-        final Room individualLab = MainActivity.Rooms.get(position);
+        String _roomNumber = getIntent().getExtras().getString("room");
 
         ArrayList<String> ClassAndTime = new ArrayList<>();
+
+        Room tempRoom = new Room();
+
+        for (Room room: MainActivity.Rooms){
+            if (room.getRoomNumber().equals(_roomNumber)){
+                tempRoom = room;
+                break;
+            }
+        }
+
+        final Room individualLab = tempRoom;
 
         for (int i = 0; i < individualLab.getTimeList().size(); i++)
         {
@@ -64,7 +73,6 @@ public class LabDetail extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.classScheduleList);
         listView.setAdapter(myCustomAdapter);
         listView.setCacheColorHint(Color.WHITE);
-
 
         roomNumber = (TextView) findViewById(R.id.roomNumber);
         roomNumber.setText(individualLab.getRoomNumber());

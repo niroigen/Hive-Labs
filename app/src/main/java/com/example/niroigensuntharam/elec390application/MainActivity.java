@@ -6,7 +6,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,7 +21,10 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,7 +80,9 @@ public class MainActivity extends AppCompatActivity{
     // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
 
+    private RecyclerView roomsView;
     private final int CODE_PERMISSIONS = 0;
+    private RoomsAdapter adapter;
 
     private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
 
@@ -86,7 +96,6 @@ public class MainActivity extends AppCompatActivity{
             Log.d(TAG, "Lattitude: " + iaLocation.getLatitude());
             Log.d(TAG, "Longitude: " + iaLocation.getLongitude());
             Log.d(TAG, "Floor number: " + iaLocation.getFloorLevel());
-
         }
 
         @Override
@@ -119,8 +128,6 @@ public class MainActivity extends AppCompatActivity{
     // List of all available rooms that the user
     // can enter currently
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    static ListViewAdapter myCustomAdapter = null;
-    ListView roomListView = null;
     static SwipeRefreshLayout swipeRefreshLayout = null;
     static Room currentRoom;
     static ArrayList<Application> Applications = new ArrayList<>();
@@ -208,13 +215,13 @@ public class MainActivity extends AppCompatActivity{
 
                     Room.EarliestAvailableTime();
 
-                    myCustomAdapter.notifyDataSetChanged();
-
                     AllRooms.addAll(Rooms);
 
                     areRoomsInitialized = true;
 
                     dialog.dismiss();
+
+                    adapter.notifyDataSetChanged();
 
                     showSearchPrompt();
                 }
@@ -279,8 +286,6 @@ public class MainActivity extends AppCompatActivity{
                 Room room = dataSnapshot.getValue(Room.class);
 
                 Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
-
-                myCustomAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -386,8 +391,6 @@ public class MainActivity extends AppCompatActivity{
 
             Rooms.clear();
 
-            myCustomAdapter.notifyDataSetChanged();
-
             timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
 
             GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
@@ -404,58 +407,19 @@ public class MainActivity extends AppCompatActivity{
 
     private void Initialization()
     {
-        myCustomAdapter = new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
 
-        roomListView = findViewById(R.id.simpleListView);
-        roomListView.setAdapter(myCustomAdapter);
-        roomListView.setCacheColorHint(Color.WHITE);
+        roomsView = findViewById(R.id.rooms);
+
+        // Initialize contacts
+        adapter = new RoomsAdapter(this, Rooms);
+        // Attach the adapter to the recyclerview to populate items
+        roomsView.setAdapter(adapter);
+        // Set layout manager to position the items
+        roomsView.setLayoutManager(new LinearLayoutManager(this));
+        // That's all!
 
         mIaLocationManager = IALocationManager.create(this);
         mIaLocationManager.registerRegionListener(mRegionListener);
-
-        roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getBaseContext(), LabDetail.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
-        });
-
-        roomListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                StringBuilder output = new StringBuilder();
-
-                for (int j = 0; j < Applications.size(); j++)
-                {
-                    ArrayList<String> rooms = Applications.get(j).getRoomsToUse();
-
-                    for (int k = 0; k < rooms.size(); k++)
-                    {
-                        if (rooms.get(k).substring(3,6).equals(Rooms.get(i).getRoomNumber()))
-                        {
-                            output.append(Applications.get(j).getApplication());
-                            output.append("\n");
-                        }
-                    }
-                }
-
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Software Available");
-                alertDialog.setMessage(output);
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
-                return true;
-            }
-        });
 
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -472,7 +436,7 @@ public class MainActivity extends AppCompatActivity{
 
         if (cm != null)
         {
-            NetworkInfo netInfo =cm.getActiveNetworkInfo();
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
             if (netInfo!=null && netInfo.isConnected()){
 
                 android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -538,7 +502,7 @@ public class MainActivity extends AppCompatActivity{
 
         Room.SortRooms();
 
-        myCustomAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     public void showSearchPrompt()
