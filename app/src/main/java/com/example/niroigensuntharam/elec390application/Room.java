@@ -44,6 +44,14 @@ public class Room implements Comparable<Room> {
 
     private String Longitude;
 
+    private long Volume = -1;
+
+    long getVolume() {return Volume;}
+
+    void setVolume(long volume) {
+        Volume = volume;
+    }
+
     String getLatitude() {
         return Latitude;
     }
