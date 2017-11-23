@@ -46,6 +46,16 @@ public class Room implements Comparable<Room> {
 
     private long Volume = -1;
 
+    private boolean isImageChanged;
+
+    boolean isImageChanged() {
+        return isImageChanged;
+    }
+
+    void setImageChanged(boolean imageChanged) {
+        isImageChanged = imageChanged;
+    }
+
     long getVolume() {return Volume;}
 
     void setVolume(long volume) {

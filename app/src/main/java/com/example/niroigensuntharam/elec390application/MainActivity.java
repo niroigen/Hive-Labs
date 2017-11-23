@@ -286,6 +286,8 @@ public class MainActivity extends AppCompatActivity{
                 Room room = dataSnapshot.getValue(Room.class);
 
                 Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
+
+                adapter.changeImage(Rooms.indexOf(room));
             }
 
             @Override

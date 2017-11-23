@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +26,8 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView labName;
+
+        public ImageView volumeLevel;
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
         public ViewHolder(View itemView) {
@@ -30,6 +36,8 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             super(itemView);
 
             labName = (TextView) itemView.findViewById(R.id.room_number);
+
+            volumeLevel = (ImageView) itemView.findViewById(R.id.volume);
         }
     }
 
@@ -154,8 +162,27 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             textView.append("\t\t\t" + MainActivity.Rooms.get(position).getCurrentClass());
             viewHolder.itemView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
+        if(MainActivity.Rooms.get(position).isImageChanged()) {
+
+
+            if (MainActivity.Rooms.get(position).getVolume() < 10) {
+                viewHolder.volumeLevel.setImageResource(R.drawable.low);
+            } else if (MainActivity.Rooms.get(position).getVolume() >= 40 && MainActivity.Rooms.get(position).getVolume() < 100) {
+                viewHolder.volumeLevel.setImageResource(R.drawable.medium);
+            } else {
+                viewHolder.volumeLevel.setImageResource(R.drawable.loud);
+            }
+        }
+        else{
+            viewHolder.volumeLevel.setImageResource(R.drawable.low);
+        }
 
         textView.setTextColor(Color.WHITE);
+    }
+
+    public void changeImage(int index) {
+        MainActivity.Rooms.get(index).setImageChanged(true);
+        notifyDataSetChanged();
     }
 
     // Returns the total count of items in the list
