@@ -5,7 +5,9 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // The AsyncTask is used since the application is doing a web call
 public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
@@ -102,8 +104,6 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
     private static void saveRooms() {
 
-        List<Room> rooms = MainActivity.Rooms;
-
         // Remove after being saving all the locations of each room
         for (Room room: MainActivity.Rooms){
             if (room.getRoomNumber().contains("819")){
@@ -118,6 +118,12 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
                 room.setLatitude("45.4971524");
                 room.setLongitude("-73.5786222");
             }
+        }
+
+        Map<String, Room> rooms = new HashMap<>();
+
+        for (Room room: MainActivity.Rooms){
+            rooms.put(room.getRoomNumber(), room);
         }
 
         MainActivity.mRoomRef.setValue(rooms);

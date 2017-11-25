@@ -46,6 +46,20 @@ public class Room implements Comparable<Room> {
 
     private long Volume = -1;
 
+    private int amount = -1;
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
     private boolean isImageChanged;
 
     boolean isImageChanged() {

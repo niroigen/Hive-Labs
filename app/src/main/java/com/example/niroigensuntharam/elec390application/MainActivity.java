@@ -51,8 +51,10 @@ import com.indooratlas.android.sdk.IARegion;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
@@ -199,9 +201,15 @@ public class MainActivity extends AppCompatActivity{
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (!areRoomsInitialized) {
-                    GenericTypeIndicator<ArrayList<Room>> _rooms = new GenericTypeIndicator<ArrayList<Room>>() {};
 
-                    ArrayList<Room> rooms = dataSnapshot.getValue(_rooms);
+                    Map<String, Room> td = new HashMap<String, Room>();
+
+                    for (DataSnapshot jobSnapshot: dataSnapshot.getChildren()) {
+                        Room job = jobSnapshot.getValue(Room.class);
+                        td.put(jobSnapshot.getKey(), job);
+                    }
+
+                    ArrayList<Room> rooms = new ArrayList<>(td.values());
 
                     Rooms.clear();
 
