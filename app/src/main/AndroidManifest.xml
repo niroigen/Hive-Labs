@@ -51,10 +51,10 @@
 
         <meta-data
             android:name="com.indooratlas.android.sdk.API_KEY"
-            android:value="1b737f4d-378b-4866-8862-ec9c30350555" />
+            android:value="cc44982e-2ec5-4302-a225-c598f92f12cd" />
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
-            android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
+            android:value="rQ+1MDaHq5Ryhyni47fy9pV2CVZo/CfTQLV/YI82EHq3ah7ljOkt8xWTjfnoRiUKBw/zp2KZ872IrRrxLvkAuzE6i3oSdE09ynDDS2jHHAovnPbHzVbgs+sGmW2AtQ==" />
 
         <activity android:name=".NavigationActivity" />
         <activity android:name=".ImageViewActivity"/>
