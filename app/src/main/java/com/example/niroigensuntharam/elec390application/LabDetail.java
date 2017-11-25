@@ -26,6 +26,7 @@ public class LabDetail extends AppCompatActivity {
     TextView roomNumber;
     TextView lab_capacity;
     Button currentRoomButton;
+    Button contactsButton;
     ArrayAdapter myCustomAdapter=null;
     ListView listView = null;
     static AlarmManager mgr;
@@ -79,6 +80,7 @@ public class LabDetail extends AppCompatActivity {
         lab_capacity = (TextView) findViewById(R.id.capacity);
         lab_capacity.setText(getString(R.string.room_capacity, individualLab.getCapacity()));
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
+        contactsButton = (Button) findViewById(R.id.contactsButton);
 
         if (MainActivity.currentRoom != null
                 && MainActivity.currentRoom.getRoomNumber().equals(individualLab.getRoomNumber())
@@ -114,6 +116,15 @@ public class LabDetail extends AppCompatActivity {
 
                     currentRoomButton.setEnabled(false);
                 }
+            }
+        });
+
+        contactsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
+                intent.putExtra("roomNumber", individualLab.getRoomNumber());
+                startActivity(intent);
             }
         });
     }
