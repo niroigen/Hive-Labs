@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.niroigensuntharam.elec390application.NavigationActivity">
+
+    <ImageView
+        android:id="@+id/navigationImageView"
+        android:layout_width="376dp"
+        android:layout_height="509dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginStart="6dp"
+        android:contentDescription="Image Of Navigatino"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@color/colorAccent" />
+</android.support.constraint.ConstraintLayout>

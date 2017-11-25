@@ -40,6 +40,44 @@ public class Room implements Comparable<Room> {
 
     private String currentClass;
 
+    private String Latitude;
+
+    private String Longitude;
+
+    private long Volume = -1;
+
+    private boolean isImageChanged;
+
+    boolean isImageChanged() {
+        return isImageChanged;
+    }
+
+    void setImageChanged(boolean imageChanged) {
+        isImageChanged = imageChanged;
+    }
+
+    long getVolume() {return Volume;}
+
+    void setVolume(long volume) {
+        Volume = volume;
+    }
+
+    String getLatitude() {
+        return Latitude;
+    }
+
+    String getLongitude() {
+        return Longitude;
+    }
+
+    public void setLatitude(String latitude) {
+        Latitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
+        Longitude = longitude;
+    }
+
     boolean getIsAvailable() {return isAvailable;}
 
     void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}
@@ -184,6 +222,7 @@ public class Room implements Comparable<Room> {
                 room.setNextClass(room.getClassList().get(i));
                 room.setNextTime(StartTime);
                 isNextClass = true;
+                MainActivity.RoomsNowAvailable.add(room);
             }
             else if (!isNextClass){
                 room.setNextClass(null);

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.example.niroigensuntharam.elec390application"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -25,6 +25,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'io.mattcarroll.hover:hover:0.9.8'
+    compile 'uk.co.samuelwall:material-tap-target-prompt:2.4.1'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.8.0'
     compile 'com.google.firebase:firebase-database:11.6.0'
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.google.code.gson:gson:2.8.2'
@@ -33,5 +36,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.6.0'
     compile 'com.google.android.gms:play-services-maps:11.6.0'
     compile files('libs/jsoup-1.10.3.jar')
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.indooratlas.android:indooratlas-android-sdk:2.5.2@aar'
     apply plugin: 'com.google.gms.google-services'
 }

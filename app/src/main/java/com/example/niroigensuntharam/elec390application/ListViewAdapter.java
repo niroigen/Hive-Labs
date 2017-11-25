@@ -34,7 +34,7 @@ public class ListViewAdapter extends ArrayAdapter {
             convertView = vi.inflate(R.layout.lab_cell, null);
 
             holder = new ViewHolder();
-            holder.labName = convertView.findViewById(R.id.labName);
+            holder.labName = convertView.findViewById(R.id.room_number);
             holder.labName.setHintTextColor(Color.WHITE);
 
             convertView.setTag(holder);

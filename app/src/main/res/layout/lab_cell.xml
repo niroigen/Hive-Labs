@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    >
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/room_number"
+        android:layout_width="0dp"
+        android:layout_height="75dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_weight="1"
+        android:textSize="20sp"/>
+
+    <ImageView
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:textSize="20sp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:id="@+id/labName" />
+        android:id="@+id/volume"
+        android:src="@drawable/low"/>
 
 </LinearLayout>

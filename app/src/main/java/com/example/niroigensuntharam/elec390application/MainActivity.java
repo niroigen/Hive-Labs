@@ -1,29 +1,40 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-
 import android.view.View;
 import android.widget.AdapterView;
-import android.support.v7.widget.SearchView;
+import android.widget.ListView;
 import android.widget.Toast;
+import io.mattcarroll.hover.overlay.OverlayPermission;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,8 +42,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.indooratlas.android.sdk.IALocation;
+import com.indooratlas.android.sdk.IALocationListener;
+import com.indooratlas.android.sdk.IALocationManager;
+import com.indooratlas.android.sdk.IALocationRequest;
+import com.indooratlas.android.sdk.IARegion;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import dmax.dialog.SpotsDialog;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+import static android.Manifest.permission.CHANGE_WIFI_STATE;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -52,12 +79,55 @@ public class MainActivity extends AppCompatActivity{
     // A list of all the rooms information
     // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
-    
-    // List of all available rooms that the user 
+
+    private RecyclerView roomsView;
+    private final int CODE_PERMISSIONS = 0;
+    private RoomsAdapter adapter;
+
+    private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
+
+    private boolean mPermissionsRequested = false;
+
+    static IALocationManager mIaLocationManager;
+
+    IALocationListener mIALocationListener = new IALocationListener() {
+        @Override
+        public void onLocationChanged(IALocation iaLocation) {
+            Log.d(TAG, "Lattitude: " + iaLocation.getLatitude());
+            Log.d(TAG, "Longitude: " + iaLocation.getLongitude());
+            Log.d(TAG, "Floor number: " + iaLocation.getFloorLevel());
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+    };
+
+    private IARegion.Listener mRegionListener = new IARegion.Listener() {
+
+        IARegion mCurrentFloorPlan = null;
+
+        @Override
+        public void onEnterRegion(IARegion iaRegion) {
+            if (iaRegion.getType() == IARegion.TYPE_FLOOR_PLAN){
+                Log.d(TAG, "Entered " + iaRegion.getName());
+                Log.d(TAG, "floor plan ID: " + iaRegion.getId());
+                mCurrentFloorPlan = iaRegion;
+            }
+        }
+
+        @Override
+        public void onExitRegion(IARegion iaRegion) {
+
+        }
+    };
+
+    private String TAG = "MainActivity";
+
+    // List of all available rooms that the user
     // can enter currently
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    static ListViewAdapter myCustomAdapter = null;
-    ListView roomListView = null;
     static SwipeRefreshLayout swipeRefreshLayout = null;
     static Room currentRoom;
     static ArrayList<Application> Applications = new ArrayList<>();
@@ -77,6 +147,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         if (!isConnected(MainActivity.this))
@@ -87,6 +158,13 @@ public class MainActivity extends AppCompatActivity{
 
         dialog = new SpotsDialog(this);
         dialog.show();
+
+        String[] neededPermissions = {
+                CHANGE_WIFI_STATE,
+                ACCESS_WIFI_STATE,
+                ACCESS_COARSE_LOCATION
+        };
+        ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
 
         Initialization();
 
@@ -105,9 +183,9 @@ public class MainActivity extends AppCompatActivity{
                     Applications.addAll(_apps);
 
                     areApplicationsInitialized = true;
-
-                    dialog.dismiss();
                 }
+
+                dialog.dismiss();
             }
 
             @Override
@@ -137,13 +215,15 @@ public class MainActivity extends AppCompatActivity{
 
                     Room.EarliestAvailableTime();
 
-                    myCustomAdapter.notifyDataSetChanged();
-
                     AllRooms.addAll(Rooms);
 
                     areRoomsInitialized = true;
 
                     dialog.dismiss();
+
+                    adapter.notifyDataSetChanged();
+
+                    showSearchPrompt();
                 }
             }
 
@@ -184,6 +264,13 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //Handle if any of the permissions are denied, in grantResults
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -200,7 +287,7 @@ public class MainActivity extends AppCompatActivity{
 
                 Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
 
-                myCustomAdapter.notifyDataSetChanged();
+                adapter.changeImage(Rooms.indexOf(room));
             }
 
             @Override
@@ -241,17 +328,70 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
+                mIALocationListener);
+
+        ActionBar bar = getSupportActionBar();
+        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
+
+        Intent stopHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
+        stopService(stopHoverIntent);
+
+        // On Android M and above we need to ask the user for permission to display the Hover
+        // menu within the "alert window" layer.  Use OverlayPermission to check for the permission
+        // and to request it.
+        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
+            @SuppressWarnings("NewApi")
+            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
+            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (REQUEST_CODE_HOVER_PERMISSION == requestCode) {
+            mPermissionsRequested = true;
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+            super.onPause();
+        mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
+                mIALocationListener);
+
+        if (isApplicationSentToBackground(this)){
+            Intent startHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
+            startService(startHoverIntent);
+        }
+    }
+
+    public static boolean isApplicationSentToBackground(final Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Will refresh to show the rooms the user can currently go to
     private void RefreshRooms() {
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
 
         if (dateChanged ||
-                (earliestTime != null && Integer.parseInt(earliestTime) > Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
+                (earliestTime != null && Integer.parseInt(earliestTime) < Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
 
             Rooms.clear();
-
-            myCustomAdapter.notifyDataSetChanged();
 
             timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
 
@@ -269,55 +409,19 @@ public class MainActivity extends AppCompatActivity{
 
     private void Initialization()
     {
-        myCustomAdapter = new ListViewAdapter(this, android.R.layout.simple_list_item_1, Rooms);
 
-        roomListView = findViewById(R.id.simpleListView);
-        roomListView.setAdapter(myCustomAdapter);
-        roomListView.setCacheColorHint(Color.WHITE);
+        roomsView = findViewById(R.id.rooms);
 
-        roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getBaseContext(), LabDetail.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
-            }
-        });
+        // Initialize contacts
+        adapter = new RoomsAdapter(this, Rooms);
+        // Attach the adapter to the recyclerview to populate items
+        roomsView.setAdapter(adapter);
+        // Set layout manager to position the items
+        roomsView.setLayoutManager(new LinearLayoutManager(this));
+        // That's all!
 
-        roomListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                StringBuilder output = new StringBuilder();
-
-                for (int j = 0; j < Applications.size(); j++)
-                {
-                    ArrayList<String> rooms = Applications.get(j).getRoomsToUse();
-
-                    for (int k = 0; k < rooms.size(); k++)
-                    {
-                        if (rooms.get(k).substring(3,6).equals(Rooms.get(i).getRoomNumber()))
-                        {
-                            output.append(Applications.get(j).getApplication());
-                            output.append("\n");
-                        }
-                    }
-                }
-
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Software Available");
-                alertDialog.setMessage(output);
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
-                return true;
-            }
-        });
+        mIaLocationManager = IALocationManager.create(this);
+        mIaLocationManager.registerRegionListener(mRegionListener);
 
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -334,11 +438,11 @@ public class MainActivity extends AppCompatActivity{
 
         if (cm != null)
         {
-            NetworkInfo netInfo =cm.getActiveNetworkInfo();
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
             if (netInfo!=null && netInfo.isConnected()){
 
                 android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                android.net.NetworkInfo mobile=cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                android.net.NetworkInfo mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
                 return (mobile!=null && mobile.isConnectedOrConnecting())|| (wifi.isConnectedOrConnecting());
             }
@@ -349,9 +453,9 @@ public class MainActivity extends AppCompatActivity{
             return false;
     }
 
-    public  AlertDialog.Builder builderDialog(Context c)
+    public AlertDialog.Builder builderDialog(Context c)
     {
-        AlertDialog.Builder builder=new AlertDialog.Builder(c);
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
         // Display internet connection
         builder.setTitle("No Connection");
         builder.setMessage("You need to have Mobile Data or wifi");
@@ -400,16 +504,17 @@ public class MainActivity extends AppCompatActivity{
 
         Room.SortRooms();
 
-        myCustomAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
+    }
+
+    public void showSearchPrompt()
+    {
+        new MaterialTapTargetPrompt.Builder(this)
+                .setPrimaryText(R.string.search_prompt_title)
+                .setSecondaryText(R.string.search_prompt_description)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_search)
+                .setTarget(findViewById(R.id.action_search))
+                .show();
     }
 }
-// Commented code
-
-//        // Create an instance of GoogleAPIClient.
-//        if (mGoogleApiClient == null) {
-//            mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                    .addConnectionCallbacks(this)
-//                    .addOnConnectionFailedListener(this)
-//                    .addApi(LocationServices.API)
-//                    .build();
-//        }
