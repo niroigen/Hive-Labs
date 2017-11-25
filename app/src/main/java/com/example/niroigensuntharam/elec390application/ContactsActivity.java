@@ -86,7 +86,7 @@ public class ContactsActivity extends AppCompatActivity {
         else {
             // Android version is lesser than 6.0 or the permission is already granted.
 
-            List<String> contacts = new ArrayList<>();
+            final List<String> contacts = new ArrayList<>();
             getContactNames();
 
             for (int i=0; i < contactData.size(); i++){
@@ -106,43 +106,53 @@ public class ContactsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v){
 
-                String phoneNumber = "";
+                    //variable to hold the contact's phone number
+                    String phoneNumber = "";
 
-                //List to hold contact names that were selected for SMS
-                List<String> selected = new ArrayList<>();
+                    //List to hold contact names that were selected for SMS
+                    List<String> selected = new ArrayList<>();
 
-                int cntChoice = lstNames.getCount();
-                SparseBooleanArray sparseBooleanArray = lstNames.getCheckedItemPositions();
+                    //temporary array of hash to hold the selected contacts' name and phone number for SMS
+                    ArrayList<HashMap<String,String>> selectedContacts = new ArrayList<HashMap<String,String>>();
 
-                for(int i = 0; i < cntChoice; i++){
-                    if(sparseBooleanArray.get(i)) {
-                        selected.add(lstNames.getItemAtPosition(i).toString());
+                    int cntChoice = lstNames.getCount();
+                    SparseBooleanArray sparseBooleanArray = lstNames.getCheckedItemPositions();
+
+                    for(int i = 0; i < cntChoice; i++){
+                        if(sparseBooleanArray.get(i)) {
+                            selected.add(lstNames.getItemAtPosition(i).toString());
+                        }
                     }
-                }
 
-                SmsManager sms = SmsManager.getDefault();
-
-                for (int i = 0; i < selected.size(); i++) {
-
-                    for (int j = 0; j < contactData.size(); j++) {
-                        if (selected.get(i).contentEquals(contactData.get(j).get("name"))) {
-
-                            phoneNumber = contactData.get(j).get("number");
-                            phoneNumber = phoneNumber.replace("(", "");
-                            phoneNumber = phoneNumber.replace(")", "");
-                            phoneNumber = phoneNumber.replace(" ", "");
-                            phoneNumber = phoneNumber.replace("-", "");
-
-                            try {
-                                sms.sendTextMessage(phoneNumber, null, message, null, null);
-                            }
-                            catch (Exception error) {
-                                String why = "";
+                    //get the selected contact info and put in a separate array
+                    for (int i=0; i < selected.size(); i++){
+                        for (int j=0; j < contactData.size(); j++){
+                            if (selected.get(i).contentEquals(contactData.get(j).get("name"))){
+                                selectedContacts.add(contactData.get(j));
                             }
                         }
                     }
-                    Toast.makeText(ContactsActivity.this, "Sent to " + selected.get(i), Toast.LENGTH_SHORT).show();
-                }
+
+                    SmsManager sms = SmsManager.getDefault();
+
+                    for (int i=0; i < selectedContacts.size(); i++){
+
+                        phoneNumber = selectedContacts.get(i).get("number");
+                        phoneNumber = phoneNumber.replace("(", "");
+                        phoneNumber = phoneNumber.replace(")", "");
+                        phoneNumber = phoneNumber.replace(" ", "");
+                        phoneNumber = phoneNumber.replace("-", "");
+
+                        try {
+                            sms.sendTextMessage(phoneNumber, null, message, null, null);
+                        }
+                        catch (Exception error) {
+                            String why = "";
+                        }
+
+                        Toast.makeText(ContactsActivity.this, "Sent to " + selectedContacts.get(i).get("name"), Toast.LENGTH_SHORT).show();
+
+                    }
                 }
             });
         }
