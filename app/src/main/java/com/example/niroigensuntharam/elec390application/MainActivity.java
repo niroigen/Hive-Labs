@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
 
     private boolean mPermissionsRequested = false;
+    PagerAdapter pagerAdapter;
 
     static IALocationManager mIaLocationManager;
 
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity{
     private static ArrayList<Room> AllRooms = new ArrayList<>();
     private static boolean areRoomsInitialized = false;
     private static boolean areApplicationsInitialized = false;
-    private static boolean dateChanged = false;
+    static boolean dateChanged = false;
 
     static FirebaseDatabase database = FirebaseDatabase.getInstance();
     static DatabaseReference mRootRef = database.getReference();
@@ -184,8 +185,7 @@ public class MainActivity extends AppCompatActivity{
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (!areApplicationsInitialized) {
-                    GenericTypeIndicator<ArrayList<Application>> apps = new GenericTypeIndicator<ArrayList<Application>>() {
-                    };
+                    GenericTypeIndicator<ArrayList<Application>> apps = new GenericTypeIndicator<ArrayList<Application>>() {};
 
                     ArrayList<Application> _apps = dataSnapshot.getValue(apps);
 
@@ -214,11 +214,13 @@ public class MainActivity extends AppCompatActivity{
                     Map<String, Room> td = new HashMap<String, Room>();
 
                     for (DataSnapshot jobSnapshot: dataSnapshot.getChildren()) {
-                        Room job = jobSnapshot.getValue(Room.class);
-                        td.put(jobSnapshot.getKey(), job);
+                        Room room = jobSnapshot.getValue(Room.class);
+                        td.put(jobSnapshot.getKey(), room);
                     }
 
                     ArrayList<Room> rooms = new ArrayList<>(td.values());
+
+                    ArrayList<Room> _rooms = new ArrayList<>();
 
                     Rooms.clear();
 
@@ -226,6 +228,9 @@ public class MainActivity extends AppCompatActivity{
 
                     for(Room room: Rooms){
                         Room.VerifyIfAvalaible(room);
+                        if (room.getIsAvailable() && room.getNextClass() == null){
+                            _rooms.add(room);
+                        }
                     }
 
                     Room.SortRooms();
@@ -240,21 +245,15 @@ public class MainActivity extends AppCompatActivity{
 
                     roomsView = findViewById(R.id.rooms);
 
-                    swipeRefreshLayout = findViewById(R.id.swiperefresh);
-                    swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                        @Override
-                        public void onRefresh() {
-                            RefreshRooms();
-                        }
-                    });
-
-                    adapter = new RoomsAdapter(getApplicationContext(), MainActivity.Rooms);
+                    adapter = new RoomsAdapter(getApplicationContext(), _rooms);
 
                     roomsView.setAdapter(adapter);
 
                     roomsView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
                     adapter.notifyDataSetChanged();
+
+                    pagerAdapter.notifyDataSetChanged();
 
                     showSearchPrompt();
                 }
@@ -442,17 +441,9 @@ public class MainActivity extends AppCompatActivity{
 
     private void Initialization()
     {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        try {
-            setSupportActionBar(toolbar);
-        }
-        catch (Exception ex){
-            ex.getMessage();
-        }
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(pagerAdapter);
 
         // Give the TabLayout the ViewPager
@@ -565,7 +556,7 @@ public class MainActivity extends AppCompatActivity{
         String tabTitles[] = new String[] { "Available", "Upcoming", "In Progress" };
         Context context;
 
-        public PagerAdapter(FragmentManager fm, Context context) {
+        PagerAdapter(FragmentManager fm, Context context) {
             super(fm);
             this.context = context;
         }
@@ -578,16 +569,13 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public Fragment getItem(int position) {
 
-            switch (position) {
-                case 0:
-                    return new BlankFragment();
-                case 1:
-                    return new BlankFragment();
-                case 2:
-                    return new BlankFragment();
-            }
+            Bundle args = new Bundle();
+            args.putInt("position", position);
 
-            return null;
+            BlankFragment blankFragment = new BlankFragment();
+            blankFragment.setArguments(args);
+
+            return blankFragment;
         }
 
         @Override
@@ -602,6 +590,5 @@ public class MainActivity extends AppCompatActivity{
             tv.setText(tabTitles[position]);
             return tab;
         }
-
     }
 }

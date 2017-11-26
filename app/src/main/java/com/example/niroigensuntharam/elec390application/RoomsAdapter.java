@@ -53,7 +53,9 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
     // Store a member variable for the contacts
     private List<Room> mRooms;
     // Store the context for easy access
-    private Context mContext;
+    private static Context mContext;
+
+    private int position;
 
     // Pass in the contact array into the constructor
     public RoomsAdapter(Context context, List<Room> rooms) {
@@ -63,6 +65,11 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
 
     public RoomsAdapter(List<Room> rooms){
         mRooms = rooms;
+    }
+
+    public RoomsAdapter(List<Room> rooms, int position){
+        mRooms = rooms;
+        this.position = position;
     }
 
     // Easy access to the context object in the recyclerview
@@ -143,15 +150,50 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
                                 dialog.dismiss();
                             }
                         });
-                alertDialog.show();
 
+                try {
+                    alertDialog.show();
+                }
+                catch (Exception ex){
+                    ex.getMessage();
+                }
                 return true;
             }
         });
 
         TextView nextClassInfo = viewHolder.nextClass;
 
-        if(MainActivity.Rooms.get(position).getIsAvailable())
+        ArrayList<Room> rooms = new ArrayList<>();
+
+        if (this.position == 0) {
+            viewHolder.cardView.setBackgroundColor(Color.rgb(159, 208, 137)); // some color
+
+            for (Room _room : MainActivity.Rooms) {
+                if (_room.getIsAvailable() && _room.getNextClass() == null) {
+                    rooms.add(_room);
+                }
+            }
+        }
+        else if (this.position == 1) {
+            viewHolder.cardView.setBackgroundColor(Color.rgb(233, 175, 0));
+
+            for (Room _room : MainActivity.Rooms) {
+                if (_room.getIsAvailable() && _room.getNextClass() != null) {
+                    rooms.add(_room);
+                }
+            }
+        }
+        else if (this.position == 2) {
+            viewHolder.cardView.setBackgroundColor(Color.rgb(233, 64, 0));
+
+            for (Room _room : MainActivity.Rooms) {
+                if (!_room.getIsAvailable()) {
+                    rooms.add(_room);
+                }
+            }
+        }
+
+        if(rooms.get(position).getIsAvailable())
         {
             String out = "";
             if (MainActivity.Rooms.get(position).getNextClass() == null)
@@ -161,23 +203,15 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
 
             // do something change color
             nextClassInfo.setText("Next class: " + out);
-
-            if (out.equals("No other classes"))
-                viewHolder.cardView.setBackgroundColor (Color.rgb(159,208,137)); // some color
-            else
-                viewHolder.cardView.setBackgroundColor (Color.rgb(233,175,0));
         }
         else
         {
-            nextClassInfo.setText(MainActivity.Rooms.get(position).getCurrentClass());
-            viewHolder.cardView.setBackgroundColor (Color.rgb(233,64,0)); // default color
+            nextClassInfo.setText(rooms.get(position).getCurrentClass());
         }
-        if(MainActivity.Rooms.get(position).isImageChanged()) {
-
-
-            if (MainActivity.Rooms.get(position).getVolume() < 10) {
+        if(rooms.get(position).isImageChanged()) {
+            if (rooms.get(position).getVolume() < 10) {
                 viewHolder.volumeLevel.setImageResource(R.drawable.low);
-            } else if (MainActivity.Rooms.get(position).getVolume() >= 40 && MainActivity.Rooms.get(position).getVolume() < 100) {
+            } else if (rooms.get(position).getVolume() >= 40 && rooms.get(position).getVolume() < 100) {
                 viewHolder.volumeLevel.setImageResource(R.drawable.medium);
             } else {
                 viewHolder.volumeLevel.setImageResource(R.drawable.loud);

@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -135,9 +136,6 @@ public class LabDetail extends AppCompatActivity {
 
         Intent stopHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
         stopService(stopHoverIntent);
-
-        ActionBar bar = getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
     }
 
     @Override

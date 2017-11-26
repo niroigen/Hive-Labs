@@ -7,30 +7,16 @@
     android:layout_height="match_parent"
     tools:context="com.example.niroigensuntharam.elec390application.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="?attr/colorPrimary"
-        android:elevation="6dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
-
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"
         app:tabMode="fixed"
-        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:elevation="6dp"
+        app:tabBackground="@color/black"
         app:tabTextColor="#d3d3d3"
         app:tabSelectedTextColor="#ffffff"
-        app:tabIndicatorColor="#ff00ff"
-        android:minHeight="?attr/actionBarSize"
+        app:tabIndicatorColor="#ff4081"
         />
 
     <android.support.v4.view.ViewPager
