@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -46,7 +47,7 @@ public class HoverMenuScreen implements Content {
     @NonNull
     private View createScreenView() {
 
-        ListView roomListView = new ListView(mContext);
+        RecyclerView recyclerView = new RecyclerView(mContext);
 
         if (mPageTitle.equals("Available Rooms")) {
             ArrayList<Room> availableRooms = new ArrayList<>();
@@ -57,25 +58,12 @@ public class HoverMenuScreen implements Content {
                 }
             }
 
-            ListViewAdapter customAdapter = new ListViewAdapter(mContext, android.R.layout.simple_list_item_1, availableRooms);
+            RoomsAdapter customAdapter = new RoomsAdapter(mContext, availableRooms);
 
-            roomListView.setAdapter(customAdapter);
-            roomListView.setCacheColorHint(Color.WHITE);
-            roomListView.setForegroundGravity(Gravity.CENTER);
-
-            roomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(mContext, LabDetail.class);
-                    intent.putExtra("position", position);
-                    mContext.startActivity(intent);
-
-                    Intent stopHoverIntent = new Intent(mContext, SingleSectionHoverMenuService.class);
-                    mContext.stopService(stopHoverIntent);
-                }
-            });
+            recyclerView.setAdapter(customAdapter);
+            recyclerView.setForegroundGravity(Gravity.CENTER);
         }
-            return roomListView;
+            return recyclerView;
 
     }
 

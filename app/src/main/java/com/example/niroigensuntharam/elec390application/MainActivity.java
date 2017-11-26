@@ -16,7 +16,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -24,13 +30,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import io.mattcarroll.hover.overlay.OverlayPermission;
 
@@ -229,6 +238,22 @@ public class MainActivity extends AppCompatActivity{
 
                     dialog.dismiss();
 
+                    roomsView = findViewById(R.id.rooms);
+
+                    swipeRefreshLayout = findViewById(R.id.swiperefresh);
+                    swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                        @Override
+                        public void onRefresh() {
+                            RefreshRooms();
+                        }
+                    });
+
+                    adapter = new RoomsAdapter(getApplicationContext(), MainActivity.Rooms);
+
+                    roomsView.setAdapter(adapter);
+
+                    roomsView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
                     adapter.notifyDataSetChanged();
 
                     showSearchPrompt();
@@ -417,27 +442,36 @@ public class MainActivity extends AppCompatActivity{
 
     private void Initialization()
     {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        roomsView = findViewById(R.id.rooms);
+        try {
+            setSupportActionBar(toolbar);
+        }
+        catch (Exception ex){
+            ex.getMessage();
+        }
+        // Get the ViewPager and set it's PagerAdapter so that it can display items
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        viewPager.setAdapter(pagerAdapter);
+
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Iterate over all tabs and set the custom view
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            tab.setCustomView(pagerAdapter.getTabView(i));
+        }
 
         // Initialize contacts
-        adapter = new RoomsAdapter(this, Rooms);
         // Attach the adapter to the recyclerview to populate items
-        roomsView.setAdapter(adapter);
-        // Set layout manager to position the items
-        roomsView.setLayoutManager(new LinearLayoutManager(this));
+
         // That's all!
 
         mIaLocationManager = IALocationManager.create(this);
         mIaLocationManager.registerRegionListener(mRegionListener);
-
-        swipeRefreshLayout = findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshRooms();
-            }
-        });
     }
 
     public boolean isConnected(Context context)
@@ -524,5 +558,50 @@ public class MainActivity extends AppCompatActivity{
                 .setIcon(R.drawable.ic_search)
                 .setTarget(findViewById(R.id.action_search))
                 .show();
+    }
+
+    class PagerAdapter extends FragmentPagerAdapter {
+
+        String tabTitles[] = new String[] { "Available", "Upcoming", "In Progress" };
+        Context context;
+
+        public PagerAdapter(FragmentManager fm, Context context) {
+            super(fm);
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return tabTitles.length;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position) {
+                case 0:
+                    return new BlankFragment();
+                case 1:
+                    return new BlankFragment();
+                case 2:
+                    return new BlankFragment();
+            }
+
+            return null;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // Generate title based on item position
+            return tabTitles[position];
+        }
+
+        public View getTabView(int position) {
+            View tab = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
+            TextView tv = (TextView) tab.findViewById(R.id.custom_text);
+            tv.setText(tabTitles[position]);
+            return tab;
+        }
+
     }
 }

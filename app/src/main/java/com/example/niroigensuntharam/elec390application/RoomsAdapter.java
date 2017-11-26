@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,13 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public TextView labName;
+        public TextView roomNumber;
 
         public ImageView volumeLevel;
+
+        public TextView nextClass;
+
+        public CardView cardView;
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
         public ViewHolder(View itemView) {
@@ -35,9 +40,13 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             // to access the context from any ViewHolder instance.
             super(itemView);
 
-            labName = (TextView) itemView.findViewById(R.id.room_number);
+            roomNumber = (TextView) itemView.findViewById(R.id.room_number);
 
             volumeLevel = (ImageView) itemView.findViewById(R.id.volume);
+
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
+
+            nextClass = itemView.findViewById(R.id.next_class);
         }
     }
 
@@ -52,6 +61,10 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
         mContext = context;
     }
 
+    public RoomsAdapter(List<Room> rooms){
+        mRooms = rooms;
+    }
+
     // Easy access to the context object in the recyclerview
     private Context getContext() {
         return mContext;
@@ -64,7 +77,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View contactView = inflater.inflate(R.layout.lab_cell, parent, false);
+        View contactView = inflater.inflate(R.layout.card_item, parent, false);
 
         // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(contactView);
@@ -78,10 +91,10 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
         Room room = mRooms.get(position);
 
         // Set item views based on your views and data model
-        final TextView textView = viewHolder.labName;
+        final TextView textView = viewHolder.roomNumber;
         textView.setText(room.getRoomNumber());
 
-        textView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, LabDetail.class);
@@ -90,7 +103,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             }
         });
 
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
+        viewHolder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -136,31 +149,28 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             }
         });
 
+        TextView nextClassInfo = viewHolder.nextClass;
+
         if(MainActivity.Rooms.get(position).getIsAvailable())
         {
             String out = "";
             if (MainActivity.Rooms.get(position).getNextClass() == null)
-            {
                 out = "No other classes";
-            }
             else
-            {
-                //String nextTime = (rooms.get(position).nextClass != null) ? rooms.get(position).nextClass : "No other classes";
                 out = "@" + MainActivity.Rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + MainActivity.Rooms.get(position).getNextClass();
-            }
 
             // do something change color
-            textView.append("\t\t\tNext class: " + out);
+            nextClassInfo.setText("Next class: " + out);
 
             if (out.equals("No other classes"))
-                viewHolder.itemView.setBackgroundColor (Color.rgb(159,208,137)); // some color
+                viewHolder.cardView.setBackgroundColor (Color.rgb(159,208,137)); // some color
             else
-                viewHolder.itemView.setBackgroundColor (Color.rgb(233,175,0));
+                viewHolder.cardView.setBackgroundColor (Color.rgb(233,175,0));
         }
         else
         {
-            textView.append("\t\t\t" + MainActivity.Rooms.get(position).getCurrentClass());
-            viewHolder.itemView.setBackgroundColor (Color.rgb(233,64,0)); // default color
+            nextClassInfo.setText(MainActivity.Rooms.get(position).getCurrentClass());
+            viewHolder.cardView.setBackgroundColor (Color.rgb(233,64,0)); // default color
         }
         if(MainActivity.Rooms.get(position).isImageChanged()) {
 
