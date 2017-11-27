@@ -3,5 +3,6 @@
     <string name="room_capacity">Capacity: %1$s</string>
     <string name="action_search">Application</string>
     <string name="search_prompt_title">Search Applications</string>
+    <string name="button_close">Close</string>
     <string name="search_prompt_description">Tap on icon to search for an application that can be seen in a lab room</string>
 </resources>
