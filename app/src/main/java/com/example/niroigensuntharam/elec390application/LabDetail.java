@@ -24,6 +24,7 @@ public class LabDetail extends AppCompatActivity {
 
     double lat;
     double lon;
+    String room;
     TextView roomNumber;
     TextView lab_capacity;
     Button currentRoomButton;
@@ -47,19 +48,20 @@ public class LabDetail extends AppCompatActivity {
                 Intent intent = new Intent(getBaseContext(), MapsOverlayActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
+                intent.putExtra("room", room);
                 startActivity(intent);
             }
         });
 
 
-        String _roomNumber = getIntent().getExtras().getString("room");
+        room = getIntent().getExtras().getString("room");
 
         ArrayList<String> ClassAndTime = new ArrayList<>();
 
         Room tempRoom = new Room();
 
         for (Room room: MainActivity.Rooms){
-            if (room.getRoomNumber().equals(_roomNumber)){
+            if (room.getRoomNumber().equals(this.room)){
                 tempRoom = room;
                 break;
             }

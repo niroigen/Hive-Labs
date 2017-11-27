@@ -58,6 +58,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     private static final int MAX_DIMENSION = 2048;
 
     private static double latitude;
+    private static String room;
     private static double longitude;
     private GoogleMap mMap;
     private Circle mCircle;
@@ -209,6 +210,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
             latitude = getIntent().getExtras().getDouble("lat");
             longitude = getIntent().getExtras().getDouble("lon");
+            room = getIntent().getExtras().getString("room");
         }
         catch (Exception ex){
             ex.getMessage();
@@ -439,7 +441,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
     private void setUpMap()
     {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Room Location"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Room: " + room));
     }
-
 }
