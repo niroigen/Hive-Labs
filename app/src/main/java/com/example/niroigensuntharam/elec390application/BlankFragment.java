@@ -14,12 +14,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.example.niroigensuntharam.elec390application.MainActivity.dateChanged;
-import static com.example.niroigensuntharam.elec390application.MainActivity.earliestTime;
+import static com.example.niroigensuntharam.elec390application.MainActivity.TIME_COMPARATOR;
+import static com.example.niroigensuntharam.elec390application.MainActivity.mAdapter;
 
 public class BlankFragment extends Fragment {
 
     private int position;
+
+    private View view;
+
+    private static RecyclerView recyclerView;
 
     public BlankFragment() {
         // Required empty public constructor
@@ -51,6 +55,11 @@ public class BlankFragment extends Fragment {
                         rooms.add(room);
                     }
                 }
+                if (mAdapter == null)
+                    mAdapter = new RoomsAdapter(getContext(), TIME_COMPARATOR, position);
+                else
+                    mAdapter.replaceAll(rooms);
+                rv.setAdapter(mAdapter);
             }
             break;
             case 1: {
@@ -59,6 +68,12 @@ public class BlankFragment extends Fragment {
                         rooms.add(room);
                     }
                 }
+                if (mAdapter == null)
+                    mAdapter = new RoomsAdapter(getContext(), TIME_COMPARATOR, position);
+                else
+                    mAdapter.replaceAll(rooms);
+                rv.setAdapter(mAdapter);
+
             }
             break;
             case 2: {
@@ -67,16 +82,32 @@ public class BlankFragment extends Fragment {
                         rooms.add(room);
                     }
                 }
+                if (mAdapter == null)
+                    mAdapter = new RoomsAdapter(getContext(), TIME_COMPARATOR, position);
+                else
+                    mAdapter.replaceAll(rooms);
+
+                rv.setAdapter(mAdapter);
             }
             break;
         }
-
-        RoomsAdapter adapter = new RoomsAdapter(rooms, position);
-        rv.setAdapter(adapter);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
 
         return rootView;
+    }
+
+    private void setRecyclerView() {
+
+        recyclerView = (RecyclerView) view
+                .findViewById(R.id.rooms);
+        recyclerView.setHasFixedSize(true);
+        recyclerView
+                .setLayoutManager(new LinearLayoutManager(getActivity()));//Linear Items
+
+        RoomsAdapter adapter = new RoomsAdapter(getActivity(), TIME_COMPARATOR);
+        recyclerView.setAdapter(adapter);// set adapter on recyclerview
+
     }
 }

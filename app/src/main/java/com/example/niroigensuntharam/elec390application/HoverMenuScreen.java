@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 
@@ -58,7 +59,7 @@ public class HoverMenuScreen implements Content {
                 }
             }
 
-            RoomsAdapter customAdapter = new RoomsAdapter(mContext, availableRooms);
+            RoomsAdapter customAdapter = new RoomsAdapter(mContext, MainActivity.TIME_COMPARATOR);
 
             recyclerView.setAdapter(customAdapter);
             recyclerView.setForegroundGravity(Gravity.CENTER);

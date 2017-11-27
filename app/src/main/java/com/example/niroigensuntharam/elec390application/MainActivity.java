@@ -27,6 +27,7 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -59,6 +60,7 @@ import com.indooratlas.android.sdk.IARegion;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +117,18 @@ public class MainActivity extends AppCompatActivity{
 
         }
     };
+
+    static final Comparator<Room> TIME_COMPARATOR = new Comparator<Room>() {
+        @Override
+        public int compare(Room room1, Room room2) {
+            int compareTime = room1.getNextTime();
+            return compareTime - room2.getNextTime();
+        }
+    };
+
+    public static RoomsAdapter mAdapter;
+    private List<Room> mRooms;
+    private RecyclerView mRecyclerView;
 
     private IARegion.Listener mRegionListener = new IARegion.Listener() {
 
@@ -220,40 +234,42 @@ public class MainActivity extends AppCompatActivity{
 
                     ArrayList<Room> rooms = new ArrayList<>(td.values());
 
-                    ArrayList<Room> _rooms = new ArrayList<>();
+                    Rooms = rooms;
 
-                    Rooms.clear();
+                    mAdapter.add(rooms);
 
-                    Rooms.addAll(rooms);
+//                    ArrayList<Room> _rooms = new ArrayList<>();
+//
+//                    Rooms.clear();
+//
+//                    Rooms.addAll(rooms);
+//
+//                    for(Room room: Rooms){
+//                        Room.VerifyIfAvalaible(room);
+//                        if (room.getIsAvailable() && room.getNextClass() == null){
+//                            _rooms.add(room);
+//                        }
+//                    }
+//
+//                    Room.EarliestAvailableTime();
+//
+//                    AllRooms.addAll(Rooms);
+//
+//                    areRoomsInitialized = true;
+//
+//                    dialog.dismiss();
+//
+//                    roomsView = findViewById(R.id.rooms);
+//
+//                    mAdapter = new RoomsAdapter(getApplicationContext(), TIME_COMPARATOR);
+//
+//                    roomsView.setAdapter(adapter);
+//
+//                    roomsView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//
+//                    adapter.notifyDataSetChanged();
 
-                    for(Room room: Rooms){
-                        Room.VerifyIfAvalaible(room);
-                        if (room.getIsAvailable() && room.getNextClass() == null){
-                            _rooms.add(room);
-                        }
-                    }
-
-                    Room.SortRooms();
-
-                    Room.EarliestAvailableTime();
-
-                    AllRooms.addAll(Rooms);
-
-                    areRoomsInitialized = true;
-
-                    dialog.dismiss();
-
-                    roomsView = findViewById(R.id.rooms);
-
-                    adapter = new RoomsAdapter(getApplicationContext(), _rooms);
-
-                    roomsView.setAdapter(adapter);
-
-                    roomsView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-
-                    adapter.notifyDataSetChanged();
-
-                    pagerAdapter.notifyDataSetChanged();
+//                    pagerAdapter.notifyDataSetChanged();
 
                     showSearchPrompt();
                 }
@@ -319,7 +335,7 @@ public class MainActivity extends AppCompatActivity{
 
                 Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
 
-                adapter.changeImage(Rooms.indexOf(room));
+                mAdapter.changeImage(Rooms.indexOf(room));
             }
 
             @Override
@@ -446,7 +462,8 @@ public class MainActivity extends AppCompatActivity{
         pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(pagerAdapter);
 
-        // Give the TabLayout the ViewPager
+        // Give the
+        // TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -455,6 +472,8 @@ public class MainActivity extends AppCompatActivity{
             TabLayout.Tab tab = tabLayout.getTabAt(i);
             tab.setCustomView(pagerAdapter.getTabView(i));
         }
+
+        viewPager.setOffscreenPageLimit(3);
 
         // Initialize contacts
         // Attach the adapter to the recyclerview to populate items
@@ -534,10 +553,6 @@ public class MainActivity extends AppCompatActivity{
             Rooms.clear();
             Rooms.addAll(AllRooms);
         }
-
-        Room.SortRooms();
-
-        adapter.notifyDataSetChanged();
     }
 
     public void showSearchPrompt()
