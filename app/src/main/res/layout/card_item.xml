@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_margin="10dp"
         android:layout_height="100dp"
-        card_view:cardCornerRadius="10dp"
         card_view:elevation="30dp">
 
         <RelativeLayout

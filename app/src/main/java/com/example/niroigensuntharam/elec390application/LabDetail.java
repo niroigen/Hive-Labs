@@ -3,14 +3,11 @@ package com.example.niroigensuntharam.elec390application;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.SystemClock;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Intent;
-import android.support.v7.widget.Toolbar;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -44,7 +41,7 @@ public class LabDetail extends AppCompatActivity {
         viewNavigationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), ImageViewActivity.class);
+                Intent intent = new Intent(getBaseContext(), MapsOverlayActivity.class);
                 startActivity(intent);
             }
         });
