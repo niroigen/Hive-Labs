@@ -57,6 +57,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     /* used to decide when bitmap should be downscaled */
     private static final int MAX_DIMENSION = 2048;
 
+    private static double latitude;
+    private static double longitude;
     private GoogleMap mMap;
     private Circle mCircle;
     private IARegion mOverlayFloorPlan = null;
@@ -205,6 +207,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             setContentView(R.layout.googlemap);
             setUpMapIfNeeded();
 
+            latitude = getIntent().getExtras().getDouble("lat");
+            longitude = getIntent().getExtras().getDouble("lon");
         }
         catch (Exception ex){
             ex.getMessage();
@@ -435,7 +439,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
     private void setUpMap()
     {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(45.49701681, -73.57899472)).title("Indore"));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Room Location"));
     }
 
 }

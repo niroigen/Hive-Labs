@@ -21,6 +21,9 @@ import java.util.Locale;
 
 public class LabDetail extends AppCompatActivity {
 
+
+    double lat;
+    double lon;
     TextView roomNumber;
     TextView lab_capacity;
     Button currentRoomButton;
@@ -42,6 +45,8 @@ public class LabDetail extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getBaseContext(), MapsOverlayActivity.class);
+                intent.putExtra("lat", lat);
+                intent.putExtra("lon", lon);
                 startActivity(intent);
             }
         });
@@ -59,6 +64,9 @@ public class LabDetail extends AppCompatActivity {
                 break;
             }
         }
+
+        lat = tempRoom.getLatitude();
+        lon = tempRoom.getLongitude();
 
         final Room individualLab = tempRoom;
 
