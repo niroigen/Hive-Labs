@@ -66,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements IALocationListener
             public void onMapLongClick(LatLng latLng) {
                 ExampleUtils.shareText(MapsActivity.this, mIALocationManager.getExtraInfo().traceId,
                         "traceId");
+
             }
         });
     }
@@ -84,6 +85,11 @@ public class MapsActivity extends FragmentActivity implements IALocationListener
      * This is where location updates can be handled by moving markers or the camera.
      */
     public void onLocationChanged(IALocation location) {
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        mMap.addMarker(new MarkerOptions().position(sydney)
+                .title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (mMarker == null) {
             if (mMap != null) {

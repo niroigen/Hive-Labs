@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -202,6 +203,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.googlemap);
+            setUpMapIfNeeded();
+
         }
         catch (Exception ex){
             ex.getMessage();
@@ -220,6 +223,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         }
 
         startListeningPlatformLocations();
+
+
+
     }
 
     @Override
@@ -233,6 +239,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     protected void onResume() {
         super.onResume();
         if (mMap == null) {
+
+
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -243,6 +251,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
+
                 return;
             }
             mMap.setMyLocationEnabled(false);
@@ -410,6 +419,23 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
         }
+    }
+
+    private void setUpMapIfNeeded()
+    {
+        if (mMap == null)
+        {
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            if (mMap != null)
+            {
+                setUpMap();
+            }
+        }
+    }
+
+    private void setUpMap()
+    {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(45.49701681, -73.57899472)).title("Indore"));
     }
 
 }
