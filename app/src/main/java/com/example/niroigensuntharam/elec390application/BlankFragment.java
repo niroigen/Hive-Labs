@@ -1,6 +1,5 @@
 package com.example.niroigensuntharam.elec390application;
 
-import android.app.PendingIntent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,10 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.example.niroigensuntharam.elec390application.MainActivity.TIME_COMPARATOR;
 import static com.example.niroigensuntharam.elec390application.MainActivity.mAdapter;
@@ -20,6 +16,8 @@ import static com.example.niroigensuntharam.elec390application.MainActivity.mAda
 public class BlankFragment extends Fragment {
 
     private int position;
+
+    public static SwipeRefreshLayout swipeRefreshLayout;
 
     private View view;
 
@@ -42,6 +40,15 @@ public class BlankFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_blank, container, false);
+
+        swipeRefreshLayout = rootView.findViewById(R.id.swiperefresh);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                MainActivity.RefreshRooms(getContext());
+            }
+        });
 
         RecyclerView rv = rootView.findViewById(R.id.rooms);
         rv.setHasFixedSize(true);
@@ -96,18 +103,5 @@ public class BlankFragment extends Fragment {
         rv.setLayoutManager(llm);
 
         return rootView;
-    }
-
-    private void setRecyclerView() {
-
-        recyclerView = (RecyclerView) view
-                .findViewById(R.id.rooms);
-        recyclerView.setHasFixedSize(true);
-        recyclerView
-                .setLayoutManager(new LinearLayoutManager(getActivity()));//Linear Items
-
-        RoomsAdapter adapter = new RoomsAdapter(getActivity(), TIME_COMPARATOR);
-        recyclerView.setAdapter(adapter);// set adapter on recyclerview
-
     }
 }

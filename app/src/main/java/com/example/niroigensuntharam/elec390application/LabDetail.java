@@ -67,8 +67,12 @@ public class LabDetail extends AppCompatActivity {
             }
         }
 
-        lat = tempRoom.getLatitude();
-        lon = tempRoom.getLongitude();
+        if (MainActivity.coordinates.containsKey(tempRoom.getRoomNumber())){
+            Coordinate co = MainActivity.coordinates.get(tempRoom.getRoomNumber());
+
+            lat = co.getLatitude();
+            lon = co.getLongitude();
+        }
 
         final Room individualLab = tempRoom;
 

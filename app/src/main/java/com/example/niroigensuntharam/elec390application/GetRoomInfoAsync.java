@@ -1,6 +1,7 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.content.Context;
+import android.hardware.camera2.params.BlackLevelPattern;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -80,8 +81,8 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        if (MainActivity.swipeRefreshLayout.isRefreshing())
-            MainActivity.swipeRefreshLayout.setRefreshing(false);
+        if (BlankFragment.swipeRefreshLayout.isRefreshing())
+            BlankFragment.swipeRefreshLayout.setRefreshing(false);
 
         Toast.makeText(mContext, "Done", Toast.LENGTH_SHORT).show();
 
@@ -108,7 +109,12 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
             rooms.put(room.getRoomNumber(), room);
         }
 
-        MainActivity.mRoomRef.setValue(rooms);
+        try {
+            MainActivity.mRoomRef.setValue(rooms);
+        }
+        catch (Exception ex){
+            ex.getMessage();
+        }
     }
 
     private void saveDate() {

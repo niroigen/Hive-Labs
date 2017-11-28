@@ -48,7 +48,6 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
  * Created by abdullahalsaeed on 2017-11-26.
  */
 
-
 public class MapsOverlayActivity extends FragmentActivity implements LocationListener {
     private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 42;
     private static final String TAG = "IndoorAtlasExample";
@@ -206,11 +205,12 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.googlemap);
-            setUpMapIfNeeded();
 
             latitude = getIntent().getExtras().getDouble("lat");
             longitude = getIntent().getExtras().getDouble("lon");
             room = getIntent().getExtras().getString("room");
+
+            setUpMapIfNeeded();
         }
         catch (Exception ex){
             ex.getMessage();
@@ -429,11 +429,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
     private void setUpMapIfNeeded()
     {
-        if (mMap == null)
-        {
+        if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (mMap != null)
-            {
+            if (mMap != null) {
                 setUpMap();
             }
         }

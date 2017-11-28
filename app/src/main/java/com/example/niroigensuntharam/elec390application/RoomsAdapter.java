@@ -105,6 +105,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
     private final Context mContext;
     private final LayoutInflater mInflater;
     private final Comparator<Room> mComparator;
+    static int counter = 0;
 
     // Pass in the contact array into the constructor
     public RoomsAdapter(Context context, Comparator<Room> comparator, int position) {
@@ -256,13 +257,13 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             }
         }
 
-        if (rooms.size() != 0 && position < rooms.size()){
+        if (rooms.size() != 0 && position == counter && position < rooms.size()) {
             if(rooms.get(position).getIsAvailable()) {
                 String out = "";
-                if (MainActivity.Rooms.get(position).getNextClass() == null)
+                if (rooms.get(position).getNextClass() == null)
                     out = "No other classes";
                 else
-                    out = "@" + MainActivity.Rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + MainActivity.Rooms.get(position).getNextClass();
+                    out = "@" + rooms.get(position).getNextTime() + " \n\t\t\t\t\t\t\t" + rooms.get(position).getNextClass();
 
                 // do something change color
                 nextClassInfo.setText("Next class: " + out);
@@ -288,7 +289,10 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.ViewHolder> 
             }
 
              textView.setTextColor(Color.WHITE);
+            counter++;
         }
+        else
+            counter = 0;
     }
 
     public void changeImage(int index) {

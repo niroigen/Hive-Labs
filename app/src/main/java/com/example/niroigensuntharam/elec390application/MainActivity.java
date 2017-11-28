@@ -6,12 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,30 +16,21 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.util.SortedList;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import io.mattcarroll.hover.overlay.OverlayPermission;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.internal.bind.ArrayTypeAdapter;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -93,9 +80,7 @@ public class MainActivity extends AppCompatActivity{
     // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
 
-    private RecyclerView roomsView;
     private final int CODE_PERMISSIONS = 0;
-    private RoomsAdapter adapter;
 
     private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
 
@@ -154,14 +139,15 @@ public class MainActivity extends AppCompatActivity{
     // List of all available rooms that the user
     // can enter currently
     static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    static SwipeRefreshLayout swipeRefreshLayout = null;
     static Room currentRoom;
     static ArrayList<Application> Applications = new ArrayList<>();
+    static Map<String, Coordinate> coordinates = new HashMap<String, Coordinate>();
     static AlertDialog dialog;
     static String earliestTime;
     private static ArrayList<Room> AllRooms = new ArrayList<>();
     private static boolean areRoomsInitialized = false;
     private static boolean areApplicationsInitialized = false;
+    private static boolean areCoordinatesInitialized = false;
     static boolean dateChanged = false;
 
     static FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -169,6 +155,7 @@ public class MainActivity extends AppCompatActivity{
     static DatabaseReference mRoomRef = mRootRef.child("rooms");
     static DatabaseReference mAppRef = mRootRef.child("apps");
     static DatabaseReference mDateRef = mRootRef.child("date");
+    static DatabaseReference mCoordRef = mRootRef.child("coordinates");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,6 +224,11 @@ public class MainActivity extends AppCompatActivity{
                     Rooms = rooms;
 
                     mAdapter.add(rooms);
+                    mAdapter.notifyDataSetChanged();
+
+                    for (Room room: Rooms) {
+                        Room.VerifyIfAvalaible(room);
+                    }
 
 //                    ArrayList<Room> _rooms = new ArrayList<>();
 //
@@ -251,7 +243,7 @@ public class MainActivity extends AppCompatActivity{
 //                        }
 //                    }
 //
-//                    Room.EarliestAvailableTime();
+                    Room.EarliestAvailableTime();
 //
 //                    AllRooms.addAll(Rooms);
 //
@@ -273,6 +265,28 @@ public class MainActivity extends AppCompatActivity{
 
                     showSearchPrompt();
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mCoordRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!areCoordinatesInitialized) {
+
+                    for (DataSnapshot jobSnapshot: dataSnapshot.getChildren()) {
+                        Coordinate coordinate = jobSnapshot.getValue(Coordinate.class);
+                        coordinates.put(jobSnapshot.getKey(), coordinate);
+                    }
+
+                    areCoordinatesInitialized = true;
+                }
+
+                dialog.dismiss();
             }
 
             @Override
@@ -333,7 +347,11 @@ public class MainActivity extends AppCompatActivity{
 
                 Room room = dataSnapshot.getValue(Room.class);
 
-                Rooms.set(Integer.parseInt(dataSnapshot.getKey()), room);
+                for (int i = 0 ; i < Rooms.size(); i++){
+                    if (Rooms.get(i).getRoomNumber().equals(room.getRoomNumber())){
+                        Rooms.set(i, room);
+                    }
+                }
 
                 mAdapter.changeImage(Rooms.indexOf(room));
             }
@@ -432,9 +450,11 @@ public class MainActivity extends AppCompatActivity{
     }
 
     // Will refresh to show the rooms the user can currently go to
-    private void RefreshRooms() {
+    public static void RefreshRooms(Context context) {
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
+
+        dateChanged = true;
 
         if (dateChanged ||
                 (earliestTime != null && Integer.parseInt(earliestTime) < Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
@@ -443,7 +463,7 @@ public class MainActivity extends AppCompatActivity{
 
             timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
 
-            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(this);
+            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(context);
 
             getRoomInfoAsync.execute(new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date()));
 
@@ -451,7 +471,7 @@ public class MainActivity extends AppCompatActivity{
         }
         else
         {
-            swipeRefreshLayout.setRefreshing(false);
+            BlankFragment.swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -461,6 +481,68 @@ public class MainActivity extends AppCompatActivity{
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(pagerAdapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                switch (position){
+                    case 0: {
+                        ArrayList<Room> rooms = new ArrayList<>();
+
+                        for (Room room: Rooms){
+                            if (room.getIsAvailable()){
+                                rooms.add(room);
+                            }
+                        }
+
+                        mAdapter.replaceAll(rooms);
+
+                        mAdapter.notifyDataSetChanged();
+                    }
+                        break;
+                    case 1: {
+                        ArrayList<Room> rooms = new ArrayList<>();
+
+                        for (Room room: Rooms) {
+                            if (room.getIsAvailable() && room.getNextClass() != null) {
+                                rooms.add(room);
+                            }
+                        }
+
+                        mAdapter.replaceAll(rooms);
+
+                        mAdapter.notifyDataSetChanged();
+                    }
+                        break;
+                    case 2: {
+                        ArrayList<Room> rooms = new ArrayList<>();
+
+                        for (Room room: Rooms){
+                            if (!room.getIsAvailable()){
+                                rooms.add(room);
+                            }
+                        }
+
+                        mAdapter.replaceAll(rooms);
+
+                        mAdapter.notifyDataSetChanged();
+                    }
+                        break;
+                }
+
+                RoomsAdapter.position = position;
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         // Give the
         // TabLayout the ViewPager
