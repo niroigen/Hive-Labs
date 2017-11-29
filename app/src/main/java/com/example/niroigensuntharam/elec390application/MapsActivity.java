@@ -80,15 +80,20 @@ public class MapsActivity extends FragmentActivity implements IALocationListener
 
     }
 
+
+
+
     /**
      * Callback for receiving locations.
      * This is where location updates can be handled by moving markers or the camera.
      */
     public void onLocationChanged(IALocation location) {
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        mMap.addMarker(new MarkerOptions().position(sydney)
-                .title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//        LatLng sydney = new LatLng(-33.852, 151.211);
+//        mMap.addMarker(new MarkerOptions().position(sydney)
+//                .title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (mMarker == null) {
@@ -100,12 +105,32 @@ public class MapsActivity extends FragmentActivity implements IALocationListener
         } else {
             mMarker.setPosition(latLng);
         }
+//        LatLng dhsg=new  LatLng(45.49750842, -73.57884518);
+//
+//        mMap.addPolyline(new PolylineOptions().add(
+//
+//                latLng,
+//                new LatLng(45.49748218, -73.57886627),
+//                new LatLng(45.49746615, -73.57887670),
+//                dhsg
+//
+//                )
+//                .width(1)
+//                .color(Color.RED)
+//
+//
+//        );
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // N/A
     }
+
+
+
+
+
 }
 
 

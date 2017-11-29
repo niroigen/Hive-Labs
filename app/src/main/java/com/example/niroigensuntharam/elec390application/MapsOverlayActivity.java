@@ -1,8 +1,10 @@
 package com.example.niroigensuntharam.elec390application;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -26,6 +28,8 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -69,6 +73,11 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     private Target mLoadTarget;
     private boolean mCameraPositionNeedsUpdating = true; // update on first location
     private boolean mShowIndoorLocation = false;
+    private static LatLng center;
+    Polyline line;
+
+    LatLng[] Corners = {new LatLng(45.49719166, -73.57933402), new LatLng(45.49756392, -73.57899204),
+                        new LatLng(45.49734207, -73.57851461), new LatLng(45.49697639, -73.57886866)};
 
     private void showLocationCircle(LatLng center, double accuracyRadius) {
         if (mCircle == null) {
@@ -76,9 +85,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             if (mMap != null) {
                 mCircle = mMap.addCircle(new CircleOptions()
                         .center(center)
-                        .radius(accuracyRadius)
-                        .fillColor(0x801681FB)
-                        .strokeColor(0x800A78DD)
+                        .radius(1)
+                        .fillColor(Color.GREEN)
+                        .strokeColor(Color.GREEN)
                         .zIndex(1.0f)
                         .visible(true)
                         .strokeWidth(5.0f));
@@ -86,9 +95,33 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         } else {
             // move existing markers position to received location
             mCircle.setCenter(center);
-            mCircle.setRadius(accuracyRadius);
+            mCircle.setRadius(1);
         }
+
+        this.center = center;
+
+        FindTwoClosestCorners();
+
+
+
+
+//        if (line == null){
+//        // ... get a map.
+//        // Add a thin red line from London to New York.
+//            line = mMap.addPolyline(new PolylineOptions()
+//                .add(new LatLng(latitude, longitude), center)
+//                .width(5)
+//                .color(Color.RED));
+//
+//
+//
+//        }
+//        else{
+//            line = null;
+//        }
     }
+
+
 
 
     private IALocationListener mListener = new IALocationListenerSupport() {
@@ -223,12 +256,15 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         mResourceManager = IAResourceManager.create(this);
 
         // Request GPS locations
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
             return;
         }
 
         startListeningPlatformLocations();
+
+
+
 
 
 
@@ -437,8 +473,98 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         }
     }
 
+    private void FindTwoClosestCorners(){
+
+        double[] distances = {1000,1000,1000,1000};
+
+
+        for (int i = 0; i < 4; i++){
+
+                double d_lat = Corners[i].latitude - center.latitude;
+                double d_lon = Corners[i].longitude - center.longitude;
+
+                double distance = Math.sqrt(Math.pow(d_lat,2) + Math.pow(d_lon, 2));
+
+                distances[i] = distance;
+        }
+
+        LatLng corner1 = Corners[0];
+        LatLng corner2 = Corners[0];
+        LatLng corner3 = Corners[0];
+        double min = 1000;
+
+        for (int i = 0; i < 4; i++){
+            if (distances[i] < min){
+                min = distances[i];
+                corner2 = corner1;
+                corner1 = Corners[i];
+            }
+        }
+
+        double d1;
+        double d2;
+        double dest_lat = 45.49730729;
+        double dest_lon = -73.57848912;
+
+        d1 = Math.sqrt(Math.pow(corner1.latitude - dest_lat,2) + ((Math.pow(corner1.longitude - dest_lon,2))));
+        d2 = Math.sqrt(Math.pow(corner2.latitude - dest_lat,2) + ((Math.pow(corner2.longitude - dest_lon,2))));
+
+        if (d1 < d2)
+            corner3 = Corners[2];
+        else
+            corner3 = Corners[3];
+
+        //45.49730729, -73.57848912
+
+        LatLng dhsg=new  LatLng(latitude, longitude);
+// Drawing path between coordinates
+        mMap.addPolyline(new PolylineOptions().add(
+
+
+                new LatLng(center.latitude, center.longitude),
+                new LatLng(corner1.latitude, corner1.longitude),
+                new LatLng(corner3.latitude, corner3.longitude),
+                dhsg
+
+                )
+                        .width(20)
+                        .color(Color.BLUE)
+
+
+        );
+
+        String x = "";
+    }
+
     private void setUpMap()
     {
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Room: " + room));
+
+
+        // user 45.49701344, -73.57896275
+        // dest 45.49739941, -73.57863262
+
+
+
+//
+//
+//        LatLng dhsg=new  LatLng(latitude, longitude);
+//// Drawing path between coordinates
+
+
+
+
+
+//        // ... get a map.
+//        // Add a thin red line from London to New York.
+//        Polyline line = mMap.addPolyline(new PolylineOptions()
+//                .add(new LatLng(latitude, longitude), new LatLng(40.7, -74.0))
+//                .width(5)
+//                .color(Color.RED));
+
+
     }
+
+
+
 }
