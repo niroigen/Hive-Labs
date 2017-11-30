@@ -139,9 +139,9 @@ public class LabDetail extends AppCompatActivity {
         contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
-                intent.putExtra("roomNumber", individualLab.getRoomNumber());
                 try {
+                    Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
+                    intent.putExtra("roomNumber", individualLab.getRoomNumber());
                     startActivity(intent);
                 }
                 catch(Exception ex){

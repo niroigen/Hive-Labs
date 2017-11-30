@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity{
     static Room currentRoom;
     static ArrayList<Application> Applications = new ArrayList<>();
     static Map<String, Coordinate> coordinates = new HashMap<String, Coordinate>();
-    static AlertDialog dialog;
     static String earliestTime;
     private static ArrayList<Room> AllRooms = new ArrayList<>();
     private static boolean areRoomsInitialized = false;
@@ -188,9 +187,6 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        dialog = new SpotsDialog(this);
-        dialog.show();
-
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         setContentView(R.layout.activity_main);
@@ -217,8 +213,6 @@ public class MainActivity extends AppCompatActivity{
 
                     areApplicationsInitialized = true;
                 }
-
-                dialog.dismiss();
             }
 
             @Override
@@ -279,8 +273,6 @@ public class MainActivity extends AppCompatActivity{
 
                     areCoordinatesInitialized = true;
                 }
-
-                dialog.dismiss();
             }
 
             @Override
