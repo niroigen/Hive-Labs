@@ -53,7 +53,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
  */
 
 public class MapsOverlayActivity extends FragmentActivity implements LocationListener {
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 42;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = "IndoorAtlasExample";
 
 
@@ -75,6 +75,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     private boolean mShowIndoorLocation = false;
     private static LatLng center;
     Polyline line;
+
 
     LatLng[] Corners = {new LatLng(45.49719166, -73.57933402), new LatLng(45.49756392, -73.57899204),
                         new LatLng(45.49734207, -73.57851461), new LatLng(45.49697639, -73.57886866)};
@@ -100,7 +101,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
         this.center = center;
 
-        FindTwoClosestCorners();
+        //FindTwoClosestCorners();
 
 
 
@@ -151,6 +152,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             }
         }
     };
+
+
 
 
     private IARegion.Listener mRegionListener = new IARegion.Listener() {
@@ -256,13 +259,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         // Request GPS locations
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-            return;
         }
 
         startListeningPlatformLocations();
-
-
-
     }
 
     @Override
@@ -508,8 +507,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             corner3 = Corners[2];
         else
             corner3 = Corners[3];
-
-        //45.49730729, -73.57848912
 
         LatLng dhsg=new  LatLng(latitude, longitude);
 // Drawing path between coordinates

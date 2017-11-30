@@ -59,6 +59,7 @@ import dmax.dialog.SpotsDialog;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
 
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity{
         String[] neededPermissions = {
                 CHANGE_WIFI_STATE,
                 ACCESS_WIFI_STATE,
+                ACCESS_FINE_LOCATION,
                 ACCESS_COARSE_LOCATION
         };
         ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
