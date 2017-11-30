@@ -179,11 +179,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
                 }
 
                 mShowIndoorLocation = true;
-                showInfo("Showing IndoorAtlas SDK\'s location output");
             }
-            showInfo("Enter " + (region.getType() == IARegion.TYPE_VENUE
-                    ? "VENUE "
-                    : "FLOOR_PLAN ") + region.getId());
         }
 
         @Override
@@ -195,9 +191,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             }
 
             mShowIndoorLocation = false;
-            showInfo("Exit " + (region.getType() == IARegion.TYPE_VENUE
-                    ? "VENUE "
-                    : "FLOOR_PLAN ") + region.getId());
         }
 
     };
@@ -362,7 +355,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
                 @Override
                 public void onBitmapFailed(Drawable placeHolderDraweble) {
-                    showInfo("Failed to load bitmap");
                     mOverlayFloorPlan = null;
                 }
             };
@@ -405,7 +397,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
                     // ignore errors if this task was already canceled
                     if (!task.isCancelled()) {
                         // do something with error
-                        showInfo("Loading floor plan failed: " + result.getError());
                         mOverlayFloorPlan = null;
                     }
                 }
@@ -424,18 +415,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         if (mFetchFloorPlanTask != null && !mFetchFloorPlanTask.isCancelled()) {
             mFetchFloorPlanTask.cancel();
         }
-    }
-
-    private void showInfo(String text) {
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), text,
-                Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.button_close, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.show();
     }
 
     private void startListeningPlatformLocations() {
@@ -512,15 +491,15 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         if (polyline != null)
             polyline.remove();
 
-        polyline = mMap.addPolyline(new PolylineOptions().add(
-                new LatLng(center.latitude, center.longitude),
-                new LatLng(corner1.latitude, corner1.longitude),
-                new LatLng(corner3.latitude, corner3.longitude),
-                dhsg
-                )
-                        .width(20)
-                        .color(Color.BLUE)
-        );
+//        polyline = mMap.addPolyline(new PolylineOptions().add(
+//                new LatLng(center.latitude, center.longitude),
+//                new LatLng(corner1.latitude, corner1.longitude),
+//                new LatLng(corner3.latitude, corner3.longitude),
+//                dhsg
+//                )
+//                        .width(20)
+//                        .color(Color.BLUE)
+//        );
 
         String x = "";
     }

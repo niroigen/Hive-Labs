@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ public class LabDetail extends AppCompatActivity {
     double lon;
     String room;
     TextView roomNumber;
-    TextView lab_capacity;
     Button currentRoomButton;
     Button contactsButton;
     ArrayAdapter myCustomAdapter=null;
@@ -94,8 +94,6 @@ public class LabDetail extends AppCompatActivity {
 
         roomNumber = (TextView) findViewById(R.id.roomNumber);
         roomNumber.setText(individualLab.getRoomNumber());
-        lab_capacity = (TextView) findViewById(R.id.capacity);
-        lab_capacity.setText(getString(R.string.room_capacity, individualLab.getCapacity()));
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
         contactsButton = (Button) findViewById(R.id.contactsButton);
 
@@ -132,6 +130,8 @@ public class LabDetail extends AppCompatActivity {
                     mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
 
                     currentRoomButton.setEnabled(false);
+
+                    Toast.makeText(getApplicationContext(), "Current room set to " + roomNumber.getText(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
