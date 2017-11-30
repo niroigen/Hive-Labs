@@ -20,7 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-public class Room {
+public class Room implements Comparable<Room>{
 
     // Storing the list of different time slots for a certain room
     private ArrayList<String> TimeList = new ArrayList<>();
@@ -267,14 +267,14 @@ public class Room {
         }
     }
 
-//    static void SortRooms() {
-//        Collections.sort(MainActivity.Rooms);
-//    }
-//
-//    @Override
-//    public int compareTo(@NonNull Room room) {
-//            int compareTime = room.getNextTime();
-//            return compareTime - this.getNextTime();
-//    }
+    static void SortRooms(ArrayList<Room> rooms) {
+        Collections.sort(rooms);
+    }
+
+    @Override
+    public int compareTo(@NonNull Room room) {
+            int compareTime = room.getNextTime();
+            return compareTime - this.getNextTime();
+    }
 }
 

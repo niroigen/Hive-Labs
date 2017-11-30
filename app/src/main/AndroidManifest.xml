@@ -28,7 +28,7 @@
         android:allowBackup="false"
         android:icon="@drawable/hive_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/hive_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
         <meta-data
@@ -72,10 +72,11 @@
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
 
+        <activity android:name=".IntroActivity"
+            android:label="@string/app_intro" />
         <activity android:name=".MapsOverlayActivity"/>
         <activity android:name=".MapsActivity"/>
         <service android:name=".ScheduledService"/>
-        <service android:name=".SingleSectionHoverMenuService"/>
     </application>
 
 </manifest>

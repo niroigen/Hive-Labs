@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -62,6 +64,7 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
+import static com.example.niroigensuntharam.elec390application.IntroActivity.MY_PREFS_NAME;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -82,13 +85,12 @@ public class MainActivity extends AppCompatActivity{
     // Ex: Capacity, Courses, and Time Slots
     static ArrayList<Room> Rooms = new ArrayList<>();
 
-    private final int CODE_PERMISSIONS = 0;
-
     private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
 
     private boolean mPermissionsRequested = false;
     static ViewPager viewPager;
     SwipeRefreshLayout swipeRefreshLayout;
+    private final int CODE_PERMISSIONS = 0;
 
     static IALocationManager mIaLocationManager;
 
@@ -162,6 +164,33 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        boolean doneTutorial = prefs.getBoolean("doneTutorial", false);
+
+        if (!doneTutorial) {
+            startActivity(new Intent(MainActivity.this, IntroActivity.class));
+            finish();
+        }
+
+        boolean doneRequests = prefs.getBoolean("requestAsked", false);
+        if (!doneRequests){
+            String[] neededPermissions = {
+                    CHANGE_WIFI_STATE,
+                    ACCESS_WIFI_STATE,
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_COARSE_LOCATION
+            };
+            ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
+
+            // Request GPS locations
+            if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+
+        dialog = new SpotsDialog(this);
+        dialog.show();
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         setContentView(R.layout.activity_main);
@@ -170,18 +199,6 @@ public class MainActivity extends AppCompatActivity{
             builderDialog(MainActivity.this).show();
         else
             setContentView(R.layout.activity_main);
-
-
-        dialog = new SpotsDialog(this);
-        dialog.show();
-
-        String[] neededPermissions = {
-                CHANGE_WIFI_STATE,
-                ACCESS_WIFI_STATE,
-                ACCESS_FINE_LOCATION,
-                ACCESS_COARSE_LOCATION
-        };
-        ActivityCompat.requestPermissions( this, neededPermissions, CODE_PERMISSIONS );
 
         Initialization();
 
@@ -239,7 +256,8 @@ public class MainActivity extends AppCompatActivity{
                     AllRooms.addAll(Rooms);
 
 
-                    showSearchPrompt();
+
+//                    showSearchPrompt();
                 }
             }
 
@@ -299,13 +317,6 @@ public class MainActivity extends AppCompatActivity{
         });
 
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        //Handle if any of the permissions are denied, in grantResults
     }
 
     @Override
@@ -378,26 +389,20 @@ public class MainActivity extends AppCompatActivity{
         ActionBar bar = getSupportActionBar();
         bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
 
-        Intent stopHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
-        stopService(stopHoverIntent);
-
-        // On Android M and above we need to ask the user for permission to display the Hover
-        // menu within the "alert window" layer.  Use OverlayPermission to check for the permission
-        // and to request it.
-        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
-            @SuppressWarnings("NewApi")
-            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
-            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
-        }
+//        // On Android M and above we need to ask the user for permission to display the Hover
+//        // menu within the "alert window" layer.  Use OverlayPermission to check for the permission
+//        // and to request it.
+//        if (!mPermissionsRequested && !OverlayPermission.hasRuntimePermissionToDrawOverlay(this)) {
+//            @SuppressWarnings("NewApi")
+//            Intent myIntent = OverlayPermission.createIntentToRequestOverlayPermission(this);
+//            startActivityForResult(myIntent, REQUEST_CODE_HOVER_PERMISSION);
+//        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_CODE_HOVER_PERMISSION == requestCode) {
-            mPermissionsRequested = true;
-        } else {
             super.onActivityResult(requestCode, resultCode, data);
-        }
+
     }
 
     @Override
@@ -405,23 +410,6 @@ public class MainActivity extends AppCompatActivity{
             super.onPause();
         mIaLocationManager.requestLocationUpdates(IALocationRequest.create(),
                 mIALocationListener);
-
-        if (isApplicationSentToBackground(this)){
-            Intent startHoverIntent = new Intent(MainActivity.this, SingleSectionHoverMenuService.class);
-            startService(startHoverIntent);
-        }
-    }
-
-    public static boolean isApplicationSentToBackground(final Context context) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-        if (!tasks.isEmpty()) {
-            ComponentName topActivity = tasks.get(0).topActivity;
-            if (!topActivity.getPackageName().equals(context.getPackageName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void Initialization()

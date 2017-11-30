@@ -150,22 +150,4 @@ public class LabDetail extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Intent stopHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
-        stopService(stopHoverIntent);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (MainActivity.isApplicationSentToBackground(this)){
-            Intent startHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
-            startService(startHoverIntent);
-        }
-    }
 }

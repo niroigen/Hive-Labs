@@ -120,6 +120,8 @@ public class RoomFragment extends Fragment {
                 break;
         }
 
+        Room.SortRooms(rooms);
+
         RoomsAdapter adapter = new RoomsAdapter(getActivity(), rooms);
         recyclerView.setAdapter(adapter);// set adapter on recyclerview
     }

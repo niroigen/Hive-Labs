@@ -5,4 +5,5 @@
     <string name="search_prompt_title">Search Applications</string>
     <string name="button_close">Close</string>
     <string name="search_prompt_description">Tap on icon to search for an application that can be seen in a lab room</string>
+    <string name="app_intro">Welcome to H.I.V.E Labs</string>
 </resources>

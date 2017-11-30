@@ -34,11 +34,11 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         mainHolder.roomNumber.setText(mRooms.get(position).getRoomNumber());
 
-        if (mRooms.get(position).getVolume() < 5){
+        if (mRooms.get(position).getVolume() <= 9){
             mainHolder.volume.setText("Quiet");
             mainHolder.volume.setTextColor(Color.rgb(45,130,61));
         }
-        else if (mRooms.get(position).getVolume() > 5 && mRooms.get(position).getVolume() < 15){
+        else if (mRooms.get(position).getVolume() > 10 && mRooms.get(position).getVolume() < 50){
             mainHolder.volume.setText("Moderate");
             mainHolder.volume.setTextColor(Color.rgb(181,112,23));
 
@@ -53,7 +53,19 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
             mainHolder.nextClass.setText("No classes for the rest of the day!");
             mainHolder.cardView.setCardBackgroundColor(Color.rgb(147, 204, 57));
         } else if (mRooms.get(position).getNextClass() != null) {
-            mainHolder.nextClass.setText("Next class: " + mRooms.get(position).getNextClass() + "\n@\t" + mRooms.get(position).getNextTime());
+            String nextTimeHour = "";
+            String nextTimeMinute = "";
+
+            if (mRooms.get(position).getNextTime() >= 1000) {
+                nextTimeHour = String.valueOf(mRooms.get(position).getNextTime()).substring(0, 2);
+                nextTimeMinute = String.valueOf(mRooms.get(position).getNextTime()).substring(2, 4);
+            }
+            else{
+                nextTimeHour = String.valueOf(mRooms.get(position).getNextTime()).substring(0, 1);
+                nextTimeMinute = String.valueOf(mRooms.get(position).getNextTime()).substring(1, 3);
+            }
+
+            mainHolder.nextClass.setText("Next class: " + mRooms.get(position).getNextClass() + "\n@\t" + nextTimeHour + ":" + nextTimeMinute);
             mainHolder.cardView.setCardBackgroundColor(Color.rgb(216, 224, 98));
         } else if (mRooms.get(position).getCurrentClass() != null) {
             mainHolder.nextClass.setText("Current Class: " + mRooms.get(position).getCurrentClass());

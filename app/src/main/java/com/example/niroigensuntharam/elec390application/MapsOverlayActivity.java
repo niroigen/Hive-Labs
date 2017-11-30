@@ -2,6 +2,8 @@ package com.example.niroigensuntharam.elec390application;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -30,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.internal.IPolylineDelegate;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -46,20 +50,23 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
+import java.util.Map;
+
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.example.niroigensuntharam.elec390application.IntroActivity.MY_PREFS_NAME;
 
 /**
  * Created by abdullahalsaeed on 2017-11-26.
  */
 
 public class MapsOverlayActivity extends FragmentActivity implements LocationListener {
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = "IndoorAtlasExample";
 
 
     /* used to decide when bitmap should be downscaled */
     private static final int MAX_DIMENSION = 2048;
 
+    private static Polyline polyline;
     private static double latitude;
     private static String room;
     private static double longitude;
@@ -101,10 +108,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
         this.center = center;
 
-        //FindTwoClosestCorners();
-
-
-
+        FindTwoClosestCorners();
 
 //        if (line == null){
 //        // ... get a map.
@@ -200,7 +204,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSION_ACCESS_FINE_LOCATION: {
+            case 1: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startListeningPlatformLocations();
@@ -255,11 +259,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         // instantiate IALocationManager and IAResourceManager
         mIALocationManager = IALocationManager.create(this);
         mResourceManager = IAResourceManager.create(this);
-
-        // Request GPS locations
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_ACCESS_FINE_LOCATION);
-        }
 
         startListeningPlatformLocations();
     }
@@ -484,7 +483,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
         LatLng corner1 = Corners[0];
         LatLng corner2 = Corners[0];
-        LatLng corner3 = Corners[0];
+        LatLng corner3;
         double min = 1000;
 
         for (int i = 0; i < 4; i++){
@@ -497,8 +496,8 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
         double d1;
         double d2;
-        double dest_lat = 45.49730729;
-        double dest_lon = -73.57848912;
+        double dest_lat = latitude;
+        double dest_lon = -longitude;
 
         d1 = Math.sqrt(Math.pow(corner1.latitude - dest_lat,2) + ((Math.pow(corner1.longitude - dest_lon,2))));
         d2 = Math.sqrt(Math.pow(corner2.latitude - dest_lat,2) + ((Math.pow(corner2.longitude - dest_lon,2))));
@@ -509,20 +508,18 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             corner3 = Corners[3];
 
         LatLng dhsg=new  LatLng(latitude, longitude);
-// Drawing path between coordinates
-        mMap.addPolyline(new PolylineOptions().add(
 
+        if (polyline != null)
+            polyline.remove();
 
+        polyline = mMap.addPolyline(new PolylineOptions().add(
                 new LatLng(center.latitude, center.longitude),
                 new LatLng(corner1.latitude, corner1.longitude),
                 new LatLng(corner3.latitude, corner3.longitude),
                 dhsg
-
                 )
                         .width(20)
                         .color(Color.BLUE)
-
-
         );
 
         String x = "";
@@ -532,6 +529,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     {
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Room: " + room));
 
+        LatLng coordinate = new LatLng(latitude, longitude);
+        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 19);
+        mMap.animateCamera(yourLocation);
 
         // user 45.49701344, -73.57896275
         // dest 45.49739941, -73.57863262
