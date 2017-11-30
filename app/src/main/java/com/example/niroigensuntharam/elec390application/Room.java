@@ -48,7 +48,7 @@ public class Room {
 
     private long Volume = -1;
 
-    private int amount = -1;
+    private int amount = 0;
 
     public int getAmount() {
         return amount;

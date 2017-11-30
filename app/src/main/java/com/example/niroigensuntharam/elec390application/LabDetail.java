@@ -49,7 +49,12 @@ public class LabDetail extends AppCompatActivity {
                 intent.putExtra("lat", lat);
                 intent.putExtra("lon", lon);
                 intent.putExtra("room", room);
-                startActivity(intent);
+                try {
+                    startActivity(intent);
+                }
+                catch (Exception ex){
+                    ex.getMessage();
+                }
             }
         });
 
@@ -136,7 +141,12 @@ public class LabDetail extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
                 intent.putExtra("roomNumber", individualLab.getRoomNumber());
-                startActivity(intent);
+                try {
+                    startActivity(intent);
+                }
+                catch(Exception ex){
+                    ex.getMessage();
+                }
             }
         });
     }

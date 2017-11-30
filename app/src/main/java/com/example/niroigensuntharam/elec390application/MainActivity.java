@@ -16,8 +16,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +40,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.internal.bind.ArrayTypeAdapter;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity{
     private static final int REQUEST_CODE_HOVER_PERMISSION = 1000;
 
     private boolean mPermissionsRequested = false;
-    PagerAdapter pagerAdapter;
+    static ViewPager viewPager;
 
     static IALocationManager mIaLocationManager;
 
@@ -111,9 +112,7 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
-    public static RoomsAdapter mAdapter;
-    private List<Room> mRooms;
-    private RecyclerView mRecyclerView;
+    public static ViewPagerAdapter adapter;
 
     private IARegion.Listener mRegionListener = new IARegion.Listener() {
 
@@ -160,6 +159,8 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         setContentView(R.layout.activity_main);
 
@@ -223,45 +224,17 @@ public class MainActivity extends AppCompatActivity{
 
                     Rooms = rooms;
 
-                    mAdapter.add(rooms);
-                    mAdapter.notifyDataSetChanged();
-
                     for (Room room: Rooms) {
                         Room.VerifyIfAvalaible(room);
                     }
 
-//                    ArrayList<Room> _rooms = new ArrayList<>();
-//
-//                    Rooms.clear();
-//
-//                    Rooms.addAll(rooms);
-//
-//                    for(Room room: Rooms){
-//                        Room.VerifyIfAvalaible(room);
-//                        if (room.getIsAvailable() && room.getNextClass() == null){
-//                            _rooms.add(room);
-//                        }
-//                    }
-//
-                    Room.EarliestAvailableTime();
-//
-//                    AllRooms.addAll(Rooms);
-//
-//                    areRoomsInitialized = true;
-//
-//                    dialog.dismiss();
-//
-//                    roomsView = findViewById(R.id.rooms);
-//
-//                    mAdapter = new RoomsAdapter(getApplicationContext(), TIME_COMPARATOR);
-//
-//                    roomsView.setAdapter(adapter);
-//
-//                    roomsView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-//
-//                    adapter.notifyDataSetChanged();
 
-//                    pagerAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+
+                    Room.EarliestAvailableTime();
+
+                    AllRooms.addAll(Rooms);
+
 
                     showSearchPrompt();
                 }
@@ -353,7 +326,6 @@ public class MainActivity extends AppCompatActivity{
                     }
                 }
 
-                mAdapter.changeImage(Rooms.indexOf(room));
             }
 
             @Override
@@ -449,113 +421,43 @@ public class MainActivity extends AppCompatActivity{
         return false;
     }
 
-    // Will refresh to show the rooms the user can currently go to
-    public static void RefreshRooms(Context context) {
-        // If after the user refreshes, and there is a change in the date
-        // all the rooms will be initialized again
-
-        dateChanged = true;
-
-        if (dateChanged ||
-                (earliestTime != null && Integer.parseInt(earliestTime) < Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
-
-            Rooms.clear();
-
-            timeString = new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date());
-
-            GetRoomInfoAsync getRoomInfoAsync = new GetRoomInfoAsync(context);
-
-            getRoomInfoAsync.execute(new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date()));
-
-            dateChanged = false;
-        }
-        else
-        {
-            BlankFragment.swipeRefreshLayout.setRefreshing(false);
-        }
-    }
-
     private void Initialization()
     {
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), MainActivity.this);
-        viewPager.setAdapter(pagerAdapter);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                switch (position){
-                    case 0: {
-                        ArrayList<Room> rooms = new ArrayList<>();
-
-                        for (Room room: Rooms){
-                            if (room.getIsAvailable()){
-                                rooms.add(room);
-                            }
-                        }
-
-                        mAdapter.replaceAll(rooms);
-
-                        mAdapter.notifyDataSetChanged();
-                    }
-                        break;
-                    case 1: {
-                        ArrayList<Room> rooms = new ArrayList<>();
-
-                        for (Room room: Rooms) {
-                            if (room.getIsAvailable() && room.getNextClass() != null) {
-                                rooms.add(room);
-                            }
-                        }
-
-                        mAdapter.replaceAll(rooms);
-
-                        mAdapter.notifyDataSetChanged();
-                    }
-                        break;
-                    case 2: {
-                        ArrayList<Room> rooms = new ArrayList<>();
-
-                        for (Room room: Rooms){
-                            if (!room.getIsAvailable()){
-                                rooms.add(room);
-                            }
-                        }
-
-                        mAdapter.replaceAll(rooms);
-
-                        mAdapter.notifyDataSetChanged();
-                    }
-                        break;
-                }
-
-                RoomsAdapter.position = position;
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager();
 
         // Give the
         // TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
-        // Iterate over all tabs and set the custom view
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            TabLayout.Tab tab = tabLayout.getTabAt(i);
-            tab.setCustomView(pagerAdapter.getTabView(i));
-        }
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());//setting current selected item over viewpager
+                switch (tab.getPosition()) {
+                    case 0:
+                        Log.e("TAG","TAB1");
+                        break;
+                    case 1:
+                        Log.e("TAG","TAB2");
+                        break;
+                    case 2:
+                        Log.e("TAG","TAB3");
+                        break;
+                }
+            }
 
-        viewPager.setOffscreenPageLimit(3);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         // Initialize contacts
         // Attach the adapter to the recyclerview to populate items
@@ -635,6 +537,8 @@ public class MainActivity extends AppCompatActivity{
             Rooms.clear();
             Rooms.addAll(AllRooms);
         }
+
+        adapter.notifyDataSetChanged();
     }
 
     public void showSearchPrompt()
@@ -648,44 +552,72 @@ public class MainActivity extends AppCompatActivity{
                 .show();
     }
 
-    class PagerAdapter extends FragmentPagerAdapter {
+        //Setting View Pager
+    private void setupViewPager() {
 
-        String tabTitles[] = new String[] { "Available", "Upcoming", "In Progress" };
-        Context context;
+            RoomFragment roomFragment1 = new RoomFragment();
 
-        PagerAdapter(FragmentManager fm, Context context) {
-            super(fm);
-            this.context = context;
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("Type","Available");
+
+            roomFragment1.setArguments(bundle1);
+
+            RoomFragment roomFragment2 = new RoomFragment();
+
+            Bundle bundle2 = new Bundle();
+            bundle2.putString("Type","Upcoming");
+
+            roomFragment2.setArguments(bundle2);
+
+            RoomFragment roomFragment3 = new RoomFragment();
+
+            Bundle bundle3 = new Bundle();
+            bundle3.putString("Type","In Progress");
+
+            roomFragment3.setArguments(bundle3);
+
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            adapter.addFrag(roomFragment1, "Available");
+            adapter.addFrag(roomFragment2, "Upcoming");
+            adapter.addFrag(roomFragment3, "In Progress");
+            viewPager.setAdapter(adapter);
+        }
+    }
+
+    //View Pager fragments setting adapter class
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();//fragment arraylist
+        private final List<String> mFragmentTitleList = new ArrayList<>();//title arraylist
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public int getItemPosition(Object object){
+            return PagerAdapter.POSITION_NONE;
+        }
+
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return tabTitles.length;
+            return mFragmentList.size();
         }
 
-        @Override
-        public Fragment getItem(int position) {
 
-            Bundle args = new Bundle();
-            args.putInt("position", position);
-
-            BlankFragment blankFragment = new BlankFragment();
-            blankFragment.setArguments(args);
-
-            return blankFragment;
+        //adding fragments and title method
+        public void addFrag(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            // Generate title based on item position
-            return tabTitles[position];
-        }
-
-        public View getTabView(int position) {
-            View tab = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
-            TextView tv = (TextView) tab.findViewById(R.id.custom_text);
-            tv.setText(tabTitles[position]);
-            return tab;
+            return mFragmentTitleList.get(position);
         }
     }
-}

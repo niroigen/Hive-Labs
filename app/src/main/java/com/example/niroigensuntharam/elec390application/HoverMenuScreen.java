@@ -59,7 +59,7 @@ public class HoverMenuScreen implements Content {
                 }
             }
 
-            RoomsAdapter customAdapter = new RoomsAdapter(mContext, MainActivity.TIME_COMPARATOR);
+            RoomsAdapter customAdapter = new RoomsAdapter(mContext, MainActivity.Rooms);
 
             recyclerView.setAdapter(customAdapter);
             recyclerView.setForegroundGravity(Gravity.CENTER);

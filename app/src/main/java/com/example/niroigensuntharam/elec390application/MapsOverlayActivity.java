@@ -122,8 +122,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     }
 
 
-
-
     private IALocationListener mListener = new IALocationListenerSupport() {
 
         /**
@@ -262,9 +260,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         }
 
         startListeningPlatformLocations();
-
-
-
 
 
 
@@ -564,7 +559,4 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
 
 
     }
-
-
-
 }

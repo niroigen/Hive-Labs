@@ -81,9 +81,6 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        if (BlankFragment.swipeRefreshLayout.isRefreshing())
-            BlankFragment.swipeRefreshLayout.setRefreshing(false);
-
         Toast.makeText(mContext, "Done", Toast.LENGTH_SHORT).show();
 
         Room.EarliestAvailableTime();
@@ -93,7 +90,6 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         saveDate();
 
         MainActivity.SetAllRooms(MainActivity.Rooms);
-        //MainActivity.currentRoom = MainActivity.RoomsNowAvailable.get(0);
     }
 
     @Override
