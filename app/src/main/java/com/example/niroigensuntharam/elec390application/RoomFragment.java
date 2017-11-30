@@ -21,7 +21,7 @@ import static com.example.niroigensuntharam.elec390application.MainActivity.earl
 
 public class RoomFragment extends Fragment {
     private View view;
-    static SwipeRefreshLayout swipeRefreshLayout;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public RoomFragment() {
     }
@@ -61,7 +61,7 @@ public class RoomFragment extends Fragment {
     }
 
     // Will refresh to show the rooms the user can currently go to
-    public static void RefreshRooms(Context context) {
+    public void RefreshRooms(Context context) {
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
 

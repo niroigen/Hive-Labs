@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean mPermissionsRequested = false;
     static ViewPager viewPager;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     static IALocationManager mIaLocationManager;
 
@@ -460,6 +461,8 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         // Initialize contacts
         // Attach the adapter to the recyclerview to populate items
