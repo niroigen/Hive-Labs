@@ -9,12 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,8 +44,14 @@ public class ContactsActivity extends AppCompatActivity {
     //array of hash to hold all contacts' name and phone number
     private ArrayList<HashMap<String,String>> contactData=new ArrayList<HashMap<String,String>>();
 
+
+    //list of contact names
+    final List<String> contacts = new ArrayList<>();
+
     //hold the default message
     private String message = "I am in room H-";
+
+    MaterialSearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +66,84 @@ public class ContactsActivity extends AppCompatActivity {
         this.lstNames = (ListView) findViewById(R.id.lstNames);
         getChoice = (Button) findViewById(R.id.getchoice);
 
+        searchView =(MaterialSearchView) findViewById(R.id.search_view);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
+        lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        lstNames.setAdapter(adapter);
+
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
+                lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                lstNames.setAdapter(adapter);
+            }
+        });
+
+
+
+
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText != null && !newText.isEmpty()){
+
+                    List<String> lstFound = new ArrayList<String>();
+                    List<String> tempContacts = new ArrayList<>();
+
+                    for (int i=0; i < contacts.size(); i++){
+                        tempContacts.add(contacts.get(i).toUpperCase());
+                    }
+
+                    for (int i=0; i < tempContacts.size(); i++){
+                        if (tempContacts.get(i).contains(newText.toUpperCase())){
+                            lstFound.add(contacts.get(i));
+                        }
+                    }
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, lstFound);
+                    lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    lstNames.setAdapter(adapter);
+                }
+
+                else{
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
+                    lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                    lstNames.setAdapter(adapter);
+                }
+
+                return true;
+            }
+        });
+
+
+
+
         // Read and show the contacts
         showContacts();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_contacts, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+        return true;
     }
 
     @Override
@@ -86,7 +171,7 @@ public class ContactsActivity extends AppCompatActivity {
         else {
             // Android version is lesser than 6.0 or the permission is already granted.
 
-            final List<String> contacts = new ArrayList<>();
+            //final List<String> contacts = new ArrayList<>();
             getContactNames();
 
             for (int i=0; i < contactData.size(); i++){
@@ -96,6 +181,7 @@ public class ContactsActivity extends AppCompatActivity {
                     Collections.sort(contacts); //sort contact names in alphabetic order
                 }
             }
+            
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
             lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
