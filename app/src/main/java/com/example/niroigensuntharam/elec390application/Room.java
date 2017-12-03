@@ -3,6 +3,8 @@ package com.example.niroigensuntharam.elec390application;
 import android.app.IntentService;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v7.util.SortedList;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -18,7 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-public class Room implements Comparable<Room> {
+public class Room implements Comparable<Room>{
 
     // Storing the list of different time slots for a certain room
     private ArrayList<String> TimeList = new ArrayList<>();
@@ -40,13 +42,13 @@ public class Room implements Comparable<Room> {
 
     private String currentClass;
 
-    private String Latitude;
+    private double latitude;
 
-    private String Longitude;
+    private double longitude;
 
     private long Volume = -1;
 
-    private int amount = -1;
+    private int amount = 0;
 
     public int getAmount() {
         return amount;
@@ -76,20 +78,20 @@ public class Room implements Comparable<Room> {
         Volume = volume;
     }
 
-    String getLatitude() {
-        return Latitude;
+    double getLatitude() {
+        return latitude;
     }
 
-    String getLongitude() {
-        return Longitude;
+    double getLongitude() {
+        return longitude;
     }
 
-    public void setLatitude(String latitude) {
-        Latitude = latitude;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public void setLongitude(String longitude) {
-        Longitude = longitude;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     boolean getIsAvailable() {return isAvailable;}
@@ -265,8 +267,8 @@ public class Room implements Comparable<Room> {
         }
     }
 
-    static void SortRooms() {
-        Collections.sort(MainActivity.Rooms);
+    static void SortRooms(ArrayList<Room> rooms) {
+        Collections.sort(rooms);
     }
 
     @Override

@@ -4,6 +4,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        mavenCentral()   // This repo should have the gradle plugin
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -15,9 +16,8 @@ buildscript {
 
 allprojects {
     repositories {
-            maven {
-                url "http://indooratlas-ltd.bintray.com/mvn-public"
-            }
+        maven { url "http://indooratlas-ltd.bintray.com/mvn-public" }
+        maven { url 'https://jitpack.io' }
         jcenter()
         google()
     }

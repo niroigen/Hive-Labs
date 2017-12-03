@@ -3,18 +3,17 @@ package com.example.niroigensuntharam.elec390application;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.SystemClock;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,8 +22,11 @@ import java.util.Locale;
 
 public class LabDetail extends AppCompatActivity {
 
+
+    double lat;
+    double lon;
+    String room;
     TextView roomNumber;
-    TextView lab_capacity;
     Button currentRoomButton;
     Button contactsButton;
     ArrayAdapter myCustomAdapter=null;
@@ -43,23 +45,38 @@ public class LabDetail extends AppCompatActivity {
         viewNavigationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), ImageViewActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(getBaseContext(), MapsOverlayActivity.class);
+                intent.putExtra("lat", lat);
+                intent.putExtra("lon", lon);
+                intent.putExtra("room", room);
+                try {
+                    startActivity(intent);
+                }
+                catch (Exception ex){
+                    ex.getMessage();
+                }
             }
         });
 
 
-        String _roomNumber = getIntent().getExtras().getString("room");
+        room = getIntent().getExtras().getString("room");
 
         ArrayList<String> ClassAndTime = new ArrayList<>();
 
         Room tempRoom = new Room();
 
         for (Room room: MainActivity.Rooms){
-            if (room.getRoomNumber().equals(_roomNumber)){
+            if (room.getRoomNumber().equals(this.room)){
                 tempRoom = room;
                 break;
             }
+        }
+
+        if (MainActivity.coordinates.containsKey(tempRoom.getRoomNumber())){
+            Coordinate co = MainActivity.coordinates.get(tempRoom.getRoomNumber());
+
+            lat = co.getLatitude();
+            lon = co.getLongitude();
         }
 
         final Room individualLab = tempRoom;
@@ -77,8 +94,6 @@ public class LabDetail extends AppCompatActivity {
 
         roomNumber = (TextView) findViewById(R.id.roomNumber);
         roomNumber.setText(individualLab.getRoomNumber());
-        lab_capacity = (TextView) findViewById(R.id.capacity);
-        lab_capacity.setText(getString(R.string.room_capacity, individualLab.getCapacity()));
         currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
         contactsButton = (Button) findViewById(R.id.contactsButton);
 
@@ -115,6 +130,8 @@ public class LabDetail extends AppCompatActivity {
                     mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
 
                     currentRoomButton.setEnabled(false);
+
+                    Toast.makeText(getApplicationContext(), "Current room set to " + roomNumber.getText(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -122,31 +139,15 @@ public class LabDetail extends AppCompatActivity {
         contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
-                intent.putExtra("roomNumber", individualLab.getRoomNumber());
-                startActivity(intent);
+                try {
+                    Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
+                    intent.putExtra("roomNumber", individualLab.getRoomNumber());
+                    startActivity(intent);
+                }
+                catch(Exception ex){
+                    ex.getMessage();
+                }
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Intent stopHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
-        stopService(stopHoverIntent);
-
-        ActionBar bar = getSupportActionBar();
-        bar.setBackgroundDrawable(new ColorDrawable(Color.rgb(147, 33, 56)));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (MainActivity.isApplicationSentToBackground(this)){
-            Intent startHoverIntent = new Intent(LabDetail.this, SingleSectionHoverMenuService.class);
-            startService(startHoverIntent);
-        }
     }
 }

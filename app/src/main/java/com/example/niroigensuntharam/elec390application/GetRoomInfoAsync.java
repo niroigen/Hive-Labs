@@ -1,6 +1,7 @@
 package com.example.niroigensuntharam.elec390application;
 
 import android.content.Context;
+import android.hardware.camera2.params.BlackLevelPattern;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -80,21 +81,15 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
 
-        if (MainActivity.swipeRefreshLayout.isRefreshing())
-            MainActivity.swipeRefreshLayout.setRefreshing(false);
-
         Toast.makeText(mContext, "Done", Toast.LENGTH_SHORT).show();
 
         Room.EarliestAvailableTime();
-
-        Room.SortRooms();
 
         saveRooms();
 
         saveDate();
 
         MainActivity.SetAllRooms(MainActivity.Rooms);
-        //MainActivity.currentRoom = MainActivity.RoomsNowAvailable.get(0);
     }
 
     @Override
@@ -104,29 +99,18 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
     private static void saveRooms() {
 
-        // Remove after being saving all the locations of each room
-        for (Room room: MainActivity.Rooms){
-            if (room.getRoomNumber().contains("819")){
-                room.setLatitude("45.4969376");
-                room.setLongitude("-73.5789478");
-            }
-            if (room.getRoomNumber().contains("821")){
-                room.setLatitude("45.4969595");
-                room.setLongitude("-73.5790202");
-            }
-            if (room.getRoomNumber().contains("807")){
-                room.setLatitude("45.4971524");
-                room.setLongitude("-73.5786222");
-            }
-        }
-
         Map<String, Room> rooms = new HashMap<>();
 
         for (Room room: MainActivity.Rooms){
             rooms.put(room.getRoomNumber(), room);
         }
 
-        MainActivity.mRoomRef.setValue(rooms);
+        try {
+            MainActivity.mRoomRef.setValue(rooms);
+        }
+        catch (Exception ex){
+            ex.getMessage();
+        }
     }
 
     private void saveDate() {

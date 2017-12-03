@@ -17,6 +17,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,10 +28,21 @@
         android:allowBackup="false"
         android:icon="@drawable/hive_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/hive_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
-
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAs05vqB6h0rMKPtT67TbDIUL6tMKLTrS8" />
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_KEY"
+            android:value="1b737f4d-378b-4866-8862-ec9c30350555" />
+        <meta-data
+            android:name="com.indooratlas.android.sdk.API_SECRET"
+            android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -51,28 +63,34 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
         <activity
             android:name=".ContactsActivity"
             android:label="@string/app_name"
             android:parentActivityName=".LabDetail"
             android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".LabDetail" />
+
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".LabDetail"/>
         </activity>
 
         <meta-data
             android:name="com.indooratlas.android.sdk.API_KEY"
-            android:value="cc44982e-2ec5-4302-a225-c598f92f12cd" />
+            android:value="1b737f4d-378b-4866-8862-ec9c30350555" />
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
-            android:value="rQ+1MDaHq5Ryhyni47fy9pV2CVZo/CfTQLV/YI82EHq3ah7ljOkt8xWTjfnoRiUKBw/zp2KZ872IrRrxLvkAuzE6i3oSdE09ynDDS2jHHAovnPbHzVbgs+sGmW2AtQ==" />
+            android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
 
-        <activity android:name=".NavigationActivity" />
-        <activity android:name=".ImageViewActivity"/>
-
+        <activity
+            android:name=".MapsOverlayActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".MapsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".IntroActivity"
+            android:label="@string/app_intro" />
         <service android:name=".ScheduledService"/>
-        <service android:name=".SingleSectionHoverMenuService"/>
     </application>
 
 </manifest>
