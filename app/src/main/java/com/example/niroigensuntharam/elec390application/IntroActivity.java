@@ -33,15 +33,6 @@ public class IntroActivity extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Note here that we DO NOT use setContentView();
-
-//        // Add your slide fragments here.
-//        // AppIntro will automatically generate the dots indicator and buttons.
-//        addSlide(firstFragment);
-//        addSlide(secondFragment);
-//        addSlide(thirdFragment);
-//        addSlide(fourthFragment);
-
         SliderPage applicationsInClass = new SliderPage();
 
         applicationsInClass.setTitle("Get Applications In Room");
@@ -101,6 +92,8 @@ public class IntroActivity extends AppIntro {
         editor.putBoolean("doneTutorial",true);
         editor.apply();
 
+        finish();
+
         startActivity(new Intent(this, MainActivity.class));
     }
 
@@ -113,6 +106,8 @@ public class IntroActivity extends AppIntro {
         editor.putBoolean("doneTutorial",true);
         editor.putBoolean("requestAsked", false);
         editor.apply();
+
+        finish();
 
         startActivity(new Intent(this, MainActivity.class));
     }

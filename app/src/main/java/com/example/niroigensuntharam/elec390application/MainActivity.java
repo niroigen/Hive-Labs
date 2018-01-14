@@ -242,14 +242,11 @@ public class MainActivity extends AppCompatActivity{
                         Room.VerifyIfAvalaible(room);
                     }
 
-
                     adapter.notifyDataSetChanged();
 
                     Room.EarliestAvailableTime();
 
                     AllRooms.addAll(Rooms);
-
-
 
 //                    showSearchPrompt();
                 }

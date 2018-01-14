@@ -11,13 +11,11 @@ import java.net.URL;
 public class MyRunnable implements Runnable{
     private final String url;
     private String RoomNumber;
-    private String Capacity;
     private String Date;
 
     MyRunnable(String url, String RoomNumber, String Capacity, String Date) {
         this.url = url;
         this.RoomNumber = RoomNumber;
-        this.Capacity = Capacity;
         this.Date = Date;
     }
 
@@ -31,7 +29,7 @@ public class MyRunnable implements Runnable{
             Document doc = Jsoup.connect(url).get();
 
             // Passing in the room number, its capacity and the date
-            Room room = new Room(RoomNumber, Capacity, Date, doc);
+            Room room = new Room(RoomNumber, Date, doc);
 
             // Verifying whether the room is currently available or not
             Room.VerifyIfAvalaible(room);

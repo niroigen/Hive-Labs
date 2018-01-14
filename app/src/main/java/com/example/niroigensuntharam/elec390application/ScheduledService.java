@@ -3,6 +3,7 @@ package com.example.niroigensuntharam.elec390application;
 import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,7 +12,7 @@ import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
-public class ScheduledService extends IntentService{
+public class ScheduledService extends IntentService {
 
     public ScheduledService() {
         super("My service");
@@ -22,9 +23,29 @@ public class ScheduledService extends IntentService{
         sendNotification();
     }
 
-    @TargetApi(21)
+    @TargetApi(26)
     public void sendNotification() {
         //Get an instance of NotificationManager//
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+// The id of the channel.
+        String id = "my_channel_01";
+// The user-visible name of the channel.
+        CharSequence name = getString(R.string.notification_title);
+// The user-visible description of the channel.
+        String description = getString(R.string.notification_desc);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+// Configure the notification channel.
+        mChannel.setDescription(description);
+        mChannel.enableLights(true);
+// Sets the notification light color for notifications posted to this
+// channel, if the device supports this feature.
+        mChannel.setLightColor(Color.RED);
+        mChannel.enableVibration(true);
+        mNotificationManager.createNotificationChannel(mChannel);
 
         Intent notificationIntent = new Intent(this.getApplicationContext(), MainActivity.class);
 
@@ -34,14 +55,12 @@ public class ScheduledService extends IntentService{
                 notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.getApplicationContext())
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.getApplicationContext(),id)
                 .setSmallIcon(R.drawable.desktop_icon)
                 .setContentTitle("Change Room")
                 .setContentText("Room in this lab soon")
                 .setContentIntent(contentIntent)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setVibrate(new long[] { 1000, 500, 1000, 500 })
-                .setLights(Color.MAGENTA, 1000, 1000)
                 .setVisibility(Notification.VISIBILITY_PUBLIC);
 
         NotificationCompat.InboxStyle inboxStyle =
@@ -60,9 +79,11 @@ public class ScheduledService extends IntentService{
         }
 
         mBuilder.setStyle(inboxStyle);
-
-        // Gets an instance of the NotificationManager service//
-        NotificationManager mNotificationManager = (NotificationManager) this.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        // Gets an instance of the NotificationManager service//
+//        NotificationManager mNotificationManager = (NotificationManager) this.getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
 
         //When you issue multiple notifications about the same type of event, it’s best practice for your app to try to update an existing notification with this new information, rather than immediately creating a new notification. If you want to update this notification at a later date, you need to assign it an ID. You can then use this ID whenever you issue a subsequent notification. If the previous notification is still visible, the system will update this existing notification, rather than create a new one. In this example, the notification’s ID is 001//
 

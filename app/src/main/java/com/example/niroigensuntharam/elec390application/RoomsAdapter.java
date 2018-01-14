@@ -34,20 +34,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
         mainHolder.roomNumber.setText(mRooms.get(position).getRoomNumber());
 
-        if (mRooms.get(position).getVolume() <= 9){
-            mainHolder.volume.setText("Quiet");
-            mainHolder.volume.setTextColor(Color.rgb(45,130,61));
-        }
-        else if (mRooms.get(position).getVolume() > 10 && mRooms.get(position).getVolume() < 50){
-            mainHolder.volume.setText("Moderate");
-            mainHolder.volume.setTextColor(Color.rgb(181,112,23));
-
-        }
-        else {
-            mainHolder.volume.setText("Loud");
-            mainHolder.volume.setTextColor(Color.rgb(122,4,4));
-        }
-
         if (mRooms.get(position).getNextClass() == null &&
                 mRooms.get(position).getCurrentClass() == null) {
             mainHolder.nextClass.setText("No classes for the rest of the day!");
@@ -128,8 +114,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                 return true;
             }
         });
-
-        mainHolder.amount.setText(mRooms.get(position).getAmount() + "/" + mRooms.get(position).getCapacity());
     }
 
     @Override
