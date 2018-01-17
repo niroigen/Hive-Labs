@@ -1,12 +1,7 @@
-package com.example.niroigensuntharam.elec390application;
-
-import android.graphics.Paint;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class MyRunnable implements Runnable{
     private final String url;

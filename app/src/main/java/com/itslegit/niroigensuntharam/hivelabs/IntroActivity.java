@@ -1,23 +1,15 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
-import android.*;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.ACCESS_WIFI_STATE;
-import static android.Manifest.permission.CHANGE_WIFI_STATE;
 
 /**
  * Created by niroigensuntharam on 2017-11-29.
@@ -41,7 +33,7 @@ public class IntroActivity extends AppIntro {
 
         SliderPage searchApplication = new SliderPage();
 
-        searchApplication.setTitle("Search For Application");
+        searchApplication.setTitle("Search For application");
         searchApplication.setDescription("If you want to use a specific software, by using H.I.V.E Labs you can search for that with ease!");
         searchApplication.setImageDrawable(R.drawable.search_image);
 

@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 /**
  * Created by niroigensuntharam on 2017-11-27.

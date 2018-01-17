@@ -1,20 +1,10 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
-import android.app.IntentService;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.v7.util.SortedList;
-import android.support.v7.widget.util.SortedListAdapterCallback;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,29 +13,29 @@ import org.jsoup.select.Elements;
 public class Room implements Comparable<Room>{
 
     // Storing the list of different time slots for a certain room
-    private ArrayList<String> TimeList = new ArrayList<>();
+    public ArrayList<String> timeList = new ArrayList<>();
     
     // Storing the list of classes for a certain room
-    private ArrayList<String> ClassList = new ArrayList<>();
+    public ArrayList<String> classList = new ArrayList<>();
 
-    private boolean isAvailable;
+    public boolean isAvailable;
 
     // The room number of the room
-    private String roomNumber;
+    public String roomNumber;
 
-    private String nextClass;
+    public String nextClass;
 
-    private int nextTime = 0;
+    public int nextTime = 0;
 
-    private String currentClass;
+    public String currentClass;
 
-    private double latitude;
+    public double latitude;
 
-    private double longitude;
+    public double longitude;
 
-    private long Volume = -1;
+    public long volume = -1;
 
-    private int amount = 0;
+    public int amount = 0;
 
     public int getAmount() {
         return amount;
@@ -59,27 +49,27 @@ public class Room implements Comparable<Room>{
         isAvailable = available;
     }
 
-    private boolean isImageChanged;
+    public boolean isImageChanged;
 
-    boolean isImageChanged() {
+    public boolean isImageChanged() {
         return isImageChanged;
     }
 
-    void setImageChanged(boolean imageChanged) {
+    public void setImageChanged(boolean imageChanged) {
         isImageChanged = imageChanged;
     }
 
-    long getVolume() {return Volume;}
+    public long getVolume() {return volume;}
 
-    void setVolume(long volume) {
-        Volume = volume;
+    public void setVolume(long volume) {
+        this.volume = volume;
     }
 
-    double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -91,37 +81,39 @@ public class Room implements Comparable<Room>{
         this.longitude = longitude;
     }
 
-    boolean getIsAvailable() {return isAvailable;}
+    public boolean getIsAvailable() {return isAvailable;}
 
-    void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}
+    public void setIsAvailable(boolean _isAvailable) {isAvailable = _isAvailable;}
 
-    ArrayList<String> getTimeList() {return TimeList;}
+    public ArrayList<String> getTimeList() {return timeList;}
 
-    ArrayList<String> getClassList() {
-        return ClassList;
+    public ArrayList<String> getClassList() {
+        return classList;
     }
 
-    String getRoomNumber() {
+    public String getRoomNumber() {
         return roomNumber;
     }
 
-    String getCurrentClass() {return currentClass;}
+    public String getCurrentClass() {return currentClass;}
 
-    String getNextClass() {return nextClass;}
+    public String getNextClass() {return nextClass;}
 
-    int getNextTime() {return nextTime;}
+    public int getNextTime() {return nextTime;}
 
-    void setNextClass(String next_class) {nextClass = next_class;}
+    public void setNextClass(String next_class) {nextClass = next_class;}
 
-    void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
+    public void setCurrentClass(String currentCourse) {currentClass = currentCourse;}
 
-    void setNextTime(int next_time) {nextTime = next_time;}
+    public void setNextTime(int next_time) {nextTime = next_time;}
 
-    void setRoomNumber(String room_Number) {roomNumber = room_Number;}
+    public void setRoomNumber(String room_Number) {roomNumber = room_Number;}
 
-    void setClassList(ArrayList<String> class_List) {ClassList = class_List;}
+    public void setClassList(ArrayList<String> class_List) {
+        classList = class_List;}
 
-    void setTimeList(ArrayList<String> timeList) {TimeList = timeList;}
+    public void setTimeList(ArrayList<String> timeList) {
+        this.timeList = timeList;}
 
     Room()
     {
@@ -150,11 +142,11 @@ public class Room implements Comparable<Room>{
 
                 String temp = event.childNode(7).toString().split("\n")[1];
 
-                TimeList.add(temp);
+                timeList.add(temp);
 
                 temp = element.childNode(1).toString().split(";")[1];
 
-                ClassList.add(temp);
+                classList.add(temp);
             }
         }
         catch (Exception ex)
@@ -167,7 +159,7 @@ public class Room implements Comparable<Room>{
     {
         for (int i = 0; i < MainActivity.RoomsNowAvailable.size(); i++) {
 
-            if (MainActivity.RoomsNowAvailable.get(i).TimeList.size() > 0) {
+            if (MainActivity.RoomsNowAvailable.get(i).timeList.size() > 0) {
 
                 String nowTime = MainActivity.timeString;// SimpleDateFormat("HHmm").format(new Date());
 
@@ -197,11 +189,11 @@ public class Room implements Comparable<Room>{
 
         boolean isNextClass = false;
 
-        for (int i = 0; i < room.TimeList.size(); i++)
+        for (int i = 0; i < room.timeList.size(); i++)
         {
             // Getting the time of a certain course
             // Ex: 12:45 - 13:55
-            String[] time = room.TimeList.get(i).split("-");
+            String[] time = room.timeList.get(i).split("-");
 
             // Retrieving the start time
             // Ex: 12:45

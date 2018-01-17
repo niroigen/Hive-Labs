@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;

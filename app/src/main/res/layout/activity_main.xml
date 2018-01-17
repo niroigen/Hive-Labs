@@ -5,7 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.niroigensuntharam.elec390application.MainActivity">
+    tools:context="com.itslegit.niroigensuntharam.hivelabs.MainActivity">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"

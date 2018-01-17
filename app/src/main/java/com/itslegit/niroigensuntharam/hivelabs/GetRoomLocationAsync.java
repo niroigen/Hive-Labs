@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import java.util.List;
 import android.content.Context;
@@ -126,7 +126,7 @@ public class GetApplicationInfoAsync extends AsyncTask<Void, Void, Void> {
 
                 String[] rooms = cols.select("td").get(1).text().split(",");
 
-                Application application = new Application();
+                application application = new application();
 
                 application.setApplication(applicationName);
 
@@ -156,7 +156,7 @@ public class GetApplicationInfoAsync extends AsyncTask<Void, Void, Void> {
 
     private void saveApplications() {
 
-        List<Application> apps = MainActivity.Applications;
+        List<application> apps = MainActivity.Applications;
 
         MainActivity.mAppRef.setValue(apps);
     }

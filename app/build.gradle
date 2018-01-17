@@ -1,14 +1,23 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'itslegit'
+            keyPassword '123456'
+            storePassword 'M@thba11'
+            storeFile file('/Users/niroigensuntharam/Desktop/hivelabs_keystore')
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
     defaultConfig {
-        applicationId "com.example.niroigensuntharam.elec390application"
+        applicationId "com.itslegit.niroigensuntharam.hivelabs"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -16,11 +25,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+            signingConfig signingConfigs.config
         }
     }
 }
 
 dependencies {
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
+    compile 'com.google.firebase:firebase-core:11.8.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -29,13 +44,13 @@ dependencies {
     compile 'io.mattcarroll.hover:hover:0.9.8'
     compile 'uk.co.samuelwall:material-tap-target-prompt:2.4.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.8.0'
-    compile 'com.google.firebase:firebase-database:9.0.0'
+    compile 'com.google.firebase:firebase-database:11.8.0'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.github.d-max:spots-dialog:0.7@aar'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-location:9.0.0'
-    compile 'com.google.android.gms:play-services-maps:9.0.0'
+    compile 'com.google.android.gms:play-services-location:11.8.0'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
     compile files('libs/jsoup-1.10.3.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:cardview-v7:26.1.0'

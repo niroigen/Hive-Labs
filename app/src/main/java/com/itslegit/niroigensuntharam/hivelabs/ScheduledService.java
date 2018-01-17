@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.annotation.TargetApi;
 import android.app.IntentService;
@@ -9,7 +9,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 public class ScheduledService extends IntentService {
