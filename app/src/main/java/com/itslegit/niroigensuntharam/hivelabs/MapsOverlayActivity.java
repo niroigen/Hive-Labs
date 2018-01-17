@@ -451,11 +451,9 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
+                    setUpMap();
                 }
             });
-            if (mMap != null) {
-                setUpMap();
-            }
         }
     }
 
@@ -525,28 +523,5 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         LatLng coordinate = new LatLng(latitude, longitude);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 19);
         mMap.animateCamera(yourLocation);
-
-        // user 45.49701344, -73.57896275
-        // dest 45.49739941, -73.57863262
-
-
-
-//
-//
-//        LatLng dhsg=new  LatLng(latitude, longitude);
-//// Drawing path between coordinates
-
-
-
-
-
-//        // ... get a map.
-//        // Add a thin red line from London to New York.
-//        Polyline line = mMap.addPolyline(new PolylineOptions()
-//                .add(new LatLng(latitude, longitude), new LatLng(40.7, -74.0))
-//                .width(5)
-//                .color(Color.RED));
-
-
     }
 }
