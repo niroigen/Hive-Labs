@@ -1,9 +1,7 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,15 +11,15 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,8 +30,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.internal.IPolylineDelegate;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -50,11 +46,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
-import java.util.Map;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static com.example.niroigensuntharam.elec390application.IntroActivity.MY_PREFS_NAME;
-
 /**
  * Created by abdullahalsaeed on 2017-11-26.
  */
@@ -66,6 +57,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     /* used to decide when bitmap should be downscaled */
     private static final int MAX_DIMENSION = 2048;
 
+    private int REQUEST_PERMISSION_TO_USE_LOCATION;
     private static Polyline polyline;
     private static double latitude;
     private static String room;
@@ -156,9 +148,6 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
             }
         }
     };
-
-
-
 
     private IARegion.Listener mRegionListener = new IARegion.Listener() {
         @Override
@@ -268,35 +257,55 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         super.onResume();
         if (mMap == null) {
 
-
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    mMap = googleMap;
+                    int permissionCheck = checkPermission();
+                    mMap.setMyLocationEnabled(false);
 
-                return;
-            }
-            mMap.setMyLocationEnabled(false);
+                    // Setup long click to share the traceId
+                    mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                        @Override
+                        public void onMapLongClick(LatLng latLng) {
+                            ExampleUtils.shareText(MapsOverlayActivity.this,
+                                    mIALocationManager.getExtraInfo().traceId, "traceId");
+                        }
+                    });
+                }
+            });
         }
 
         // start receiving location updates & monitor region changes
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
+    }
 
-        // Setup long click to share the traceId
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                ExampleUtils.shareText(MapsOverlayActivity.this,
-                        mIALocationManager.getExtraInfo().traceId, "traceId");
+    private int checkPermission() {
+        return ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+    private void askPermission() {
+
+        // Here, thisActivity is the current activity
+        if ((ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) ) {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_PERMISSION_TO_USE_LOCATION);
+
+                // REQUEST_PERMISSION_TO_USE_LOCATION is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
             }
-        });
     }
 
     @Override
@@ -438,10 +447,13 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     private void setUpMapIfNeeded()
     {
         if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (mMap != null) {
-                setUpMap();
-            }
+            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    mMap = googleMap;
+                    setUpMap();
+                }
+            });
         }
     }
 
@@ -511,28 +523,5 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
         LatLng coordinate = new LatLng(latitude, longitude);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 19);
         mMap.animateCamera(yourLocation);
-
-        // user 45.49701344, -73.57896275
-        // dest 45.49739941, -73.57863262
-
-
-
-//
-//
-//        LatLng dhsg=new  LatLng(latitude, longitude);
-//// Drawing path between coordinates
-
-
-
-
-
-//        // ... get a map.
-//        // Add a thin red line from London to New York.
-//        Polyline line = mMap.addPolyline(new PolylineOptions()
-//                .add(new LatLng(latitude, longitude), new LatLng(40.7, -74.0))
-//                .width(5)
-//                .color(Color.RED));
-
-
     }
 }

@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.example.niroigensuntharam.elec390application.MainActivity.dateChanged;
-import static com.example.niroigensuntharam.elec390application.MainActivity.earliestTime;
+import static com.itslegit.niroigensuntharam.hivelabs.MainActivity.earliestTime;
 
 public class RoomFragment extends Fragment {
     private View view;
@@ -65,7 +64,7 @@ public class RoomFragment extends Fragment {
         // If after the user refreshes, and there is a change in the date
         // all the rooms will be initialized again
 
-        if (dateChanged ||
+        if (MainActivity.dateChanged ||
                 (earliestTime != null && Integer.parseInt(earliestTime) < Integer.parseInt(new SimpleDateFormat("HHmm", Locale.CANADA).format(new Date())))) {
 
             MainActivity.Rooms.clear();
@@ -76,7 +75,7 @@ public class RoomFragment extends Fragment {
 
             getRoomInfoAsync.execute(new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date()));
 
-            dateChanged = false;
+            MainActivity.dateChanged = false;
         }
 
         swipeRefreshLayout.setRefreshing(false);

@@ -1,13 +1,11 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.content.Context;
-import android.hardware.camera2.params.BlackLevelPattern;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 // The AsyncTask is used since the application is doing a web call

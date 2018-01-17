@@ -1,4 +1,4 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -33,20 +32,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         final RoomViewHolder mainHolder = (RoomViewHolder) holder;
 
         mainHolder.roomNumber.setText(mRooms.get(position).getRoomNumber());
-
-        if (mRooms.get(position).getVolume() <= 9){
-            mainHolder.volume.setText("Quiet");
-            mainHolder.volume.setTextColor(Color.rgb(45,130,61));
-        }
-        else if (mRooms.get(position).getVolume() > 10 && mRooms.get(position).getVolume() < 50){
-            mainHolder.volume.setText("Moderate");
-            mainHolder.volume.setTextColor(Color.rgb(181,112,23));
-
-        }
-        else {
-            mainHolder.volume.setText("Loud");
-            mainHolder.volume.setTextColor(Color.rgb(122,4,4));
-        }
 
         if (mRooms.get(position).getNextClass() == null &&
                 mRooms.get(position).getCurrentClass() == null) {
@@ -128,8 +113,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
                 return true;
             }
         });
-
-        mainHolder.amount.setText(mRooms.get(position).getAmount() + "/" + mRooms.get(position).getCapacity());
     }
 
     @Override

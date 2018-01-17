@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.niroigensuntharam.elec390application">
+    package="com.itslegit.niroigensuntharam.hivelabs">
 
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
@@ -44,7 +44,7 @@
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -54,25 +54,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LabDetail"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.LabDetail"
             android:label="@string/app_name"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.itslegit.niroigensuntharam.hivelabs.MainActivity"
             android:screenOrientation="portrait">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.itslegit.niroigensuntharam.hivelabs.MainActivity" />
         </activity>
 
         <activity
-            android:name=".ContactsActivity"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.ContactsActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".LabDetail"
+            android:parentActivityName="com.itslegit.niroigensuntharam.hivelabs.LabDetail"
             android:screenOrientation="portrait">
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".LabDetail"/>
+            android:value="com.itslegit.niroigensuntharam.hivelabs.LabDetail"/>
         </activity>
 
         <meta-data
@@ -83,14 +83,14 @@
             android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
 
         <activity
-            android:name=".MapsOverlayActivity"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.MapsOverlayActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".MapsActivity"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.MapsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".IntroActivity"
+        <activity android:name="com.itslegit.niroigensuntharam.hivelabs.IntroActivity"
             android:label="@string/app_intro" />
-        <service android:name=".ScheduledService"/>
+        <service android:name="com.itslegit.niroigensuntharam.hivelabs.ScheduledService"/>
     </application>
 
 </manifest>

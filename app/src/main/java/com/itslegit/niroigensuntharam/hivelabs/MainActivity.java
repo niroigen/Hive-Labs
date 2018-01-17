@@ -1,8 +1,6 @@
-package com.example.niroigensuntharam.elec390application;
+package com.itslegit.niroigensuntharam.hivelabs;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,16 +22,11 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-import io.mattcarroll.hover.overlay.OverlayPermission;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -57,14 +50,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import dmax.dialog.SpotsDialog;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
-import static com.example.niroigensuntharam.elec390application.IntroActivity.MY_PREFS_NAME;
+import static com.itslegit.niroigensuntharam.hivelabs.IntroActivity.MY_PREFS_NAME;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -141,23 +133,23 @@ public class MainActivity extends AppCompatActivity{
 
     // List of all available rooms that the user
     // can enter currently
-    static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
-    static Room currentRoom;
-    static ArrayList<Application> Applications = new ArrayList<>();
-    static Map<String, Coordinate> coordinates = new HashMap<String, Coordinate>();
-    static String earliestTime;
-    private static ArrayList<Room> AllRooms = new ArrayList<>();
-    private static boolean areRoomsInitialized = false;
-    private static boolean areApplicationsInitialized = false;
-    private static boolean areCoordinatesInitialized = false;
-    static boolean dateChanged = false;
+    public static ArrayList<Room> RoomsNowAvailable = new ArrayList<>();
+    public static Room currentRoom;
+    public static ArrayList<Application> Applications = new ArrayList<>();
+    public static Map<String, Coordinate> coordinates = new HashMap<String, Coordinate>();
+    public static String earliestTime;
+    public static ArrayList<Room> AllRooms = new ArrayList<>();
+    public static boolean areRoomsInitialized = false;
+    public static boolean areApplicationsInitialized = false;
+    public static boolean areCoordinatesInitialized = false;
+    public static boolean dateChanged = false;
 
-    static FirebaseDatabase database = FirebaseDatabase.getInstance();
-    static DatabaseReference mRootRef = database.getReference();
-    static DatabaseReference mRoomRef = mRootRef.child("rooms");
-    static DatabaseReference mAppRef = mRootRef.child("apps");
-    static DatabaseReference mDateRef = mRootRef.child("date");
-    static DatabaseReference mCoordRef = mRootRef.child("coordinates");
+    public static FirebaseDatabase database = FirebaseDatabase.getInstance();
+    public static DatabaseReference mRootRef = database.getReference();
+    public static DatabaseReference mRoomRef = mRootRef.child("rooms");
+    public static DatabaseReference mAppRef = mRootRef.child("apps");
+    public static DatabaseReference mDateRef = mRootRef.child("date");
+    public static DatabaseReference mCoordRef = mRootRef.child("coordinates");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,9 +195,15 @@ public class MainActivity extends AppCompatActivity{
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (!areApplicationsInitialized) {
-                    GenericTypeIndicator<ArrayList<Application>> apps = new GenericTypeIndicator<ArrayList<Application>>() {};
 
-                    ArrayList<Application> _apps = dataSnapshot.getValue(apps);
+                    Map<String, Application> apps = new HashMap<String, Application>();
+
+                    for (DataSnapshot jobSnapshot: dataSnapshot.getChildren()) {
+                        Application app = jobSnapshot.getValue(Application.class);
+                        apps.put(jobSnapshot.getKey(), app);
+                    }
+
+                    ArrayList<Application> _apps = new ArrayList<>(apps.values());
 
                     Applications.clear();
 
@@ -242,14 +240,11 @@ public class MainActivity extends AppCompatActivity{
                         Room.VerifyIfAvalaible(room);
                     }
 
-
                     adapter.notifyDataSetChanged();
 
                     Room.EarliestAvailableTime();
 
                     AllRooms.addAll(Rooms);
-
-
 
 //                    showSearchPrompt();
                 }
