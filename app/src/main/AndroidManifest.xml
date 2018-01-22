@@ -81,7 +81,10 @@
         <meta-data
             android:name="com.indooratlas.android.sdk.API_SECRET"
             android:value="wqYYBBR1pgvgIspCfu973w7XF7+hVPbYCTVm3bcCUimb8MYAcwg+wrvPWsiFq0EXECblLS5AsY9Y5J+F3kNt2nwflGBllAuafmBFYxHKEskuopNnacjO/2p2wuGSMQ==" />
-
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="d7d1b78bce93a0f0487076405224825c79b110bc"
+            />
         <activity
             android:name="com.itslegit.niroigensuntharam.hivelabs.MapsOverlayActivity"
             android:screenOrientation="portrait"/>

@@ -27,6 +27,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -154,6 +156,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         boolean doneTutorial = prefs.getBoolean("doneTutorial", false);
@@ -288,17 +291,13 @@ public class MainActivity extends AppCompatActivity{
             @Override
 
             public boolean onQueryTextSubmit(String s) {
-
                 VerifyQuery(s);
-
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-
                 VerifyQuery(s);
-
                 return false;
             }
         });
