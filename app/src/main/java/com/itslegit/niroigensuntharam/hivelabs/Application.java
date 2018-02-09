@@ -2,7 +2,7 @@ package com.itslegit.niroigensuntharam.hivelabs;
 
 import java.util.ArrayList;
 
-class Application {
+public class Application {
 
     public String application;
     public ArrayList<String> roomsToUse = new ArrayList<>();

@@ -1,45 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.itslegit.niroigensuntharam.hivelabs.ContactsActivity">
+<layout>
 
-    <ListView
-        android:id="@+id/lstNames"
-        android:layout_width="368dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/search_view"
-        app:layout_constraintBottom_toTopOf="@id/search_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/getchoice" />
-
-    <Button
-        android:id="@+id/getchoice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SEND"
-        app:layout_constraintBottom_toTopOf="@+id/lstNames"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.miguelcatalan.materialsearchview.MaterialSearchView
-        android:id="@+id/search_view"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:searchBackground="@color/black"
-        app:searchSuggestionIcon="@color/colorPrimary"
-        app:searchCloseIcon="@drawable/ic_action_navigation_close_inverted"
-        app:searchBackIcon="@drawable/ic_action_navigation_arrow_back_inverted"
-        app:searchSuggestionBackground="@drawable/ic_suggestion"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#FFFFFF"
-        />
+        android:layout_height="match_parent"
+        tools:context="com.itslegit.niroigensuntharam.hivelabs.ContactsActivity">
 
-</android.support.constraint.ConstraintLayout>
+        <ListView
+            android:id="@+id/lstNames"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="55dp"
+            android:layout_marginTop="50dp" />
+
+        <Button
+            android:id="@+id/getchoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top"
+            android:text="@string/send_button" />
+
+        <com.miguelcatalan.materialsearchview.MaterialSearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray" />
+    </FrameLayout>
+
+</layout>

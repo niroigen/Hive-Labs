@@ -2,6 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
+    dataBinding {
+        enabled = true
+    }
     signingConfigs {
         config {
             keyAlias 'itslegit'

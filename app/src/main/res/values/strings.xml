@@ -8,4 +8,5 @@
     <string name="app_intro">Welcome to H.I.V.E Labs</string>
     <string name="notification_title">Change Room</string>
     <string name="notification_desc">Room in this lab soon</string>
+    <string name="send_button">Send</string>
 </resources>
