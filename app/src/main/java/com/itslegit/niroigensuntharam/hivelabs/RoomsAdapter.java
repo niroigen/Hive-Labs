@@ -1,5 +1,6 @@
 package com.itslegit.niroigensuntharam.hivelabs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,6 +28,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         return (null != mRooms ? mRooms.size() : 0);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(RoomViewHolder holder, final int position) {
         final RoomViewHolder mainHolder = (RoomViewHolder) holder;
@@ -60,7 +62,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
         mainHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mContext.getApplicationContext(), LabDetail.class);
+                Intent intent = new Intent(mContext.getApplicationContext(), LabDetailActivity.class);
                 intent.putExtra("room", mRooms.get(position).getRoomNumber());
                 mContext.startActivity(intent);
             }

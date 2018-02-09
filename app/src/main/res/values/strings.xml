@@ -9,4 +9,8 @@
     <string name="notification_title">Change Room</string>
     <string name="notification_desc">Room in this lab soon</string>
     <string name="send_button">Send</string>
+    <string name="navigate_button">Navigate</string>
+    <string name="current_room">Current Room</string>
+    <string name="hive_up">Hive Up</string>
+    <string name="today_schedule">Today\'s Schedule</string>
 </resources>

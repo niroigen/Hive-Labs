@@ -28,7 +28,7 @@ public class RoomFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_blank, container, false);
+        view = inflater.inflate(R.layout.fragment_room, container, false);
 
         setRecyclerView(getArguments().getString("Type"));
 

@@ -224,7 +224,7 @@ public class MapsOverlayActivity extends FragmentActivity implements LocationLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.googlemap);
+            setContentView(R.layout.fragment_google_map);
 
             latitude = getIntent().getExtras().getDouble("lat");
             longitude = getIntent().getExtras().getDouble("lon");

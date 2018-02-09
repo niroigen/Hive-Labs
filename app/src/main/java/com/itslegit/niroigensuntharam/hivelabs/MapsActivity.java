@@ -35,7 +35,7 @@ public class MapsActivity extends FragmentActivity implements IALocationListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.googlemap);
+        setContentView(R.layout.fragment_google_map);
         mIALocationManager = IALocationManager.create(this);
 
         // optional setup of floor plan id

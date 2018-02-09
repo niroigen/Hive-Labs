@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.itslegit.niroigensuntharam.hivelabs.LabDetail"
+            android:name="com.itslegit.niroigensuntharam.hivelabs.LabDetailActivity"
             android:label="@string/app_name"
             android:parentActivityName="com.itslegit.niroigensuntharam.hivelabs.MainActivity"
             android:screenOrientation="portrait">
@@ -67,12 +67,12 @@
         <activity
             android:name="com.itslegit.niroigensuntharam.hivelabs.ContactsActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.itslegit.niroigensuntharam.hivelabs.LabDetail"
+            android:parentActivityName="com.itslegit.niroigensuntharam.hivelabs.LabDetailActivity"
             android:screenOrientation="portrait">
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.itslegit.niroigensuntharam.hivelabs.LabDetail"/>
+            android:value="com.itslegit.niroigensuntharam.hivelabs.LabDetailActivity"/>
         </activity>
 
         <meta-data

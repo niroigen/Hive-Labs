@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class LabDetail extends AppCompatActivity {
+public class LabDetailActivity extends AppCompatActivity {
 
 
     double lat;
@@ -38,7 +38,7 @@ public class LabDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lab_detail);
+        setContentView(R.layout.activity_lab_detail);
 
         Button viewNavigationButton = findViewById(R.id.navigateButton);
 
@@ -125,8 +125,8 @@ public class LabDetail extends AppCompatActivity {
                     long TimeLeft = MinutesStartTime - MinutesNowTime - 15;
 
                     mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    Intent i = new Intent(LabDetail.this, ScheduledService.class);
-                    pi = PendingIntent.getService(LabDetail.this, 0, i, 0);
+                    Intent i = new Intent(LabDetailActivity.this, ScheduledService.class);
+                    pi = PendingIntent.getService(LabDetailActivity.this, 0, i, 0);
                     mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
 
                     currentRoomButton.setEnabled(false);
@@ -140,7 +140,7 @@ public class LabDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Intent intent = new Intent(LabDetail.this, ContactsActivity.class);
+                    Intent intent = new Intent(LabDetailActivity.this, ContactsActivity.class);
                     intent.putExtra("roomNumber", individualLab.getRoomNumber());
                     startActivity(intent);
                 }
