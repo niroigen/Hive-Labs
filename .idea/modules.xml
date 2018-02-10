@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ELEC390Application.iml" filepath="$PROJECT_DIR$/ELEC390Application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Hive-Labs.iml" filepath="$PROJECT_DIR$/Hive-Labs.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Hive-Labs.iml" filepath="$PROJECT_DIR$/.idea/Hive-Labs.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

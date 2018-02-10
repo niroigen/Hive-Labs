@@ -13,4 +13,7 @@
     <string name="current_room">Current Room</string>
     <string name="hive_up">Hive Up</string>
     <string name="today_schedule">Today\'s Schedule</string>
+    <string name="current_class">Current Class: %1$s</string>
+    <string name="no_class">No classes for the rest of the day!</string>
+    <string name="next_class">Next: %1$s:%2$s</string>
 </resources>

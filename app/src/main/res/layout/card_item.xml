@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:layout_height="100dp"
-        card_view:elevation="30dp"
-        card_view:cardCornerRadius="10dp">
+        card_view:cardCornerRadius="20dp"
+        card_view:elevation="30dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/room_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:layout_gravity="center|top"
+                android:gravity="center"
+                android:textColor="@color/white"
                 android:textSize="20sp"
-                android:gravity="center">
-            </TextView>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/next_class"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold|italic"
-                android:layout_below="@+id/room_number"
-                android:textSize="18sp"/>
-        </RelativeLayout>
+                android:layout_gravity="center|bottom"
+                android:textSize="18sp"
+                android:textStyle="bold|italic" />
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
 </RelativeLayout>

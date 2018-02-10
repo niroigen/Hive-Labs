@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class ContactsActivity extends AppCompatActivity {
+public class ContactsActivity extends AppCompatActivity implements MaterialSearchView.OnQueryTextListener, MaterialSearchView.SearchViewListener, Button.OnClickListener {
 
     // Request code for READ_CONTACTS. It can be any number > 0.
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
@@ -36,6 +36,7 @@ public class ContactsActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_SEND_SMS = 99;
     //list of contact names
     final List<String> contacts = new ArrayList<>();
+
     //store the desired room number in order to SMS
     String roomNumber;
 
@@ -56,66 +57,14 @@ public class ContactsActivity extends AppCompatActivity {
 
         message = message + roomNumber;
 
-
-
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
         binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         binding.lstNames.setAdapter(adapter);
 
 
-        binding.searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
+        binding.searchView.setOnSearchViewListener(this);
 
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
-                binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                binding.lstNames.setAdapter(adapter);
-            }
-        });
-
-
-        binding.searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText != null && !newText.isEmpty()) {
-
-                    List<String> lstFound = new ArrayList<>();
-                    List<String> tempContacts = new ArrayList<>();
-
-                    for (int i = 0; i < contacts.size(); i++) {
-                        tempContacts.add(contacts.get(i).toUpperCase());
-                    }
-
-                    for (int i = 0; i < tempContacts.size(); i++) {
-                        if (tempContacts.get(i).contains(newText.toUpperCase())) {
-                            lstFound.add(contacts.get(i));
-                        }
-                    }
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, lstFound);
-                    binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                    binding.lstNames.setAdapter(adapter);
-                } else {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
-                    binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                    binding.lstNames.setAdapter(adapter);
-                }
-
-                return true;
-            }
-        });
-
+        binding.searchView.setOnQueryTextListener(this);
 
         // Read and show the contacts
         showContacts();
@@ -161,63 +110,11 @@ public class ContactsActivity extends AppCompatActivity {
                 }
             }
 
-
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
             binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             binding.lstNames.setAdapter(adapter);
 
-            binding.getchoice.setOnClickListener(new Button.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    //variable to hold the contact's phone number
-                    String phoneNumber;
-
-                    //List to hold contact names that were selected for SMS
-                    List<String> selected = new ArrayList<>();
-
-                    //temporary array of hash to hold the selected contacts' name and phone number for SMS
-                    ArrayList<HashMap<String, String>> selectedContacts = new ArrayList<>();
-
-                    int cntChoice = binding.lstNames.getCount();
-                    SparseBooleanArray sparseBooleanArray = binding.lstNames.getCheckedItemPositions();
-
-                    for (int i = 0; i < cntChoice; i++) {
-                        if (sparseBooleanArray.get(i)) {
-                            selected.add(binding.lstNames.getItemAtPosition(i).toString());
-                        }
-                    }
-
-                    //get the selected contact info and put in a separate array
-                    for (int i = 0; i < selected.size(); i++) {
-                        for (int j = 0; j < contactData.size(); j++) {
-                            if (selected.get(i).contentEquals(contactData.get(j).get("name"))) {
-                                selectedContacts.add(contactData.get(j));
-                            }
-                        }
-                    }
-
-                    SmsManager sms = SmsManager.getDefault();
-
-                    for (int i = 0; i < selectedContacts.size(); i++) {
-
-                        phoneNumber = selectedContacts.get(i).get("number");
-                        phoneNumber = phoneNumber.replace("(", "");
-                        phoneNumber = phoneNumber.replace(")", "");
-                        phoneNumber = phoneNumber.replace(" ", "");
-                        phoneNumber = phoneNumber.replace("-", "");
-
-                        try {
-                            sms.sendTextMessage(phoneNumber, null, message, null, null);
-                        } catch (Exception ignored) {
-                        }
-
-                        Toast.makeText(ContactsActivity.this, "Sent to " + selectedContacts.get(i).get("name"), Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            });
+            binding.getchoice.setOnClickListener(this);
         }
     }
 
@@ -274,5 +171,99 @@ public class ContactsActivity extends AppCompatActivity {
         }
 
         //return contactsData;
+    }
+
+    @Override
+    public void onSearchViewShown() {
+
+    }
+
+    @Override
+    public void onSearchViewClosed() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
+        binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        binding.lstNames.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        if (query != null && !query.isEmpty()) {
+
+            List<String> lstFound = new ArrayList<>();
+            List<String> tempContacts = new ArrayList<>();
+
+            for (int i = 0; i < contacts.size(); i++) {
+                tempContacts.add(contacts.get(i).toUpperCase());
+            }
+
+            for (int i = 0; i < tempContacts.size(); i++) {
+                if (tempContacts.get(i).contains(query.toUpperCase())) {
+                    lstFound.add(contacts.get(i));
+                }
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, lstFound);
+            binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            binding.lstNames.setAdapter(adapter);
+        } else {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
+            binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            binding.lstNames.setAdapter(adapter);
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        //variable to hold the contact's phone number
+        String phoneNumber;
+
+        //List to hold contact names that were selected for SMS
+        List<String> selected = new ArrayList<>();
+
+        //temporary array of hash to hold the selected contacts' name and phone number for SMS
+        ArrayList<HashMap<String, String>> selectedContacts = new ArrayList<>();
+
+        int cntChoice = binding.lstNames.getCount();
+        SparseBooleanArray sparseBooleanArray = binding.lstNames.getCheckedItemPositions();
+
+        for (int i = 0; i < cntChoice; i++) {
+            if (sparseBooleanArray.get(i)) {
+                selected.add(binding.lstNames.getItemAtPosition(i).toString());
+            }
+        }
+
+        //get the selected contact info and put in a separate array
+        for (int i = 0; i < selected.size(); i++) {
+            for (int j = 0; j < contactData.size(); j++) {
+                if (selected.get(i).contentEquals(contactData.get(j).get("name"))) {
+                    selectedContacts.add(contactData.get(j));
+                }
+            }
+        }
+
+        SmsManager sms = SmsManager.getDefault();
+
+        for (int i = 0; i < selectedContacts.size(); i++) {
+
+            phoneNumber = selectedContacts.get(i).get("number");
+            phoneNumber = phoneNumber.replace("(", "");
+            phoneNumber = phoneNumber.replace(")", "");
+            phoneNumber = phoneNumber.replace(" ", "");
+            phoneNumber = phoneNumber.replace("-", "");
+
+            try {
+                sms.sendTextMessage(phoneNumber, null, message, null, null);
+            } catch (Exception ignored) {
+            }
+
+            Toast.makeText(ContactsActivity.this, "Sent to " + selectedContacts.get(i).get("name"), Toast.LENGTH_SHORT).show();
+        }
     }
 }
