@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
-import com.itslegit.niroigensuntharam.hivelabs.database.FirebaseCommands;
+import com.itslegit.niroigensuntharam.hivelabs.helper.FirebaseHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +15,11 @@ import java.util.Map;
 public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     private Context mContext;
     private String Date;
-    private FirebaseCommands firebaseCommands;
+    private FirebaseHelper firebaseHelper;
 
     GetRoomInfoAsync(Context context) {
         this.mContext = context;
-        this.firebaseCommands = new FirebaseCommands(context);
+        this.firebaseHelper = new FirebaseHelper(context);
     }
 
     @Override
@@ -104,13 +104,13 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         }
 
         try {
-            firebaseCommands.setDatabaseValue(rooms, FirebaseCommands.FirebaseDataType.Room);
+            firebaseHelper.setDatabaseValue(rooms, FirebaseHelper.FirebaseDataType.Room);
         } catch (Exception ex) {
             ex.getMessage();
         }
     }
 
     private void saveDate() {
-        firebaseCommands.setDatabaseValue(Date, FirebaseCommands.FirebaseDataType.Date);
+        firebaseHelper.setDatabaseValue(Date, FirebaseHelper.FirebaseDataType.Date);
     }
 }

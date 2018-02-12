@@ -1,19 +1,5 @@
 package com.itslegit.niroigensuntharam.hivelabs;
 
-import android.content.Context;
-import android.os.AsyncTask;
-
-import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.MainPresenter;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.contract.MainPresenterContract;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.util.List;
-
 //public class GetApplicationInfoAsync extends AsyncTask<Void, Void, Void> {
 //    private Context mContext;
 //

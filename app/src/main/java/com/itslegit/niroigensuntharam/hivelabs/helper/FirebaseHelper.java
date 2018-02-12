@@ -1,4 +1,4 @@
-package com.itslegit.niroigensuntharam.hivelabs.database;
+package com.itslegit.niroigensuntharam.hivelabs.helper;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -31,7 +31,7 @@ import static com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity.da
  * Created by niroigensuntharam on 2018-02-11.
  */
 
-public class FirebaseCommands {
+public class FirebaseHelper {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference mRootRef = database.getReference();
@@ -41,7 +41,7 @@ public class FirebaseCommands {
     private DatabaseReference mCoordRef = mRootRef.child("coordinates");
     private Context context;
 
-    public FirebaseCommands(Context context) {
+    public FirebaseHelper(Context context) {
         this.context = context;
     }
 

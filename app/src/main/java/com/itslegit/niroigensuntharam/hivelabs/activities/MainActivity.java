@@ -35,9 +35,8 @@ import com.itslegit.niroigensuntharam.hivelabs.R;
 import com.itslegit.niroigensuntharam.hivelabs.Room;
 import com.itslegit.niroigensuntharam.hivelabs.RoomFragment;
 import com.itslegit.niroigensuntharam.hivelabs.ViewPagerAdapter;
-import com.itslegit.niroigensuntharam.hivelabs.database.FirebaseCommands;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.MainPresenter;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.contract.MainPresenterContract;
+import com.itslegit.niroigensuntharam.hivelabs.helper.FirebaseHelper;
+import com.itslegit.niroigensuntharam.hivelabs.helper.MainHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
 
-public class MainActivity extends AppCompatActivity implements MainPresenterContract.View {
+public class MainActivity extends AppCompatActivity {
 
     // Retrieving the date and time when the application is being launches
     public static String dateString = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).format(new Date());
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
 
     static ViewPager viewPager;
     SwipeRefreshLayout swipeRefreshLayout;
-    private MainPresenterContract.Presenter presenter;
+    private MainHelper helper;
 
     static IALocationManager mIaLocationManager;
 
@@ -131,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
 
-        presenter = MainPresenter.buildPresenter(this);
+        helper = new MainHelper(this);
 
-        FirebaseCommands firebaseCommands = new FirebaseCommands(this);
+        FirebaseHelper firebaseHelper = new FirebaseHelper(this);
 
-        firebaseCommands.initializeDatabase();
+        firebaseHelper.initializeDatabase();
 
         SharedPreferences prefs = getSharedPreferences(IntroActivity.MY_PREFS_NAME, MODE_PRIVATE);
         boolean doneTutorial = prefs.getBoolean("doneTutorial", false);
@@ -166,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
 
         setContentView(R.layout.activity_main);
 
-        if (!presenter.isConnected()) {
+        if (!helper.isConnected()) {
             builderDialog(MainActivity.this).show();
         } else {
             setContentView(R.layout.activity_main);
@@ -187,13 +186,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                presenter.verifyQueryRoom(s);
+                helper.verifyQueryRoom(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                presenter.verifyQueryRoom(s);
+                helper.verifyQueryRoom(s);
                 return false;
             }
         });
@@ -206,13 +205,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                presenter.verifyQueryApplication(s);
+                helper.verifyQueryApplication(s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                presenter.verifyQueryApplication(s);
+                helper.verifyQueryApplication(s);
                 return false;
             }
         });
@@ -310,7 +309,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenterCont
         adapter.notifyDataSetChanged();
     }
 
-    @Override
     public void setupViewPager() {
 
         RoomFragment roomFragment1 = new RoomFragment();

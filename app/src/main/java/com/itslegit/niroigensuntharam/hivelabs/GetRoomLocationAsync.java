@@ -5,8 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.MainPresenter;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.contract.MainPresenterContract;
+import com.itslegit.niroigensuntharam.hivelabs.helper.FirebaseHelper;
+import com.itslegit.niroigensuntharam.hivelabs.helper.MainHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,11 +21,10 @@ public class GetRoomLocationAsync {
 
     public class GetApplicationInfoAsync extends AsyncTask<Void, Void, Void> {
         private Context mContext;
-        private MainPresenterContract.Presenter presenter;
+        private FirebaseHelper helper;
 
         GetApplicationInfoAsync(Context context){
             mContext = context;
-//            presenter = MainPresenter.buildPresenter(context, this);
         }
 
         @Override
@@ -82,7 +81,7 @@ public class GetRoomLocationAsync {
 
             List<Application> apps = MainActivity.Applications;
 
-//            mAppRef.setValue(apps);
+            helper.setDatabaseValue(apps, FirebaseHelper.FirebaseDataType.App);
         }
     }
 

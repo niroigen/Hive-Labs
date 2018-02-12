@@ -1,4 +1,4 @@
-package com.itslegit.niroigensuntharam.hivelabs.presenter;
+package com.itslegit.niroigensuntharam.hivelabs.helper;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import com.itslegit.niroigensuntharam.hivelabs.Application;
 import com.itslegit.niroigensuntharam.hivelabs.Room;
 import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
-import com.itslegit.niroigensuntharam.hivelabs.presenter.contract.MainPresenterContract;
 
 import java.util.ArrayList;
 
@@ -16,22 +15,16 @@ import static com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity.Ap
 import static com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity.Rooms;
 
 /**
- * Created by niroigensuntharam on 2018-02-11.
+ * Created by niro on 2018-02-12.
  */
 
-public class MainPresenter implements MainPresenterContract.Presenter {
-
+public class MainHelper {
     private Context context;
 
-    private MainPresenter(Context context) {
+    public MainHelper(Context context) {
         this.context = context;
     }
 
-    public static MainPresenterContract.Presenter buildPresenter(Context context) {
-        return new MainPresenter(context);
-    }
-
-    @Override
     public boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -49,7 +42,6 @@ public class MainPresenter implements MainPresenterContract.Presenter {
             return false;
     }
 
-    @Override
     public void verifyQueryRoom(String query) {
 
         if (!query.isEmpty()) {
@@ -73,7 +65,6 @@ public class MainPresenter implements MainPresenterContract.Presenter {
         MainActivity.notifyAdapter();
     }
 
-    @Override
     public void verifyQueryApplication(String query) {
         if (!query.isEmpty()) {
             ArrayList<String> rooms = new ArrayList<>();
@@ -97,8 +88,7 @@ public class MainPresenter implements MainPresenterContract.Presenter {
 
             Rooms.clear();
             Rooms.addAll(roomsWithApp);
-        }
-        else{
+        } else {
             Rooms.clear();
             Rooms.addAll(AllRooms);
         }
