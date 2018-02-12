@@ -4,10 +4,10 @@
     >
 
 <item
-    android:id="@+id/action_search"
+    android:id="@+id/action_search_application"
     android:icon="@drawable/ic_action_action_search"
     android:orderInCategory="100"
-    android:title="Search..."
+    android:title="@string/search_hint"
     app:showAsAction="always"
     />
 

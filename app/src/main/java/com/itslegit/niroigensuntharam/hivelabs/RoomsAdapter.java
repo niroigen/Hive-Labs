@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.itslegit.niroigensuntharam.hivelabs.activities.LabDetailActivity;
+import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
+
 import java.util.ArrayList;
 
 public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> implements View.OnClickListener, View.OnLongClickListener {
@@ -54,7 +57,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> implement
                 nextTimeMinute = String.valueOf(mRooms.get(position).getNextTime()).substring(1, 3);
             }
 
-            mainHolder.nextClass.setText(String.format(mContext.getString(R.string.next_class), nextTimeHour, nextTimeMinute));
+            mainHolder.nextClass.setText(String.format(mContext.getString(R.string.next_class), mRooms.get(position).getNextClass(), nextTimeHour, nextTimeMinute));
             mainHolder.cardView.setCardBackgroundColor(Color.rgb(216, 224, 98));
         } else if (mRooms.get(position).getCurrentClass() != null) {
             mainHolder.nextClass.setText(String.format(mContext.getString(R.string.current_class), mRooms.get(position).getCurrentClass()));

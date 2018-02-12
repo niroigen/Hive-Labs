@@ -1,4 +1,4 @@
-package com.itslegit.niroigensuntharam.hivelabs;
+package com.itslegit.niroigensuntharam.hivelabs.activities;
 
 /**
  * Created by niroigensuntharam on 2017-11-19.

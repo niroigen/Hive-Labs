@@ -1,4 +1,4 @@
-package com.itslegit.niroigensuntharam.hivelabs;
+package com.itslegit.niroigensuntharam.hivelabs.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.github.paolorotolo.appintro.model.SliderPage;
+import com.itslegit.niroigensuntharam.hivelabs.R;
 
 /**
  * Created by niroigensuntharam on 2017-11-29.

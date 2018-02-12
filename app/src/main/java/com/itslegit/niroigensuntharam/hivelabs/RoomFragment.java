@@ -11,18 +11,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DatabaseReference;
+import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.itslegit.niroigensuntharam.hivelabs.MainActivity.earliestTime;
+import static com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity.earliestTime;
 
 public class RoomFragment extends Fragment {
     private View view;
     SwipeRefreshLayout swipeRefreshLayout;
 
     public RoomFragment() {
+
     }
 
     @Nullable

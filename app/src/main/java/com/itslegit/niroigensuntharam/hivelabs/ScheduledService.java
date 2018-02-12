@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
+
 public class ScheduledService extends IntentService {
 
     public ScheduledService() {

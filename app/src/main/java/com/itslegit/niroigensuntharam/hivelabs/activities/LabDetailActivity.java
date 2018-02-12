@@ -1,9 +1,10 @@
-package com.itslegit.niroigensuntharam.hivelabs;
+package com.itslegit.niroigensuntharam.hivelabs.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -11,9 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.itslegit.niroigensuntharam.hivelabs.Coordinate;
+import com.itslegit.niroigensuntharam.hivelabs.MapsOverlayActivity;
+import com.itslegit.niroigensuntharam.hivelabs.R;
+import com.itslegit.niroigensuntharam.hivelabs.Room;
+import com.itslegit.niroigensuntharam.hivelabs.ScheduledService;
+import com.itslegit.niroigensuntharam.hivelabs.databinding.ActivityLabDetailBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,14 +29,11 @@ import java.util.Locale;
 public class LabDetailActivity extends AppCompatActivity {
 
 
+    ActivityLabDetailBinding binding;
     double lat;
     double lon;
     String room;
-    TextView roomNumber;
-    Button currentRoomButton;
-    Button contactsButton;
-    ArrayAdapter myCustomAdapter=null;
-    ListView listView = null;
+    ArrayAdapter<String> myCustomAdapter=null;
     static AlarmManager mgr;
 
     static PendingIntent pi = null;
@@ -39,6 +42,8 @@ public class LabDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lab_detail);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_lab_detail);
 
         Button viewNavigationButton = findViewById(R.id.navigateButton);
 
@@ -51,8 +56,7 @@ public class LabDetailActivity extends AppCompatActivity {
                 intent.putExtra("room", room);
                 try {
                     startActivity(intent);
-                }
-                catch (Exception ex){
+                } catch (Exception ex) {
                     ex.getMessage();
                 }
             }
@@ -65,14 +69,14 @@ public class LabDetailActivity extends AppCompatActivity {
 
         Room tempRoom = new Room();
 
-        for (Room room: MainActivity.Rooms){
-            if (room.getRoomNumber().equals(this.room)){
+        for (Room room : MainActivity.Rooms) {
+            if (room.getRoomNumber().equals(this.room)) {
                 tempRoom = room;
                 break;
             }
         }
 
-        if (MainActivity.coordinates.containsKey(tempRoom.getRoomNumber())){
+        if (MainActivity.coordinates.containsKey(tempRoom.getRoomNumber())) {
             Coordinate co = MainActivity.coordinates.get(tempRoom.getRoomNumber());
 
             lat = co.getLatitude();
@@ -81,30 +85,24 @@ public class LabDetailActivity extends AppCompatActivity {
 
         final Room individualLab = tempRoom;
 
-        for (int i = 0; i < individualLab.getTimeList().size(); i++)
-        {
+        for (int i = 0; i < individualLab.getTimeList().size(); i++) {
             ClassAndTime.add(individualLab.getClassList().get(i) + "\n" + individualLab.getTimeList().get(i));
         }
 
-        myCustomAdapter= new ArrayAdapter(this, android.R.layout.simple_list_item_1, ClassAndTime);
+        myCustomAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ClassAndTime);
 
-        listView = (ListView) findViewById(R.id.classScheduleList);
-        listView.setAdapter(myCustomAdapter);
-        listView.setCacheColorHint(Color.WHITE);
+        binding.classScheduleList.setAdapter(myCustomAdapter);
+        binding.classScheduleList.setCacheColorHint(Color.WHITE);
 
-        roomNumber = (TextView) findViewById(R.id.roomNumber);
-        roomNumber.setText(individualLab.getRoomNumber());
-        currentRoomButton = (Button) findViewById(R.id.currentRoomButton);
-        contactsButton = (Button) findViewById(R.id.contactsButton);
+        binding.roomNumber.setText(individualLab.getRoomNumber());
 
         if (MainActivity.currentRoom != null
                 && MainActivity.currentRoom.getRoomNumber().equals(individualLab.getRoomNumber())
-                || individualLab.getNextTime() == -1)
-        {
-            currentRoomButton.setEnabled(false);
+                || individualLab.getNextTime() == -1) {
+            binding.currentRoomButton.setEnabled(false);
         }
 
-        currentRoomButton.setOnClickListener(new View.OnClickListener() {
+        binding.currentRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -129,22 +127,21 @@ public class LabDetailActivity extends AppCompatActivity {
                     pi = PendingIntent.getService(LabDetailActivity.this, 0, i, 0);
                     mgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + TimeLeft * 60 * 1000, pi);
 
-                    currentRoomButton.setEnabled(false);
+                    binding.currentRoomButton.setEnabled(false);
 
-                    Toast.makeText(getApplicationContext(), "Current room set to " + roomNumber.getText(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Current room set to " + binding.roomNumber.getText(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        contactsButton.setOnClickListener(new View.OnClickListener() {
+        binding.contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(LabDetailActivity.this, ContactsActivity.class);
                     intent.putExtra("roomNumber", individualLab.getRoomNumber());
                     startActivity(intent);
-                }
-                catch(Exception ex){
+                } catch (Exception ex) {
                     ex.getMessage();
                 }
             }

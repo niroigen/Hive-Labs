@@ -1,4 +1,4 @@
-package com.itslegit.niroigensuntharam.hivelabs;
+package com.itslegit.niroigensuntharam.hivelabs.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +17,8 @@ import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
 import com.indooratlas.android.sdk.IALocationRequest;
 import com.indooratlas.android.sdk.IARegion;
+import com.itslegit.niroigensuntharam.hivelabs.ExampleUtils;
+import com.itslegit.niroigensuntharam.hivelabs.R;
 
 /**
  * Created by abdullahalsaeed on 2017-11-26.

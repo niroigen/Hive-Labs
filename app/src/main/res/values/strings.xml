@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">H.I.V.E Labs</string>
     <string name="room_capacity">Capacity: %1$s</string>
-    <string name="action_search">Application</string>
+    <string name="action_search_application">Application</string>
+    <string name="action_search_room">Room</string>
     <string name="search_prompt_title">Search Applications</string>
     <string name="button_close">Close</string>
     <string name="search_prompt_description">Tap on icon to search for an application that can be seen in a lab room</string>
@@ -15,5 +16,7 @@
     <string name="today_schedule">Today\'s Schedule</string>
     <string name="current_class">Current Class: %1$s</string>
     <string name="no_class">No classes for the rest of the day!</string>
-    <string name="next_class">Next: %1$s:%2$s</string>
+    <string name="next_class">Next class: %1$s, at %2$s:%3$s</string>
+    <string name="access_contacts">Until you grant the permission, we cannot access your contacts</string>
+    <string name="access_sms">Until you grant the permission, we cannot send SMS</string>
 </resources>

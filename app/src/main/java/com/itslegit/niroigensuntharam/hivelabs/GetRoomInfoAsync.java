@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
+import com.itslegit.niroigensuntharam.hivelabs.database.FirebaseCommands;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,10 +15,11 @@ import java.util.Map;
 public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
     private Context mContext;
     private String Date;
+    private FirebaseCommands firebaseCommands;
 
-    GetRoomInfoAsync(Context context){
-
-        mContext = context;
+    GetRoomInfoAsync(Context context) {
+        this.mContext = context;
+        this.firebaseCommands = new FirebaseCommands(context);
     }
 
     @Override
@@ -27,7 +31,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
 
         RetrieveRoomsInfo();
 
-        for (Room room: MainActivity.Rooms) {
+        for (Room room : MainActivity.Rooms) {
             // Verifying whether the room is currently available or not
             Room.VerifyIfAvalaible(room);
         }
@@ -35,7 +39,7 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         return null;
     }
 
-    private void RetrieveRoomsInfo(){
+    private void RetrieveRoomsInfo() {
         try {
 
             ArrayList<Thread> threads = new ArrayList<>();
@@ -57,20 +61,16 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
                 threads.add(thread);
             }
 
-            for (int i = 0; i < threads.size(); i++)
-            {
+            for (int i = 0; i < threads.size(); i++) {
                 threads.get(i).start();
             }
 
-            for (int i = 0; i < threads.size(); i++)
-            {
+            for (int i = 0; i < threads.size(); i++) {
                 threads.get(i).join();
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             //
-        }
-        finally {
+        } finally {
             saveRooms();
         }
     }
@@ -95,23 +95,22 @@ public class GetRoomInfoAsync extends AsyncTask<String, Void, Void> {
         super.onProgressUpdate(values);
     }
 
-    private static void saveRooms() {
+    private void saveRooms() {
 
         Map<String, Room> rooms = new HashMap<>();
 
-        for (Room room: MainActivity.Rooms){
+        for (Room room : MainActivity.Rooms) {
             rooms.put(room.getRoomNumber(), room);
         }
 
         try {
-            MainActivity.mRoomRef.setValue(rooms);
-        }
-        catch (Exception ex){
+            firebaseCommands.setDatabaseValue(rooms, FirebaseCommands.FirebaseDataType.Room);
+        } catch (Exception ex) {
             ex.getMessage();
         }
     }
 
     private void saveDate() {
-        MainActivity.mDateRef.setValue(Date);
+        firebaseCommands.setDatabaseValue(Date, FirebaseCommands.FirebaseDataType.Date);
     }
 }

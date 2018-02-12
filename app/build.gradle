@@ -19,8 +19,8 @@ android {
         applicationId "com.itslegit.niroigensuntharam.hivelabs"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 5
-        versionName "3.2"
+        versionCode 6
+        versionName "3.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

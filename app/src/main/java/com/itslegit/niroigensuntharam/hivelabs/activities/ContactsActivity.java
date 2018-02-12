@@ -1,6 +1,5 @@
-package com.itslegit.niroigensuntharam.hivelabs;
+package com.itslegit.niroigensuntharam.hivelabs.activities;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -9,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.util.SparseBooleanArray;
@@ -18,31 +18,43 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.itslegit.niroigensuntharam.hivelabs.R;
 import com.itslegit.niroigensuntharam.hivelabs.databinding.ActivityContactsBinding;
+import com.itslegit.niroigensuntharam.hivelabs.presenter.ContactsPresenter;
+import com.itslegit.niroigensuntharam.hivelabs.presenter.contract.ContactsPresenterContract;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class ContactsActivity extends AppCompatActivity implements MaterialSearchView.OnQueryTextListener, MaterialSearchView.SearchViewListener, Button.OnClickListener {
+import static com.itslegit.niroigensuntharam.hivelabs.presenter.ContactsPresenter.PERMISSIONS_REQUEST_READ_CONTACTS;
+import static com.itslegit.niroigensuntharam.hivelabs.presenter.ContactsPresenter.PERMISSIONS_REQUEST_SEND_SMS;
 
-    // Request code for READ_CONTACTS. It can be any number > 0.
-    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    // Request code for SEND_SMS. It can be any number > 0.
-    private static final int PERMISSIONS_REQUEST_SEND_SMS = 99;
+public class ContactsActivity extends AppCompatActivity implements MaterialSearchView.OnQueryTextListener,
+                                                                    MaterialSearchView.SearchViewListener,
+                                                                    Button.OnClickListener,
+                                                                    ContactsPresenterContract.View {
+
+
     //list of contact names
-    final List<String> contacts = new ArrayList<>();
+    private List<String> contacts = new ArrayList<>();
+
+    private ContactsPresenterContract.Presenter presenter;
 
     //store the desired room number in order to SMS
     String roomNumber;
 
     private ActivityContactsBinding binding;
+
+    ProgressBar progressBar;
+
     //array of hash to hold all contacts' name and phone number
     private ArrayList<HashMap<String, String>> contactData = new ArrayList<>();
+
     //hold the default message
     private String message = "I am in room H-";
 
@@ -51,29 +63,40 @@ public class ContactsActivity extends AppCompatActivity implements MaterialSearc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        progressBar = new ProgressBar(this);
+        progressBar.setVisibility(View.VISIBLE);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_contacts);
 
         roomNumber = getIntent().getExtras().getString("roomNumber");
 
         message = message + roomNumber;
 
+        presenter = ContactsPresenter.buildPresenter(this, this);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
         binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         binding.lstNames.setAdapter(adapter);
-
 
         binding.searchView.setOnSearchViewListener(this);
 
         binding.searchView.setOnQueryTextListener(this);
 
-        // Read and show the contacts
-        showContacts();
+        presenter.checkPermission();
+    }
+
+    @Override
+    protected void onStart() {
+
+        displayContacts();
+        super.onStart();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contacts, menu);
-        MenuItem item = menu.findItem(R.id.action_search);
+        MenuItem item = menu.findItem(R.id.action_search_application);
+
         binding.searchView.setMenuItem(item);
         return true;
     }
@@ -88,63 +111,29 @@ public class ContactsActivity extends AppCompatActivity implements MaterialSearc
         return super.onOptionsItemSelected(item);
     }
 
-    private void showContacts() {
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.SEND_SMS}, PERMISSIONS_REQUEST_SEND_SMS);
-            //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-        } else {
-            // Android version is lesser than 6.0 or the permission is already granted.
-
-            //final List<String> contacts = new ArrayList<>();
-            getContactNames();
-
-            for (int i = 0; i < contactData.size(); i++) {
-
-                if (!contacts.contains(contactData.get(i).get("name"))) {
-                    contacts.add(contactData.get(i).get("name"));
-                    Collections.sort(contacts); //sort contact names in alphabetic order
-                }
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
-            binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-            binding.lstNames.setAdapter(adapter);
-
-            binding.getchoice.setOnClickListener(this);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                showContacts();
+                displayContacts();
             } else {
-                Toast.makeText(this, "Until you grant the permission, we cannot access your contacts", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.access_contacts), Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == PERMISSIONS_REQUEST_SEND_SMS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                showContacts();
+                displayContacts();
             } else {
-                Toast.makeText(this, "Until you grant the permission, we cannot send SMS", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.access_sms), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    /**
-     * Read the name of all the contacts.
-     *
-     * @return an array of hash of names.
-     */
-    private void getContactNames() {
 
+    @Override
+    public void getContactNames() {
         try {
             @SuppressLint("Recycle") Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
             assert cursor != null;
@@ -169,8 +158,6 @@ public class ContactsActivity extends AppCompatActivity implements MaterialSearc
             }
         } catch (Exception ignored) {
         }
-
-        //return contactsData;
     }
 
     @Override
@@ -265,5 +252,26 @@ public class ContactsActivity extends AppCompatActivity implements MaterialSearc
 
             Toast.makeText(ContactsActivity.this, "Sent to " + selectedContacts.get(i).get("name"), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void displayContacts() {
+        getContactNames();
+
+        contacts = presenter.sortContacts(contactData);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
+        binding.lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        binding.lstNames.setAdapter(adapter);
+
+        binding.getchoice.setOnClickListener(this);
+
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void requestContactsPermissions(@NonNull String[] permissions, int permissionRequest) {
+        requestPermissions(permissions, permissionRequest);
     }
 }
