@@ -16,7 +16,7 @@ import com.itslegit.niroigensuntharam.hivelabs.activities.MainActivity;
 
 import java.util.ArrayList;
 
-public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> implements View.OnClickListener, View.OnLongClickListener {
+public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> {
 
     private ArrayList<Room> mRooms;
     private Context mContext;
@@ -37,7 +37,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> implement
     @Override
     public void onBindViewHolder(RoomViewHolder holder, final int position) {
         mainHolder = holder;
-        room = position;
 
         mainHolder.roomNumber.setText(mRooms.get(position).getRoomNumber());
 
@@ -64,61 +63,63 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomViewHolder> implement
             mainHolder.cardView.setCardBackgroundColor(Color.rgb(170, 46, 46));
         }
 
-        mainHolder.cardView.setOnClickListener(this);
+        mainHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                room = position;
 
-        mainHolder.cardView.setOnLongClickListener(this);
-    }
-
-    @Override
-    public void onClick(View view) {
-        Intent intent = new Intent(mContext.getApplicationContext(), LabDetailActivity.class);
-        intent.putExtra("room", mRooms.get(room).getRoomNumber());
-        mContext.startActivity(intent);
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        String roomNumber = mainHolder.roomNumber.getText().toString();
-
-        int i = -1;
-
-        for (int z = 0; z < MainActivity.Rooms.size(); z++) {
-            if (roomNumber.equals(MainActivity.Rooms.get(z).getRoomNumber())) {
-                i = z;
-                break;
+                Intent intent = new Intent(mContext.getApplicationContext(), LabDetailActivity.class);
+                intent.putExtra("room", mRooms.get(room).getRoomNumber());
+                mContext.startActivity(intent);
             }
-        }
+        });
 
-        StringBuilder output = new StringBuilder();
+        mainHolder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String roomNumber = mainHolder.roomNumber.getText().toString();
 
-        for (int j = 0; j < MainActivity.Applications.size(); j++) {
-            ArrayList<String> rooms = MainActivity.Applications.get(j).getRoomsToUse();
+                int i = -1;
 
-            for (int k = 0; k < rooms.size(); k++) {
-                if (rooms.get(k).substring(3, 6).equals(MainActivity.Rooms.get(i).getRoomNumber())) {
-                    output.append(MainActivity.Applications.get(j).getApplication());
-                    output.append("\n");
-                }
-            }
-        }
-
-        AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
-        alertDialog.setTitle("Software Available");
-        alertDialog.setMessage(output);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                for (int z = 0; z < MainActivity.Rooms.size(); z++) {
+                    if (roomNumber.equals(MainActivity.Rooms.get(z).getRoomNumber())) {
+                        i = z;
+                        break;
                     }
-                });
+                }
 
-        try {
-            alertDialog.show();
-        } catch (Exception ex) {
-            ex.getMessage();
-        }
+                StringBuilder output = new StringBuilder();
 
-        return true;
+                for (int j = 0; j < MainActivity.Applications.size(); j++) {
+                    ArrayList<String> rooms = MainActivity.Applications.get(j).getRoomsToUse();
+
+                    for (int k = 0; k < rooms.size(); k++) {
+                        if (rooms.get(k).substring(3, 6).equals(MainActivity.Rooms.get(i).getRoomNumber())) {
+                            output.append(MainActivity.Applications.get(j).getApplication());
+                            output.append("\n");
+                        }
+                    }
+                }
+
+                AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+                alertDialog.setTitle("Software Available");
+                alertDialog.setMessage(output);
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                try {
+                    alertDialog.show();
+                } catch (Exception ex) {
+                    ex.getMessage();
+                }
+
+                return true;
+            }
+        });
     }
 
     @Override
