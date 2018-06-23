@@ -44,7 +44,6 @@ public class ContactsActivity extends AppCompatActivity {
     //array of hash to hold all contacts' name and phone number
     private ArrayList<HashMap<String,String>> contactData=new ArrayList<HashMap<String,String>>();
 
-
     //list of contact names
     final List<String> contacts = new ArrayList<>();
 
@@ -77,21 +76,15 @@ public class ContactsActivity extends AppCompatActivity {
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-
             }
 
             @Override
             public void onSearchViewClosed() {
-
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
                 lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 lstNames.setAdapter(adapter);
             }
         });
-
-
-
-
 
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
@@ -121,7 +114,7 @@ public class ContactsActivity extends AppCompatActivity {
                     lstNames.setAdapter(adapter);
                 }
 
-                else{
+                else {
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(ContactsActivity.this, android.R.layout.simple_list_item_multiple_choice, contacts);
                     lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     lstNames.setAdapter(adapter);
@@ -130,9 +123,6 @@ public class ContactsActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
-
 
         // Read and show the contacts
         showContacts();
@@ -174,14 +164,13 @@ public class ContactsActivity extends AppCompatActivity {
             //final List<String> contacts = new ArrayList<>();
             getContactNames();
 
-            for (int i=0; i < contactData.size(); i++){
+            for (int i=0; i < contactData.size(); i++) {
 
-                if (!contacts.contains(contactData.get(i).get("name"))){
+                if (!contacts.contains(contactData.get(i).get("name"))) {
                     contacts.add(contactData.get(i).get("name"));
                     Collections.sort(contacts); //sort contact names in alphabetic order
                 }
             }
-            
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, contacts);
             lstNames.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -237,7 +226,6 @@ public class ContactsActivity extends AppCompatActivity {
                         }
 
                         Toast.makeText(ContactsActivity.this, "Sent to " + selectedContacts.get(i).get("name"), Toast.LENGTH_SHORT).show();
-
                     }
                 }
             });
@@ -272,9 +260,9 @@ public class ContactsActivity extends AppCompatActivity {
      * @return an array of hash of names.
      */
     private ArrayList<HashMap<String,String>> getContactNames(){
-
         try {
             Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+            assert cursor != null;
             while (cursor.moveToNext()) {
                 try {
                     String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -282,6 +270,7 @@ public class ContactsActivity extends AppCompatActivity {
                     String hasPhone = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                     if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
                         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
+                        assert phones != null;
                         while (phones.moveToNext()) {
                             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             HashMap<String, String> map = new HashMap<String, String>();
@@ -300,7 +289,6 @@ public class ContactsActivity extends AppCompatActivity {
             String c="";
         }
 
-        //return contactsData;
         return contactData;
     }
 }

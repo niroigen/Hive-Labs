@@ -28,17 +28,17 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void LongClickOnItem() {
-        onView(withId(R.id.simpleListView)).perform(longClick());
+        onView(withId(R.id.text_list_view)).perform(longClick());
     }
 
     @Test
     public void ClickOnItem(){
-        onView(withId(R.id.simpleListView)).perform(click());
+        onView(withId(R.id.text_list_view)).perform(click());
         onView(withId(R.id.currentRoomButton)).perform(click());
     }
 
     @Test
     public void SwipeDown(){
-        onView(withId(R.id.simpleListView)).perform(swipeDown());
+        onView(withId(R.id.text_list_view)).perform(swipeDown());
     }
 }
